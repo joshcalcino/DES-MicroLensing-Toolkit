@@ -1,11 +1,8 @@
 import numpy as np
 import astropy.constants as const
 ##checking the merge
-<<<<<<< HEAD
 ##This is a note from Marika's branch
-=======
 ##Merging check for Celeste's branch
->>>>>>> fermi_devel_csk
 class GenerateMicrolensingEvent(object):
     """This class will generate a random microlensing event. All of the parameters are randomly generated."""
 
