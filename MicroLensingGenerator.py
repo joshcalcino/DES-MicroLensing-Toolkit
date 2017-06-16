@@ -2,6 +2,7 @@ import numpy as np
 import astropy.constants as const
 ##checking the merge
 ##This is a note from Marika's branch
+##Merging check for Celeste's branch
 class GenerateMicrolensingEvent(object):
     """This class will generate a random microlensing event. All of the parameters are randomly generated."""
 
