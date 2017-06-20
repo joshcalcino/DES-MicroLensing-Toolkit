@@ -15,12 +15,13 @@ class GenerateMicrolensingEvent(object):
         return pi_rel
     '''
 
-    def __init__(self):
+    def __init__(self, tmax):
         self.Ds, self.Dl, self.Drel = self.get_Dist()
         self.Mass = self.get_Mass()
         self.ImpactParameter = self.get_ImpactParameter()
         self.t_0 = self.get_t_0()
-        self.t_max = self.get_t_max()
+        self.t_max = tmax
+        self.times = []
 
     def get_Dist(self):
         Ds = np.random.uniform(low=1000, high=20000)  # Ds is the distance from the observer to the source.
@@ -82,6 +83,9 @@ class GenerateMicrolensingEvent(object):
         delta_mag = 2.5 * np.log10(A)
         return delta_mag
 
+    def get_times(self, MJD_list):
+        self.times = MJD_list
+
     def generate_times(self):
         # t = np.random.uniform(low=0, high=5, size=50)  # 10 random points to mimic the DES fields
         # t = np.sort(t)
@@ -97,7 +101,7 @@ class GenerateMicrolensingEvent(object):
         return data
 
     def simple_fake(self):
-        t = self.generate_times()
+        t = self.times()
         p = 0.7
         t_max = 2.
         t_0 = 0.5
