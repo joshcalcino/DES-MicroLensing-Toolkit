@@ -15,12 +15,12 @@ class GenerateMicrolensingEvent(object):
         return pi_rel
     '''
 
-    def __init__(self, tmax):
+    def __init__(self, t_0):
         self.Ds, self.Dl, self.Drel = self.get_Dist()
         self.Mass = self.get_Mass()
         self.ImpactParameter = self.get_ImpactParameter()
-        self.t_0 = self.get_t_0()
-        self.t_max = tmax
+        self.t_E = self.get_t_E()
+        self.t_0 = t_0
         self.times = []
 
     def get_Dist(self):
@@ -36,11 +36,11 @@ class GenerateMicrolensingEvent(object):
                               high=100) * const.M_sun.value  # the mass of the lens, relative to solar mass.
         return M
 
-    def get_t_max(self):  # time of maximum approach, in years since the start of DES.. for now
-        t_max = np.random.uniform(low=1.0, high=4.0)
-        print 't_max is'
-        print t_max
-        return t_max
+    def get_t_0(self):  # time of maximum approach, in years since the start of DES.. for now
+        t_0 = np.random.uniform(low=1.0, high=4.0)
+        print 't_0 is'
+        print t_0
+        return t_0
 
     def get_ImpactParameter(self):
         p = np.random.uniform(low=0.0,
@@ -64,17 +64,17 @@ class GenerateMicrolensingEvent(object):
         r_dot = 4.22 * (V / 200.0) * (10000 / Ds)
         return r_dot
 
-    def get_t_0(self):  # time it takes the source to move a distance equal to the Einstein ring radius
-        t_0 = self.get_r_E() / self.get_r_dot()
-        print 't_0 is'
-        print t_0
-        return t_0
+    def get_t_E(self):  # time it takes the source to move a distance equal to the Einstein ring radius
+        t_E = self.get_r_E() / self.get_r_dot()
+        print 't_E is'
+        print t_E
+        return t_E
 
     def get_u(self, t):
         p = self.ImpactParameter
+        t_E = self.t_E
         t_0 = self.t_0
-        t_max = self.t_max
-        u = np.sqrt(p ** 2 + ((t - t_max) / t_0) ** 2)
+        u = np.sqrt(p ** 2 + ((t - t_0) / t_E) ** 2)
         return u
 
     def get_delta_mag(self, t):  # change in the magnitude of the star due to the lensing
@@ -103,9 +103,9 @@ class GenerateMicrolensingEvent(object):
     def simple_fake(self):
         t = self.times()
         p = 0.7
-        t_max = 2.
-        t_0 = 0.5
-        u = np.sqrt(p ** 2 + ((t - t_max) / t_0) ** 2)
+        t_0 = 2.
+        t_E = 0.5
+        u = np.sqrt(p ** 2 + ((t - t_0) / t_E) ** 2)
         A = (u ** 2 + 2) / (u * np.sqrt(u ** 2 + 4))
         delta_mag = 2.5 * np.log10(A)
         data = {"delta_mag": delta_mag, "time": t}
