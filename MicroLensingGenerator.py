@@ -14,14 +14,15 @@ class GenerateMicrolensingEvent(object):
         self.curve_type = curve_type
         self.M_lens = M_lens
         self.Ds = Ds
-        self.ImpactParameter = p
-        self.t_0 = t_0
+        self.ImpactParameter = self.get_ImpactParameter(p)
+        self.t_0 = self.get_t_0(t_0)
         self.m_0 = m_0
         self.t_eff = t_eff
-        self.times = MJD_list ##formerly []
+        self.times = self.get_times(MJD_list) ##formerly []
         self.x = x
         self.V_t = V_t
         self.t_E = self.get_t_E()
+        return self.generate_data() 
    
     def get_curve_type(self):
         curve_type = self.curve_type
@@ -34,14 +35,14 @@ class GenerateMicrolensingEvent(object):
                               high=100) * const.M_sun.value  # the mass of the lens, relative to solar mass.
         return M
 
-    def get_t_0(self):  # time of maximum approach, in years since the start of DES.. for now
-        t_0 = np.random.uniform(low=1.0, high=4.0)
+    def get_t_0(self, t0):  # time of maximum approach, in years since the start of DES.. for now
+        t_0 = t0
         print 't_0 is'
         print t_0
         return t_0
 
-    def get_ImpactParameter(self):
-        p = self.ImpactParameter
+    def get_ImpactParameter(self, impact):
+        p = impact
         print 'p is'
         print p
         return p
@@ -63,9 +64,9 @@ class GenerateMicrolensingEvent(object):
         return t_E
 
     def get_u(self, t):
-        p = self.ImpactParameter
-        t_E = self.t_E
-        t_0 = self.t_0
+        p = self.get_ImpactParameter()
+        t_E = self.get_t_E()
+        t_0 = self.get_t_0()
         u = np.sqrt(p ** 2 + ((t - t_0) / t_E) ** 2)
         return u
 
@@ -79,8 +80,8 @@ class GenerateMicrolensingEvent(object):
         delta_mag = 2.5 * np.log10(A)
         return delta_mag
 
-    def get_times(self):
-        #self.times = MJD_list
+    def get_times(self, MJD_list):
+        self.times = MJD_list
         return self.times
 
     def generate_data(self):
