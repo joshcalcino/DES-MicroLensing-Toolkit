@@ -5,15 +5,15 @@ class GenerateMicrolensingEvent(object):
     """This class will generate a random microlensing event. All of the parameters are randomly generated."""
 
     def __init__(self, t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type):
-        self.M_lens = M_lens                        #Mass of the lens 
-        self.Ds = Ds                                #Distance between observer and source
+        self.M_lens = M_lens                        #Mass of the lens, solar masses 
+        self.Ds = Ds                                #Distance between observer and source, kpc
         self.ImpactParameter = p                    #Minimum distance between object and undeflected line of sight at time, t_0
         self.t_0 = t_0                              #Time of maximum light distortion
         self.m_0 = m_0                              #Average magnitude of individual source
         self.t_eff = t_eff                          
         self.times = MJD_list ##formerly []         #list of times source was observed
         self.x = x                                  #ratio between Ds and Dl; percentage of Dl compared to Ds
-        self.V_t = V_t                              #transverse velocity, possibly determined via Gaia
+        self.V_t = V_t*(1.496e-8)*86400             #transverse velocity, possibly determined via Gaia, in AU/day, input in km/s
         self.t_E = self.get_t_E()                   #lensing timescale
         self.curve_type = curve_type
         self.A = self.get_A()
@@ -51,7 +51,7 @@ class GenerateMicrolensingEvent(object):
         M = self.M_lens
         Ds = self.Ds
         x = self.x
-        r_E = 4.54 * np.sqrt(M / const.M_sun.value)*np.sqrt(Ds/(1e4*3.086e13))*(np.sqrt((x*(1-x)))/(0.5))*1.496e8 #in km
+        r_E = 4.54 * np.sqrt(M / const.M_sun.value)*np.sqrt(Ds/(10))*(np.sqrt((x*(1-x)))/(0.5)) #in AU
         """
         r_E = 4.848e-9*Ds*( 0.902 * np.sqrt(M / const.M_sun.value) * np.sqrt(10000 / (x*Ds)) * np.sqrt(
             1 - x))  # in milli arcseconds, now in whatever units Ds is in (km)
@@ -60,6 +60,7 @@ class GenerateMicrolensingEvent(object):
 
     def get_t_E(self):  # time it takes the source to move a distance equal to the Einstein ring radius
         t_E = self.get_r_E() / self.V_t #needs the same units as r_E to get out seconds
+        t_E = t_E #convert to days
         print 't_E is'
         print t_E
         return t_E
