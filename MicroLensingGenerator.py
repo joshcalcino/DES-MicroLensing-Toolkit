@@ -16,6 +16,13 @@ class GenerateMicrolensingEvent(object):
         self.V_t = V_t                              #transverse velocity, possibly determined via Gaia
         self.t_E = self.get_t_E()                   #lensing timescale
         self.curve_type = curve_type
+        self.A = self.get_A()
+
+    def get_A(self):
+        t = self.times
+        u = self.get_u(t)
+        A = (u ** 2 + 2) / (u * np.sqrt(u ** 2 + 4))
+        return A        
 
     def get_curve_type(self):
         curve_type = self.curve_type
@@ -44,8 +51,11 @@ class GenerateMicrolensingEvent(object):
         M = self.M_lens
         Ds = self.Ds
         x = self.x
-        r_E = 0.902 * np.sqrt(M / const.M_sun.value) * np.sqrt(10000 / (x*Ds)) * np.sqrt(
-            1 - x)  # in milli arcseconds
+        r_E = 4.54 * np.sqrt(M / const.M_sun.value)*np.sqrt(Ds/(1e4*3.086e13))*(np.sqrt((x*(1-x)))/(0.5))*1.496e8 #in km
+        """
+        r_E = 4.848e-9*Ds*( 0.902 * np.sqrt(M / const.M_sun.value) * np.sqrt(10000 / (x*Ds)) * np.sqrt(
+            1 - x))  # in milli arcseconds, now in whatever units Ds is in (km)
+        """
         return r_E
 
     def get_t_E(self):  # time it takes the source to move a distance equal to the Einstein ring radius
@@ -55,15 +65,14 @@ class GenerateMicrolensingEvent(object):
         return t_E
 
     def get_u(self, t):
-        p = self.get_ImpactParameter(self.ImpactParameter)
+        p = self.get_ImpactParameter()
         t_E = self.get_t_E()
-        t_0 = self.get_t_0(self.t_0)
+        t_0 = self.get_t_0()
         u = np.sqrt(p ** 2 + ((t - t_0) / t_E) ** 2)
         return u
 
     def get_delta_mag(self, t):  # change in the magnitude of the star due to the lensing
-        u = self.get_u(t)
-        A = (u ** 2 + 2) / (u * np.sqrt(u ** 2 + 4))
+        A = self.A
         delta_mag = 2.5 * np.log10(A)
         return delta_mag
 
