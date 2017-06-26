@@ -8,12 +8,12 @@ import matplotlib.image as img
 from scipy.optimize import newton
 from scipy.interpolate import interp1d
 
-
 x = MicroLensingGenerator.GenerateMicrolensingEvent(50, 0.1, 1e-15, 30, 4.5, 0.5, np.arange(1, 100, 0.01), 12, 1, 1)
-
+                                                   #t_0,u_0, v_t, M_lens,D_s, x,  t[list],     m_0, t_eff, curve_type  
 t = x.times
 u = x.get_u(t)
 A = x.A
+delta_mag = x.get_delta_mag(t)  # change in the magnitude of the star due to the lensing
 interp = interp1d(u, A, bounds_error =  False, kind = 'linear')
 
 plt.plot(u, 2.5*np.log10(interp(u)))
@@ -22,5 +22,4 @@ plt.xlabel("Einstein Radii")
 plt.ylabel("Magnitude Difference")
 plt.grid()
 plt.show()
-
 
