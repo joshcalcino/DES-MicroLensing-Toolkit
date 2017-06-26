@@ -21,8 +21,7 @@ class GenerateMicrolensingEvent(object):
         self.times = self.get_times(MJD_list) ##formerly []
         self.x = x
         self.V_t = V_t
-        self.t_E = self.get_t_E()
-        return self.generate_data() 
+        self.t_E = self.get_t_E() 
    
     def get_curve_type(self):
         curve_type = self.curve_type
@@ -64,9 +63,9 @@ class GenerateMicrolensingEvent(object):
         return t_E
 
     def get_u(self, t):
-        p = self.get_ImpactParameter()
+        p = self.get_ImpactParameter(self.ImpactParameter)
         t_E = self.get_t_E()
-        t_0 = self.get_t_0()
+        t_0 = self.get_t_0(self.t_0)
         u = np.sqrt(p ** 2 + ((t - t_0) / t_E) ** 2)
         return u
 
@@ -85,10 +84,10 @@ class GenerateMicrolensingEvent(object):
         return self.times
 
     def generate_data(self):
-        t = self.get_times()
+        t = self.get_times(self.times)
         delta_mag_list = self.get_delta_mag(t)
         mag_list = self.m_0 + delta_mag_list
-        final_mag_list = mag_list + self.generate_noise()
+        final_mag_list = mag_list + self.generate_noise(t)
         return final_mag_list
 
     def simple_fake(self):
