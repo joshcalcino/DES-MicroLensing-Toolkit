@@ -1,13 +1,8 @@
 import numpy as np
 import astropy.constants as const
-
+##Celeste 11:04 36 June
 class GenerateMicrolensingEvent(object):
-    """This class will generate a random microlensing event. All of the parameters are randomly generated.
-    def get_pi_rel(self):
-        pi_rel = np.random.uniform(low=0.01, high=0.1) # pi_rel (\pi_{\rm rel}) is the relative parallax between the
-        # lens and the source, measured in milli-arcseconds.
-        return pi_rel
-    """
+    """This class will generate a random microlensing event. All of the parameters are randomly generated."""
 
     def __init__(self, t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type):
         #self.Ds, self.Dl, self.Drel = self.get_Dist()
