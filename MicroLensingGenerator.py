@@ -1,6 +1,6 @@
 import numpy as np
 import astropy.constants as const
-
+##Celeste 11:04 36 June
 class GenerateMicrolensingEvent(object):
     """This class will generate a random microlensing event. All of the parameters are randomly generated."""
 
