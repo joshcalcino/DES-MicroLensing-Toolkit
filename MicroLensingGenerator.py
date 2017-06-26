@@ -16,6 +16,43 @@ class GenerateMicrolensingEvent(object):
         self.V_t = V_t                              #transverse velocity, possibly determined via Gaia
         self.t_E = self.get_t_E()                   #lensing timescale
 
+    def __init__(self, t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type):
+        #self.Ds, self.Dl, self.Drel = self.get_Dist()
+        self.curve_type = curve_type
+        self.M_lens = M_lens
+        self.Ds = Ds
+        self.ImpactParameter = p
+        self.t_0 = t_0
+        self.m_0 = m_0
+        self.t_eff = t_eff
+        self.times = MJD_list ##formerly []
+        self.x = x
+        self.V_t = V_t
+        self.t_E = self.get_t_E() 
+   
+    def get_curve_type(self):
+        curve_type = self.curve_type
+        #Put curve type loop here, return value of curve type
+        #1. Paci 2. Ellipse 3. Parallax 4. Cluster
+        return 0
+
+    def get_Mass(self):
+        M = np.random.uniform(low=0.1,
+                              high=100) * const.M_sun.value  # the mass of the lens, relative to solar mass.
+        return M
+
+    def get_t_0(self):  # time of maximum approach, in years since the start of DES.. for now
+        t_0 = self.t_0
+        print 't_0 is'
+        print t_0
+        return t_0
+
+    def get_ImpactParameter(self):
+        p = self.ImpactParameter
+        print 'p is'
+        print p
+        return p
+
     def get_r_E(self):  # r_E is the Einstein ring radius in units of.. not sure yet
         M = self.M_lens
         Ds = self.Ds
@@ -31,9 +68,9 @@ class GenerateMicrolensingEvent(object):
         return t_E
 
     def get_u(self, t):
-        p = self.ImpactParameter
-        t_E = self.t_E
-        t_0 = self.t_0
+        p = self.get_ImpactParameter(self.ImpactParameter)
+        t_E = self.get_t_E()
+        t_0 = self.get_t_0(self.t_0)
         u = np.sqrt(p ** 2 + ((t - t_0) / t_E) ** 2)
         return u
 
@@ -43,11 +80,15 @@ class GenerateMicrolensingEvent(object):
         delta_mag = 2.5 * np.log10(A)
         return delta_mag
 
+    def get_times(self):
+        times = self.times
+        return times
+
     def generate_data(self):
-        t = self.times
+        t = self.get_times(self.times)
         delta_mag_list = self.get_delta_mag(t)
         mag_list = self.m_0 + delta_mag_list
-        final_mag_list = mag_list + self.generate_noise()
+        final_mag_list = mag_list + self.generate_noise(t)
         return final_mag_list
 
     def save_data(self, data):  # save the data as a text file
