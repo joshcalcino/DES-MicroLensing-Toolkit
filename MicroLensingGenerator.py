@@ -4,7 +4,7 @@ import astropy.constants as const
 class GenerateMicrolensingEvent(object):
     """This class will generate a random microlensing event. All of the parameters are randomly generated."""
 
-    def __init__(self, t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff):
+    def __init__(self, t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type):
         self.M_lens = M_lens                        #Mass of the lens 
         self.Ds = Ds                                #Distance between observer and source
         self.ImpactParameter = p                    #Minimum distance between object and undeflected line of sight at time, t_0
@@ -15,21 +15,8 @@ class GenerateMicrolensingEvent(object):
         self.x = x                                  #ratio between Ds and Dl; percentage of Dl compared to Ds
         self.V_t = V_t                              #transverse velocity, possibly determined via Gaia
         self.t_E = self.get_t_E()                   #lensing timescale
-
-    def __init__(self, t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type):
-        #self.Ds, self.Dl, self.Drel = self.get_Dist()
         self.curve_type = curve_type
-        self.M_lens = M_lens
-        self.Ds = Ds
-        self.ImpactParameter = p
-        self.t_0 = t_0
-        self.m_0 = m_0
-        self.t_eff = t_eff
-        self.times = MJD_list ##formerly []
-        self.x = x
-        self.V_t = V_t
-        self.t_E = self.get_t_E() 
-   
+
     def get_curve_type(self):
         curve_type = self.curve_type
         #Put curve type loop here, return value of curve type
