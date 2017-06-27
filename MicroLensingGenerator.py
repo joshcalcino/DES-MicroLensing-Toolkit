@@ -1,5 +1,4 @@
 import numpy as np
-import astropy.constants as const
 ##Celeste 11:04 36 June
 class GenerateMicrolensingEvent(object):
     """This class will generate a random microlensing event. All of the parameters are randomly generated."""
@@ -39,10 +38,12 @@ class GenerateMicrolensingEvent(object):
 
     def get_r_E(self):  # r_E is the Einstein ring radius in units of.. not sure yet
         print "get_r_E 4"
+        m_denominator=1.0
+        d_denominator=10.
         M = self.M_lens
         Ds = self.Ds
         x = self.x
-        r_E = 4.54 * np.sqrt(M / const.M_sun.value)*np.sqrt(Ds/(10))*(np.sqrt((x*(1-x)))/(0.5)) #in AU
+        r_E = 4.54 * np.sqrt(M / m_denominator)*np.sqrt(Ds/d_denominator)*(np.sqrt((x*(1-x)))/(0.5)) #in AU
         """
         r_E = 4.848e-9*Ds*( 0.902 * np.sqrt(M / const.M_sun.value) * np.sqrt(10000 / (x*Ds)) * np.sqrt(
             1 - x))  # in milli arcseconds, now in whatever units Ds is in (km)
@@ -71,7 +72,7 @@ class GenerateMicrolensingEvent(object):
         print "get delta mag 7"
         A = self.A
         delta_mag = 2.5 * np.log10(A)
-        print "delta_mag is: " + str(delta_mag)
+        print "delta_mag is: ",delta_mag
         return delta_mag
 
     def generate_data(self):

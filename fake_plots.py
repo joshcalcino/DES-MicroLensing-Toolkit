@@ -9,7 +9,7 @@ from scipy.optimize import newton
 from scipy.interpolate import interp1d
 
 def nike() :
-    x = MicroLensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, np.arange(1, 100, 2), 12, 1, 1)
+    x = MicroLensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, np.arange(1, 1000, 2), 12, 1, 1)
     t = x.times
     u = x.get_u(t)
     A = x.A
@@ -25,9 +25,10 @@ def nike() :
     plt.plot(utime, dm, c="r")
     plt.scatter(u, delta_mag, s=20,c="b")
     plt.ylim(0, 0.5)
-    plt.xlabel("Einstein Radii")
+    plt.xlabel("u")
     plt.ylabel("Magnitude Difference")
     plt.grid()
+    plt.xlim(0, 5)
     plt.title("Fake plots")
     return u, delta_mag
 
