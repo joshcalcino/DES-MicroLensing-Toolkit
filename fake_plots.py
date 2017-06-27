@@ -7,15 +7,22 @@ import astropy.table as t
 import matplotlib.image as img
 from scipy.optimize import newton
 from scipy.interpolate import interp1d
+import sys
+import pandas as pd
+import matplotlib as mpl
 
 def nike() :
-    x = MicroLensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, np.arange(1, 1000, 2), 12, 1, 1)
+    x = MicroLensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, 11737, 12, 1, 1)
+    # x = MicroLensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, np.arange(1, 1000, 2), 12, 1, 1)
     t = x.times
     u = x.get_u(t)
     A = x.A
     delta_mag = x.get_delta_mag(t)  # change in the magnitude of the star due to the lensing
-
+    
     # show the light curve
+    mpl.rcParams['figure.figsize'] = (8, 5)
+    sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
+
     interp = interp1d(u, A, bounds_error =  False, kind = 'linear')
     utime = np.arange(u.min(),u.max(),0.01)
     dm = 2.5*np.log10(interp(utime))

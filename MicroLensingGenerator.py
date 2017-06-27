@@ -1,4 +1,11 @@
 import numpy as np
+import sys
+import pandas as pd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
+
+#from desqcat import load_hpx, load_cat, load_cat_epochs
 ##Celeste 11:04 36 June
 class GenerateMicrolensingEvent(object):
     """This class will generate a random microlensing event. All of the parameters are randomly generated."""
@@ -11,13 +18,34 @@ class GenerateMicrolensingEvent(object):
         self.t_0 = t_0                              #Time of maximum light distortion
         self.m_0 = m_0                              #Average magnitude of individual source
         self.t_eff = t_eff                          
-        self.times = MJD_list ##formerly []         #list of times source was observed
+        self.times = self.get_MJD_list(MJD_list) ##formerly []         #list of times source was observed
         self.x = x                                  #ratio between Ds and Dl; percentage of Dl compared to Ds
         self.V_t = V_t*(1.496e-8)*86400             #transverse velocity, possibly determined via Gaia, in AU/day, input in km/s
         self.t_E = self.get_t_E()                   #lensing timescale
         self.curve_type = curve_type
         self.A = self.get_A()
         print "init 1b"
+
+    def get_MJD_list(self, identity):
+        from desqcat import load_hpx, load_cat, load_cat_epochs
+        sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
+        mpl.rcParams['figure.figsize'] = (8, 5)
+        hpix = identity
+        cat_wide = load_cat(hpix)
+        cat = load_cat(hpix, long=True)
+        epochs = {}
+        epochs['g'] = load_hpx(hpix, 'g') #change later to loop through all bands
+        cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC', 'HPX2048', 'BAND',
+            'NEPOCHS', 'FLAGS', 'WAVG_FLAGS', 'EXPNUM',
+            'WAVG_MAG_PSF', 'WAVG_MAGERR_PSF',
+            'WAVG_MAG_AUTO', 'WAVG_MAGERR_AUTO']
+        epoch_cols = ['QUICK_OBJECT_ID', 'EXPNUM', 'MJD_OBS', 'EXPTIME', 'BAND', 'T_EFF',
+              'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO']
+        ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
+        ecat = ecat.query('MAG_PSF < 30')
+        list_times = ecat['MJD']
+        return list_times
+
 
     def get_A(self):
         print "get_A 2"
