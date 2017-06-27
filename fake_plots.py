@@ -31,7 +31,7 @@ def nike() :
     plt.grid()
     plt.xlim(0, 5)
     plt.title("Fake plots")
-    return u, delta_mag
+#    return u, delta_mag
 
 """
 plt.plot(u, 2.5*np.log10(interp(u)))
