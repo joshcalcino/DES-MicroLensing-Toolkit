@@ -39,6 +39,13 @@ def nike() :
     plt.title("Fake plots")
     return u, delta_mag
 
-
-
-
+"""
+plt.plot(u, 2.5*np.log10(interp(u)))
+#plt.plot(u, interp2(delta_mag))
+plt.ylim(0, 0.5)
+plt.xlabel("Einstein Radii")
+plt.ylabel("Magnitude Difference")
+plt.grid()
+plt.title("Fake graph with chosen inputs")
+plt.show()
+"""
