@@ -23,6 +23,11 @@ def nike() :
     mpl.rcParams['figure.figsize'] = (8, 5)
     sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
 
+
+    print("u: ")
+    print(u)
+    print("A: ")
+    print(A)
     interp = interp1d(u, A, bounds_error =  False, kind = 'linear')
     utime = np.arange(u.min(),u.max(),0.01)
     dm = 2.5*np.log10(interp(utime))

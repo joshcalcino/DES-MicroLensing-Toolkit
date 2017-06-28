@@ -27,8 +27,8 @@ class GenerateMicrolensingEvent(object):
         print "init 1b"
 
     def get_MJD_list(self, identity):
-        from desqcat import load_hpx, load_cat, load_cat_epochs
         sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
+        from desqcat import load_hpx, load_cat, load_cat_epochs
         mpl.rcParams['figure.figsize'] = (8, 5)
         hpix = identity
         cat_wide = load_cat(hpix)
@@ -43,9 +43,32 @@ class GenerateMicrolensingEvent(object):
               'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO']
         ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
         ecat = ecat.query('MAG_PSF < 30')
-        list_times = ecat['MJD']
-        return list_times
+        list_times = ecat['QUICK_OBJECT_ID']
+        obj_expnum_counts = ecat[['QUICK_OBJECT_ID', 'EXPNUM', 'BAND']].groupby(['QUICK_OBJECT_ID', 'EXPNUM'], as_index=False).count()
+        obj_expnum_counts.columns = ['QUICK_OBJECT_ID', 'EXPNUM', 'COUNTS']
+        duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
+        ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
+        
+        quick_id = list_times[0]
+        myobj_df = ecat.loc[quick_id]
+        myobj_r = ecat.query("QUICK_OBJECT_ID==" + str(quick_id) + " & BAND=='r'")[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
+        index = 0
+        quick_id = list_times[index]
+        while len(myobj_r['MJD_OBS']) == 1:
+            index = index + 1
+            quick_id = list_times[index]
+            myobj_df = ecat.loc[quick_id]
+            myobj_r = ecat.query("QUICK_OBJECT_ID==" + str(quick_id) + " & BAND=='r'")[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
 
+        len_id = len(myobj_r['MJD_OBS'])
+
+        quick_id_array = np.zeros(len_id)
+
+        for time in range(0, len_id):
+            quick_id_array[time] = myobj_r['MJD_OBS'][time]
+        print("times are: ")
+        print(quick_id_array)
+        return quick_id_array        
 
     def get_A(self):
         print "get_A 2"
