@@ -11,8 +11,10 @@ import sys
 import pandas as pd
 import matplotlib as mpl
 
+"""  Argument inputs:
+        t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type"""
 def nike() :
-    x = MicroLensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, 11737, 12, 1, 1)
+    x = MicroLensingGenerator.GenerateMicrolensingEvent(56948, 0.1, 220, 30, 4.5, 0.5, 11737, 12, 1, 1)
     # x = MicroLensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, np.arange(1, 1000, 2), 12, 1, 1)
     t = x.times
     u = x.get_u(t)
@@ -24,23 +26,22 @@ def nike() :
     sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
 
 
-    print("u: ")
-    print(u)
-    print("A: ")
-    print(A)
+    print len(u), "u: ", u
+    print len(A), "A: ", A
     interp = interp1d(u, A, bounds_error =  False, kind = 'linear')
-    utime = np.arange(u.min(),u.max(),0.01)
+    utime = np.arange(u.min(),u.max(),0.001)
     dm = 2.5*np.log10(interp(utime))
     
+
     
     plt.clf()
     plt.plot(utime, dm, c="r")
     plt.scatter(u, delta_mag, s=20,c="b")
-    plt.ylim(0, 0.5)
+    #plt.ylim(0, 0.5)
     plt.xlabel("u")
     plt.ylabel("Magnitude Difference")
     plt.grid()
-    plt.xlim(0, 5)
+    #plt.xlim(0, 5)
     plt.title("Fake plots")
 #    return u, delta_mag
 
