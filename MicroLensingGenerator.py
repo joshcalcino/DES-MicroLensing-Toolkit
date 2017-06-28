@@ -11,7 +11,6 @@ class GenerateMicrolensingEvent(object):
     """This class will generate a random microlensing event. All of the parameters are randomly generated."""
 
     def __init__(self, t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type):
-        print "init 1a"
         self.t_0 = t_0                              #Time of maximum light distortion
         self.ImpactParameter = p                    #min dist betwn obj and line of sight at t_0, unitless
         self.V_t = V_t*(1.496e-8)*86400             #transverse velocity, in AU/day, input in km/s
@@ -20,16 +19,17 @@ class GenerateMicrolensingEvent(object):
         self.x = x                                  #% of Dl compared to Ds  (0, 1)
         self.times = self.get_MJD_list(MJD_list)    #list of times source was observed
         #self.times = MJD_list                      #list of times source was observed, in days
+        #self.hpix = MJD_list 
         self.m_0 = m_0                              #Avg magnitude of src   
         self.t_eff = t_eff                          
         self.curve_type = curve_type
         self.t_E = self.get_t_E()                   #lensing timescale
         self.A = self.get_A()                       # Pac curve
-        print "init 1b"
 
     def get_MJD_list(self, identity):
-        from desqcat import load_hpx, load_cat, load_cat_epochs
+        print "MJD start"
         sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
+        from desqcat import load_hpx, load_cat, load_cat_epochs
         mpl.rcParams['figure.figsize'] = (8, 5)
         hpix = identity
         cat_wide = load_cat(hpix)
@@ -45,8 +45,10 @@ class GenerateMicrolensingEvent(object):
         ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
         ecat = ecat.query('MAG_PSF < 30')
         list_times = ecat['MJD']
+        print "list times len: ", len(list_times)
+        print "list= ", list_times
+        print "MJD end"
         return list_times
-
 
     def get_A(self):
         t = self.times
