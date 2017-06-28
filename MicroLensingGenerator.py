@@ -22,12 +22,11 @@ class GenerateMicrolensingEvent(object):
         #self.hpix = MJD_list 
         self.m_0 = m_0                              #Avg magnitude of src   
         self.t_eff = t_eff                          
-        self.curve_type = curve_type
         self.t_E = self.get_t_E()                   #lensing timescale
         self.A = self.get_A()                       # Pac curve
 
+
     def get_MJD_list(self, identity):
-        print "MJD start"
         sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
         from desqcat import load_hpx, load_cat, load_cat_epochs
         mpl.rcParams['figure.figsize'] = (8, 5)
@@ -44,25 +43,51 @@ class GenerateMicrolensingEvent(object):
               'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO']
         ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
         ecat = ecat.query('MAG_PSF < 30')
-        list_times = ecat['MJD']
-        print "list times len: ", len(list_times)
-        print "list= ", list_times
-        print "MJD end"
-        return list_times
+        list_times = ecat['QUICK_OBJECT_ID']
+        obj_expnum_counts = ecat[['QUICK_OBJECT_ID', 'EXPNUM', 'BAND']].groupby(['QUICK_OBJECT_ID', 'EXPNUM'], as_index=False).count()
+        obj_expnum_counts.columns = ['QUICK_OBJECT_ID', 'EXPNUM', 'COUNTS']
+        duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
+        ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
+        quick_id = list_times[0]
+        myobj_df = ecat.loc[quick_id]
+        myobj_r = ecat.query("QUICK_OBJECT_ID==" + str(quick_id) + " & BAND=='r'")[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
+        index = 0
+        quick_id = list_times[index]
+        while len(myobj_r['MJD_OBS']) == 1:
+            index = index + 1
+            quick_id = list_times[index]
+            myobj_df = ecat.loc[quick_id]
+            myobj_r = ecat.query("QUICK_OBJECT_ID==" + str(quick_id) + " & BAND=='r'")[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
+
+        len_id = len(myobj_r['MJD_OBS'])
+
+        quick_id_array = np.zeros(len_id)
+
+        for time in range(0, len_id):
+            quick_id_array[time] = myobj_r['MJD_OBS'][time]
+        print("times are: ")
+        print(quick_id_array)
+        return quick_id_array        
 
     def get_A(self):
+        print "get_A 2"
         t = self.times
         u = self.get_u(t)
         A = (u ** 2 + 2) / (u * np.sqrt(u ** 2 + 4))
+        print "u is: " + str(u)
+        print "A is: " + str(A)
+        print "A is " + str(len(A)) + " long"
         return A        
 
     def get_curve_type(self):
+        print "get_curve_type 3"
         curve_type = self.curve_type
         #Put curve type loop here, return value of curve type
         #1. Paci 2. Ellipse 3. Parallax 4. Cluster
         return 0
 
     def get_r_E(self):  # r_E is the Einstein ring radius in units of.. not sure yet
+        print "get_r_E 4"
         m_denominator=1.0
         d_denominator=10.
         M = self.M_lens
@@ -73,25 +98,35 @@ class GenerateMicrolensingEvent(object):
         r_E = 4.848e-9*Ds*( 0.902 * np.sqrt(M / const.M_sun.value) * np.sqrt(10000 / (x*Ds)) * np.sqrt(
             1 - x))  # in milli arcseconds, now in whatever units Ds is in (km)
         """
+        print "r_E is: " + str(r_E)
         return r_E
 
     def get_t_E(self):  # time it takes the source to move a distance equal to the Einstein ring radius
+        print "get_t_E 5"
         t_E = self.get_r_E() / self.V_t #needs the same units as r_E to get out seconds
+        print 't_E is'
+        print t_E
         return t_E
 
     def get_u(self, t):
+        print "get U 6"
         p = self.ImpactParameter
         t_E = self.get_t_E()
+        print 't_E is: ' + str(t_E)
         t_0 = self.t_0
         u = np.sqrt(p ** 2 + ((t - t_0) / t_E) ** 2)
+        print "u is " + str(len(u)) + " long"
         return u
 
     def get_delta_mag(self, t):  # change in the magnitude of the star due to the lensing
+        print "get delta mag 7"
         A = self.A
         delta_mag = 2.5 * np.log10(A)
+        print "delta_mag is: ",delta_mag
         return delta_mag
 
     def generate_data(self):
+        print "generate data 8"
         t = self.times
         delta_mag_list = self.get_delta_mag(t)
         mag_list = self.m_0 + delta_mag_list
@@ -99,6 +134,7 @@ class GenerateMicrolensingEvent(object):
         return final_mag_list
 
     def save_data(self, data):  # save the data as a text file
+        print "save data 9"
         delta_mag = np.reshape(data['delta_mag'], (len(data['delta_mag']), 1))
         time = np.reshape(data['time'], (len(data['time']), 1))
         data = np.concatenate((delta_mag, time), axis=1)
