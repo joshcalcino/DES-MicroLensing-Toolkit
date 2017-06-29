@@ -1,4 +1,5 @@
 import MicroLensingGenerator
+import getData
 import matplotlib.pyplot as plt
 import matplotlib
 from astropy.io import fits
@@ -14,8 +15,10 @@ import matplotlib as mpl
 """  Argument inputs:
         t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type"""
 def nike() :
-    x = MicroLensingGenerator.GenerateMicrolensingEvent(56948, 0.1, 220, 30, 4.5, 0.5, 11737, 12, 1, 1)
-    # x = MicroLensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, np.arange(1, 1000, 2), 12, 1, 1)
+    #data = getData.getData(11737)
+    #MJD_list = data.get_MJD(6,'g')
+    x = MicroLensingGenerator.GenerateMicrolensingEvent(56948, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12, 1, 1)
+    # x = MicroensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, np.arange(1, 1000, 2), 12, 1, 1)
     t = x.times
     u = x.get_u(t)
     A = x.A
@@ -31,7 +34,7 @@ def nike() :
     interp = interp1d(u, A, bounds_error =  False, kind = 'linear')
     utime = np.arange(u.min(),u.max(),0.001)
     dm = 2.5*np.log10(interp(utime))
-    
+  
 
     
     plt.clf()

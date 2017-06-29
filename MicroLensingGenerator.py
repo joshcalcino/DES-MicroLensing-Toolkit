@@ -17,43 +17,13 @@ class GenerateMicrolensingEvent(object):
         self.M_lens = M_lens                        #Lens mass,             solar masses 
         self.Ds = Ds                                #Dist to source         kpc
         self.x = x                                  #% of Dl compared to Ds  (0, 1)
-        self.times = self.get_MJD_list(MJD_list)    #list of times source was observed
-        #self.times = MJD_list                      #list of times source was observed, in days
+        #self.times = self.get_MJD_list(MJD_list)    #list of times source was observed
+        self.times = MJD_list                      #list of times source was observed, in days
         #self.hpix = MJD_list 
         self.m_0 = m_0                              #Avg magnitude of src   
         self.t_eff = t_eff                          
         self.t_E = self.get_t_E()                   #lensing timescale
         self.A = self.get_A()                       # Pac curve
-
-
-    def get_MJD_list(self, hpix, index = 6, bandpass ='g'):
-        sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
-        from desqcat import load_hpx, load_cat, load_cat_epochs
-        mpl.rcParams['figure.figsize'] = (8, 5)
-        cat_wide = load_cat(hpix)
-        cat = load_cat(hpix, long=True)
-        epochs = {}
-        epochs[bandpass] = load_hpx(hpix, bandpass) #change later to loop through all bands
-        cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC', 'HPX2048', 'BAND',
-            'NEPOCHS', 'FLAGS', 'WAVG_FLAGS', 'EXPNUM',
-            'WAVG_MAG_PSF', 'WAVG_MAGERR_PSF',
-            'WAVG_MAG_AUTO', 'WAVG_MAGERR_AUTO']
-        epoch_cols = ['QUICK_OBJECT_ID', 'EXPNUM', 'MJD_OBS', 'EXPTIME', 'BAND', 'T_EFF',
-              'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO']
-        ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
-        ecat = ecat.query('MAG_PSF < 30')
-        list_times = ecat['QUICK_OBJECT_ID']
-        obj_expnum_counts = ecat[['QUICK_OBJECT_ID', 'EXPNUM', 'BAND']].groupby(['QUICK_OBJECT_ID', 'EXPNUM'], as_index=False).count()
-        obj_expnum_counts.columns = ['QUICK_OBJECT_ID', 'EXPNUM', 'COUNTS']
-        duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
-        ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
-        quick_id = list_times[index]
-        myobj_df = ecat.loc[quick_id]
-      #  myobj_r = ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
-        myobj_r = ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']] 
-        print "myobj:", myobj_r
-        MJD_list = myobj_r['MJD_OBS'] 
-        return MJD_list        
 
     def get_A(self):
         t = self.times
