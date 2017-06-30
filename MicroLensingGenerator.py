@@ -58,12 +58,17 @@ class GenerateMicrolensingEvent(object):
         p = self.ImpactParameter
         t_E = self.get_t_E()
         t_0 = self.t_0
-        u = np.sqrt(p ** 2 + ((t - t_0) / t_E) ** 2)
+        u = np.zeros(len(t))
+        for i in range(0, len(t)):
+            sign = 1
+            if t[i] - t_0 < 0:
+                sign = -1
+            u[i] = sign * np.sqrt(p ** 2 + ((t[i] - t_0) / t_E) ** 2)
         return u
 
     def get_delta_mag(self, t):  # change in the magnitude of the star due to the lensing
         A = self.A
-        delta_mag = 2.5 * np.log10(A)
+        delta_mag = 2.5 * np.log10(np.absolute(A))
         return delta_mag
 
     def generate_data(self):
