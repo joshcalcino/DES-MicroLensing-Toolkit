@@ -41,14 +41,18 @@ def nike(MJD_list, tMax) :
     print "delta_mag: ", delta_mag
     
     interp = interp1d(u, delta_mag, bounds_error =  False, kind = 'linear')
-    utime = np.arange(u.min(),u.max(),0.001)
-    dm = interp(utime)
-
+    t_time = np.arange(t.min(),t.max(),0.01)
+    dm = interp(t_time)
+    
+    print("dm: ", dm)
+    
    #plot a vector of MJDs instead of a list of MJDs 
 
     plt.clf()
-    plt.plot(utime, dm, c="r")
-    plt.scatter(u, delta_mag, s=20,c="b")
+    plt.plot(t_time, dm, c = "r")
+    plt.scatter(t, u, s = 20, c = "b")
+    #plt.plot(t_time, dm, c="r")
+    #plt.scatter(u, delta_mag, s=20,c="b")
     #plt.ylim(0, 0.5)
     plt.xlabel("MJD")
     plt.ylabel("Magnitude Difference")
