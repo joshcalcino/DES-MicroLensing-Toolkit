@@ -7,18 +7,12 @@ from matplotlib.ticker import FormatStrFormatter
 
 class getData(object):
 
-    def __init__(self, hpix=11737, bandpass = 'g'):
-        hpix = int(raw_input("Enter hpix value: "))
-        bandpass = raw_input("Enter bandpass: ")
-        index = int(raw_input("Enter inded: "))
-        print hpix, bandpass, index
+    def __init__(self, hpix=11737):
         sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
         from desqcat import load_hpx, load_cat, load_cat_epochs
         mpl.rcParams['figure.figsize'] = (8, 5)
         cat_wide = load_cat(hpix)
         cat = load_cat(hpix, long=True)
-      #  epochs = {}
-       # epochs[bandpass] = load_hpx(hpix, bandpass) #change later to loop through all bands
         cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC', 'HPX2048', 'BAND',
             'NEPOCHS', 'FLAGS', 'WAVG_FLAGS', 'EXPNUM',
             'WAVG_MAG_PSF', 'WAVG_MAGERR_PSF',
@@ -39,6 +33,6 @@ class getData(object):
       #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
         myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
         MJD_list = myobj_r['MJD_OBS']
-      #  print "MJD_list: ", MJD_list
+        print "MJD_list: ", MJD_list
         return MJD_list
 
