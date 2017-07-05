@@ -38,6 +38,7 @@ class getData(object):
         return MJD_list
     
     def unit_test(self, x):
+        #for id = 66666 and t_0 = 56942
         mjd = np.zeros(5)
         expected = np.array([5.22711, 8.27541, 8.27500, 7.98218, 6.88552])
         for item in range(0, 5):
