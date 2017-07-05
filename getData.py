@@ -37,18 +37,16 @@ class getData(object):
         print "MJD_list: ", MJD_list
         return MJD_list
     
-    def unit_test(self, mjd_list, x):
-        u = x.get_u(mjd_list)
+    def unit_test(self, x):
         mjd = np.zeros(5)
         expected = np.array([5.22711, 8.27541, 8.27500, 7.98218, 6.88552])
-        print expected
         for item in range(0, 5):
-            mjd_list[item] = mjd[item]
+            mjd[item] = x[item]
         print("Expected: ", expected)
-        print("Real: ", mjd_list)
-        for i in range(0, len(mjd_list)):
-            if mjd_list[i] == expected[i]:
-                    print("True")
-            else:
+        print("Real: ", x)
+        for i in range(0, len(x)):
+            #print("round of mjd: ", round(expected[i], 1))
+            #print("round of x: ", round(x[i], 1))
+            if round(x[i], 1) != round(expected[i], 1):
                 return False
         return True   
