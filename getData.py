@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
+import MicroLensingGenerator
 
 class getData(object):
 
@@ -35,4 +36,19 @@ class getData(object):
         MJD_list = myobj_r['MJD_OBS']
         print "MJD_list: ", MJD_list
         return MJD_list
-
+    
+    def unit_test(self, mjd_list, x):
+        u = x.get_u(mjd_list)
+        mjd = np.zeros(5)
+        expected = np.array([5.22711, 8.27541, 8.27500, 7.98218, 6.88552])
+        print expected
+        for item in range(0, 5):
+            mjd_list[item] = mjd[item]
+        print("Expected: ", expected)
+        print("Real: ", mjd_list)
+        for i in range(0, len(mjd_list)):
+            if mjd_list[i] == expected[i]:
+                    print("True")
+            else:
+                return False
+        return True   

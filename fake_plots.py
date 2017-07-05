@@ -40,8 +40,8 @@ def nike(MJD_list, tMax) :
     print "u: ", u
     print "delta_mag: ", delta_mag
     
-    interp = interp1d(u, delta_mag, bounds_error =  False, kind = 'linear')
     t_time = np.arange(t.min(),t.max(),0.01)
+    interp = interp1d(t, delta_mag, bounds_error =  False, kind = 'linear')
     dm = interp(t_time)
     
     print("dm: ", dm)
@@ -50,7 +50,7 @@ def nike(MJD_list, tMax) :
 
     plt.clf()
     plt.plot(t_time, dm, c = "r")
-    plt.scatter(t, u, s = 20, c = "b")
+    plt.scatter(t, delta_mag, s = 20, c = "b")
     #plt.plot(t_time, dm, c="r")
     #plt.scatter(u, delta_mag, s=20,c="b")
     #plt.ylim(0, 0.5)
@@ -60,7 +60,12 @@ def nike(MJD_list, tMax) :
     #plt.xlim(0, 5)
     plt.title("Fake plots")
 #    return u, delta_mag
-
+def get_dm(MJD_list, t_max):
+    x = MicroLensingGenerator.GenerateMicrolensingEvent(t_max, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12, 1, 1)
+    A = x.A
+    t = x.times
+    u = x.get_u(t)
+    return A
 """
 plt.plot(u, 2.5*np.log10(interp(u)))
 #plt.plot(u, interp2(delta_mag))
