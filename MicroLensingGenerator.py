@@ -13,7 +13,6 @@ class GenerateMicrolensingEvent(object):
     def __init__(self, t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type):
         self.t_0 = t_0                              #Time of maximum light distortion
         self.ImpactParameter = p                    #min dist betwn obj and line of sight at t_0, unitless
-        print(V_t)
         self.M_lens = M_lens                        #Lens mass,             solar masses 
         #self.V_t = V_t*(1.496e-8)*86400             #transverse velocity, in AU/day, input in km/s
         self.V_t = V_t*5.775e-4             #transverse velocity, in AU/day, input in km/s
@@ -26,13 +25,11 @@ class GenerateMicrolensingEvent(object):
         self.t_eff = t_eff                          
         self.t_E = self.get_t_E()                   #lensing timescale
         self.A = self.get_A()
-        print("velocity: ", self.V_t)                       # Pac curve
 
     def get_A(self):
         t = self.times
         u = self.get_u(t)
         A = (u ** 2 + 2) / (u * np.sqrt(u ** 2 + 4))
-        print("A: ", A)
         return A        
 
     def get_curve_type(self):
@@ -52,12 +49,10 @@ class GenerateMicrolensingEvent(object):
         r_E = 4.848e-9*Ds*( 0.902 * np.sqrt(M / const.M_sun.value) * np.sqrt(10000 / (x*Ds)) * np.sqrt(
             1 - x))  # in milli arcseconds, now in whatever units Ds is in (km)
         """
-        print("r_E: ", r_E)
         return r_E
 
     def get_t_E(self):  # time it takes the source to move a distance equal to the Einstein ring radius
         t_E = self.get_r_E() / self.V_t #needs the same units as r_E to get out seconds
-        print("t_E: ", t_E)
         return t_E
 
     def get_u(self, t):
@@ -70,9 +65,6 @@ class GenerateMicrolensingEvent(object):
             if t[i] - t_0 < 0:
                 sign = 1
             u[i] = sign * np.sqrt(p ** 2 + ((t[i] - t_0) / t_E) ** 2)
-        print("u in deep class: ", u)
-        print("p :", p)
-        print("t_0: ", t_0)
         return u
 
     def get_delta_mag(self, t):  # change in the magnitude of the star due to the lensing

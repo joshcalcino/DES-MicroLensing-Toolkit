@@ -30,7 +30,7 @@ class loop(object):
             start = round(start,2)
         return r
  
-    def star_object(self):
+    def star_object(self, MJD_list):
         #assuming getData has already been called
         #get the MJD_list
         #loop over all of the variables above
@@ -39,18 +39,20 @@ class loop(object):
         curve_type = 1 #PAC curve
         lightcurve = []
         m_0 = 30
-        index = 0
+        Ds = 20
+       # MJD_list = [56915, 56945]
         urange = self.get_drange(0,2,.01)
+        x_range = self.get_drange(0,1,0.05)
+        """     
+        for i in range(0,5,1):
+            lightcurve.append(MicroLensingGenerator.GenerateMicrolensingEvent(i, i, i, i, i, i, MJD_list, i, i, i))
+        print lightcurve """
         for m in range(10, 100,1):
             for u_0 in urange:
                 for v_t in range(20,220, 100):
-                    index = index + 1
-                #    print v_t
-             #         for x in range(1,1,0.1):
-            #            for t_E in range(438,1424,1):
-             #               for t_0 in range(min(MJD_list)-1424, max(MJD_list)+1424, 1):        
-                               # lightcurve.append(MicroLensingGenerator.GenerateMicrolensingEvent(t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type))
-        print index 
+                    for x in x_range:
+                        for t_E in range(438,1424,1):
+                            for t_0 in range(int(min(MJD_list)-1424), int(max(MJD_list)+1424), 1):        
+                                lightcurve.append(MicroLensingGenerator.GenerateMicrolensingEvent(t_0, u_0, v_t, m, Ds, x, MJD_list, m_0, t_eff, curve_type))
+       #                         print "curve t_0: ", t_0
         return lightcurve 
-
-    
