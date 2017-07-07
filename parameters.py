@@ -21,15 +21,16 @@ class loop(object):
     #m_0                            -average magnitude of source
     #t_E     (438, 1424,1)          -converted from (1.2-3.9) yrs to MJD    
 
-    def get_drange(start, stop, step): #function that returns a list of decimals in a given range
+    def get_drange(self, start, stop, step): #function that returns a list of decimals in a given range
+        print "start: ", start, "stop: ", stop, "step: ", step
         r = []
-        i = start
-        while i < stop:
-            r.append(i)
-            i += step
+        while start < stop:
+            r.append(start)
+            start += step
+            start = round(start,2)
         return r
  
-    def star_object(MJD_list, Ds=20):
+    def star_object(self):
         #assuming getData has already been called
         #get the MJD_list
         #loop over all of the variables above
@@ -42,10 +43,10 @@ class loop(object):
         urange = self.get_drange(0,2,.01)
         for m in range(10, 100,1):
             for u_0 in urange:
-                print u_0
-                index = index + 1
-          #      for v_t in range(20,220, 100):
-           #         for x in range(1,1,0.1):
+                for v_t in range(20,220, 100):
+                    index = index + 1
+                #    print v_t
+             #         for x in range(1,1,0.1):
             #            for t_E in range(438,1424,1):
              #               for t_0 in range(min(MJD_list)-1424, max(MJD_list)+1424, 1):        
                                # lightcurve.append(MicroLensingGenerator.GenerateMicrolensingEvent(t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type))
