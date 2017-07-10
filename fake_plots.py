@@ -59,7 +59,7 @@ def nike(MJD_list, tMax) :
     plt.grid()
     #plt.xlim(0, 5)
     plt.title("Fake plots")
-    return A
+    return x
 #    return u, delta_mag
 def get_dm(MJD_list, t_max):
     x = MicroLensingGenerator.GenerateMicrolensingEvent(t_max, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12, 1, 1)
