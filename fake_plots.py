@@ -11,23 +11,18 @@ import sys
 import pandas as pd
 import matplotlib as mpl
 
-""" 
-
-    """
-
 
 """  Argument inputs:
         t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type"""
-def nike(MJD_list, tMax) :
+def nike(MJD_list, tMax=56930) :
     if len(MJD_list) == 1:
-        raise Exception ("length of MJD_list is ", len(MJD_list))
+        raise Exception ("Length of MJD_list is: ", len(MJD_list))
     
-    x = MicroLensingGenerator.GenerateMicrolensingEvent(tMax, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12, 1, 1)
-    # x = MicroLensingGenerator.GenerateMicrolensingEvent(1, 0.1, 220, 30, 4.5, 0.5, np.arange(1, 1000, 2), 12, 1, 1)
-    t = x.times
-    u = x.get_u(t)
-    A = x.A
-    delta_mag = x.get_delta_mag(t)  # change in the magnitude of the star due to the lensing
+    event = MicroLensingGenerator.GenerateMLEvent(tMax, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12)
+    t = event.times
+    u = event.u
+    A = event.A
+    delta_mag = event.delta_mag  # change in the magnitude of the star due to the lensing
     
     # show the light curve
     mpl.rcParams['figure.figsize'] = (8, 5)
@@ -53,21 +48,51 @@ def nike(MJD_list, tMax) :
     plt.scatter(t, delta_mag, s = 20, c = "b")
     #plt.plot(t_time, dm, c="r")
     #plt.scatter(u, delta_mag, s=20,c="b")
-    #plt.ylim(0, 0.5)
-    plt.xlabel("MJD")
+   # plt.ylim(0, 0.1)
+    plt.xlabel("Time in MJD")
     plt.ylabel("Magnitude Difference")
     plt.grid()
-    #plt.xlim(0, 5)
+   # plt.xlim(0, 5)
     plt.title("Fake plots")
     return x
 #    return u, delta_mag
+
 def get_dm(MJD_list, t_max):
     x = MicroLensingGenerator.GenerateMicrolensingEvent(t_max, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12, 1, 1)
     A = x.A
     t = x.times
     u = x.get_u(t)
     return A
+
+def plot_many(MJD_list, tMax):
+    if len(MJD_list) == 1:
+        raise Exception ("Length of MJD_list is: ", len(MJD_list))
+    
+    event = MicroLensingGenerator.GenerateMLEvent(tMax, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12)
+    t = event.times
+    u = event.u
+    A = event.A
+    delta_mag = event.delta_mag  # change in the magnitude of the star due to the lensing
+    
+    mpl.rcParams['figure.figsize'] = (8, 5)
+    sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
+
+    t_time = np.arange(t.min(),t.max(),0.01)
+    interp = interp1d(t, delta_mag, bounds_error =  False, kind = 'linear')
+    dm = interp(t_time)
+    
+    plt.plot(t_time, dm, c = "r")
+    plt.scatter(t, delta_mag, s = 20, c = "b")
+   # plt.ylim(0, 0.1)
+    plt.xlabel("Time in MJD")
+    plt.ylabel("Magnitude Difference")
+    plt.grid()
+   # plt.xlim(0, 5)
+    plt.title("Fake plots")
+#    return u, delta_mag
+    return 0
 """
+
 plt.plot(u, 2.5*np.log10(interp(u)))
 #plt.plot(u, interp2(delta_mag))
 plt.ylim(0, 0.5)
