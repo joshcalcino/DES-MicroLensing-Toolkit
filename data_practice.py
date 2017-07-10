@@ -103,6 +103,12 @@ class data_practice(object):
 
 
 
+qid = self.qiuick_id_list
+unique_qid = np.unique(qid)
+for uqid in unique_qid:
+    index = qid==uqid
+    index = np.where(qid==uqid)
+    mags = obj_mag[index]
 
 
 """
