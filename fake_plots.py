@@ -14,11 +14,11 @@ import matplotlib as mpl
 
 """  Argument inputs:
         t_0, p, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type"""
-def nike(MJD_list, tMax=56930) :
-    if len(MJD_list) == 1:
-        raise Exception ("Length of MJD_list is: ", len(MJD_list))
+def nike(event) :
+    if len(event.times) == 1:
+        raise Exception ("Length of MJD_list is: ", len(event.times))
     
-    event = MicroLensingGenerator.GenerateMLEvent(tMax, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12)
+    #event = MicroLensingGenerator.GenerateMLEvent(tMax, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12)
     t = event.times
     u = event.u
     A = event.A
@@ -32,14 +32,11 @@ def nike(MJD_list, tMax=56930) :
     #interp = interp1d(u, A, bounds_error =  False, kind = 'linear')
     #utime = np.arange(u.min(),u.max(),0.001)
     #dm = 2.5*np.log10(interp(utime))
-    print "u: ", u
-    print "delta_mag: ", delta_mag
     
     t_time = np.arange(t.min(),t.max(),0.01)
     interp = interp1d(t, delta_mag, bounds_error =  False, kind = 'linear')
     dm = interp(t_time)
     
-    print("dm: ", dm)
     
    #plot a vector of MJDs instead of a list of MJDs 
 
@@ -54,7 +51,7 @@ def nike(MJD_list, tMax=56930) :
     plt.grid()
    # plt.xlim(0, 5)
     plt.title("Fake plots")
-    return x
+   # return event
 #    return u, delta_mag
 
 def get_dm(MJD_list, t_max):
@@ -64,11 +61,13 @@ def get_dm(MJD_list, t_max):
     u = x.get_u(t)
     return A
 
-def plot_many(MJD_list, tMax):
-    if len(MJD_list) == 1:
-        raise Exception ("Length of MJD_list is: ", len(MJD_list))
+def clear():
+    plt.clf()
+
+def plot_many(event):
+    if len(event.times) == 1:
+        raise Exception ("Length of MJD_list is: ", len(event.times))
     
-    event = MicroLensingGenerator.GenerateMLEvent(tMax, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12)
     t = event.times
     u = event.u
     A = event.A

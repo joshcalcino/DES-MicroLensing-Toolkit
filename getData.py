@@ -28,13 +28,13 @@ class getData(object):
         duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
         self.ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
 
-    def get_MJD(self, index =6, bandpass='g'):
+    def get_MJD(self, index =1000, bandpass='g'):
         quick_id = self.list_times[index]
         myobj_df = self.ecat.loc[quick_id]
       #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
         myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
         MJD_list = myobj_r['MJD_OBS']
-        print "MJD_list: ", MJD_list
+       # print "MJD_list: ", MJD_list
         return MJD_list
     
     def unit_test(self, mjd_list, x):
