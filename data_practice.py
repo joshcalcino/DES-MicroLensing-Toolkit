@@ -49,6 +49,14 @@ class data_practice(object):
         #print "list: ", new_list
         return new_list, wavg, spreaderr, magerr, t_eff
 
+    def grab_detalis_for_error(self, quick_id, bandpass = 'r'):
+        myobj_df = self.ecat.loc[quick_id]
+        #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
+        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
+        t_eff = myobj_r['T_EFF']
+        magerr = myobj_r['MAGERR_PSF']
+        return t_eff, magerr
+
     def avg_mag_redux(self):
         mag_file = open('mag_avgs_redux.txt', 'w')
         mag_list = []
@@ -132,6 +140,11 @@ class data_practice(object):
                 #print("mag_list", mag_list)
                 return error_mag, magerr_final, t_eff_final
         return mag_list
+
+    def get_t_eff(self, quick_id):
+        t_eff, magerr = self.grab_details_for_error(quick_id)
+        N_list = ((-2.5)**2/((magerr)**2*np.log(10)))*5/90*t_eff
+        return N_list
 
 """
 

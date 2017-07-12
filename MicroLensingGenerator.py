@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
+import data_practice as dp
 
 class GenerateMLEvent(object):
     """This class will generate a microlensing event.
@@ -70,8 +71,8 @@ class GenerateMLEvent(object):
         return delta_mag
 
     """ generate_noise(t): Calculates noise due to interference given t. """
-    def generate_noise(self, t):
-        noise = 0 
+    def generate_noise(self, t_eff):
+        noise = self.t_eff
         return noise
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
