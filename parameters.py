@@ -40,18 +40,18 @@ class star(object):
         print "x step:", x_step
         print "M step:", M_step
        # for t_0 in range(int(min(MJD_list)-365), int(max(MJD_list)+365), 20): #30        
-        for t_0 in range(56900, 57000, 5): #30        
+        for t_0 in range(56900, 57000, 5):        
             print "t_0 index: ", t_0, index
             for u_0 in urange:
                 for x in x_range:
-                    for M in range(10, 101, 10): #10
+                    for M in mrange: 
                         self.lightcurve.append(MicroLensingGenerator.GenerateMLEvent(t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, t_eff, curve_type))
                         index += 1
         print "total index:", index
         return self.lightcurve 
 
     def get_drange(self, start, stop, step): #function that returns a list of decimals in a given range
-    """ get_drange(start, stop, step): takes 3 float parameters and returns a list from start to stop with the step interval. """
+        """ get_drange(start, stop, step): takes 3 float parameters and returns a list from start to stop with the step interval. """
         r = []
         while start < stop:
             r.append(start)
