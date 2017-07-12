@@ -19,4 +19,3 @@ def primes(n):
         i=i+1
         m=2*i+3
     return [2]+[x for x in s if x]
-primes(100)
