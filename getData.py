@@ -57,7 +57,7 @@ class getData(object):
 
     def get_t_eff(self, quick_id):
         t_eff, magerr = self.grab_details_for_error(quick_id)
-        N_list = ((-2.5)**2/((magerr)**2*np.log(10)))*5/90*t_eff
+        N_list = ((-2.5)**2/((np.square(magerr)*np.log(10))))*5/90*t_eff
        # N_list = 1
         return N_list
 
