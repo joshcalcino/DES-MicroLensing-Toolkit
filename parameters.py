@@ -24,7 +24,7 @@ class star(object):
     def get_curves(self, MJD_list, m_0=30, Ds=20, t_eff=1,curve_type =1):
         self.lightcurve = []             
 
-        m_0 = 15                    #eventually will need to call data.get_m_0()
+#        m_0 = 15                    #eventually will need to call data.get_m_0()
 #        Ds = 20                     #eventually will need to call data.get_Ds()
 
         """The loop below takes approximately 3 minutes per mass producing 640,200 light curves. The complete loop would produce 6.4 million light curves in 30 minutes."""
@@ -51,7 +51,7 @@ class star(object):
         return self.lightcurve 
 
     def get_drange(self, start, stop, step): #function that returns a list of decimals in a given range
-    """ get_drange(start, stop, step): takes 3 float parameters and returns a list from start to stop with the step interval. """
+    	""" get_drange(start, stop, step): takes 3 float parameters and returns a list from start to stop with the step interval. """
         r = []
         while start < stop:
             r.append(start)
