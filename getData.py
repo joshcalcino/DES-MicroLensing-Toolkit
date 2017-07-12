@@ -47,7 +47,7 @@ class getData(object):
         MJD_list = myobj_r['MJD_OBS']
         return MJD_list   
 
-    def grab_detalis_for_error(self, quick_id, bandpass = 'r'):
+    def grab_details_for_error(self, quick_id, bandpass = 'r'):
         myobj_df = self.ecat.loc[quick_id]
         #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
         myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
