@@ -27,7 +27,7 @@ class GenerateMLEvent(object):
         self.delta_mag = self.get_delta_mag()
         self.m_0 = m_0                      #Avg magnitude of src   
         self.light_curve = self.generate_data()
-        self.t_eff = t_eff                          
+        self.t_eff = self.generate_noise(t_eff)                          
     
     """ get_r_E(): Calculates radius of the Einstein ring given M, Ds, and x."""
     def get_r_E(self):  # r_E is the Einstein ring radius in units of.. not sure yet
@@ -72,8 +72,8 @@ class GenerateMLEvent(object):
 
     """ generate_noise(t): Calculates noise due to interference given t. """
     def generate_noise(self, t_eff):
-        noise = self.t_eff
-        return noise
+        self.t_eff  = t_eff
+        return self.t_eff
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
     def generate_data(self):

@@ -47,6 +47,20 @@ class getData(object):
         MJD_list = myobj_r['MJD_OBS']
         return MJD_list   
 
+    def grab_detalis_for_error(self, quick_id, bandpass = 'r'):
+        myobj_df = self.ecat.loc[quick_id]
+        #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
+        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
+        t_eff = myobj_r['T_EFF']
+        magerr = myobj_r['MAGERR_PSF']
+        return t_eff, magerr
+
+    def get_t_eff(self, quick_id):
+        t_eff, magerr = self.grab_details_for_error(quick_id)
+        N_list = ((-2.5)**2/((magerr)**2*np.log(10)))*5/90*t_eff
+       # N_list = 1
+        return N_list
+
     def unit_test(self, mjd_list, x):
         u = x.get_u(mjd_list)
         mjd = np.zeros(5)

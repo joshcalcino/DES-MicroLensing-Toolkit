@@ -12,23 +12,27 @@ import parameters
 
 class driver(object):
 
-    """
-    def __init__(self, events):
-        self.event_list = events
-    """
-    def nike(self):
+    def __init__(self):
+        self.hpix = self.all_hpix() 
+        self.data = self.all_data()
+        teff = self.data[0].get_t_eff(self.data[0].uniqueIDs[0])
+        print teff
+
+    def nike(self, test):
         index = 0
-        for hpix in range(11737,11738,1):
-            data = getData.getData(hpix)
             # for i in data.uniqueIDs:
+        for j in self.data:
+            #self.mjd = data.get_timesByIDs(i)
+            data = self.data[j]
             for i in range(0,10,1):
-                #self.mjd = data.get_timesByIDs(i)
                 self.mjd = data.get_timesByIDs(data.uniqueIDs[i])   
-                self.star = parameters.star() 
-                self.event_list = self.star.get_curves(self.mjd)  
-                #self.plot_many(0,100)
-                index =+ 1
-            print "index:", index 
+                star = parameters.star() 
+                t_eff = data.get_t_eff(data.uniqueIDs[i])
+                star_event = star.get_curves(self.mjd, t_eff)  
+                self.event_list.append(star_event)
+            #self.plot_many(0,100)
+            index =+ 1
+        print "index:", index 
         return 0
 
     def all_MJDs(self):
@@ -39,8 +43,18 @@ class driver(object):
 
             
     def all_hpix(self):
-        return 0
+        hpix_list = []
+       # for hpix in range(11737, 11738, 1): #05441-11878
+       #     hpix_list.append(hpix)
+        hpix_list.append(11737)
+        return hpix_list
 
+    def all_data(self):
+        files = []
+        for i in self.hpix:
+            data = getData.getData(i)
+            files.append(data)
+        return files 
 
    # @profile
     def plot_many(self, start, stop, step=1):

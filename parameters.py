@@ -21,7 +21,7 @@ class star(object):
     #m_0                            -average magnitude of source
 
     """ star_object(MJD_list): takes  a list of integers and returns a list of Mircolensing events. """
-    def get_curves(self, MJD_list, m_0=30, Ds=20, t_eff=1,curve_type =1):
+    def get_curves(self, MJD_list, t_eff = 1, m_0=30, Ds=20,curve_type =1):
         self.lightcurve = []             
 
         m_0 = 15                    #eventually will need to call data.get_m_0()
@@ -39,6 +39,10 @@ class star(object):
         print "u step:", u_step
         print "x step:", x_step
         print "M step:", M_step
+        
+        #currently in data_practice, there is a method that gets t_eff and magerr from data/objID
+         
+
        # for t_0 in range(int(min(MJD_list)-365), int(max(MJD_list)+365), 20): #30        
         for t_0 in range(56900, 57000, 5):        
             print "t_0 index: ", t_0, index
