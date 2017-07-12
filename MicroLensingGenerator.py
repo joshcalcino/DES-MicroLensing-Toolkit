@@ -1,108 +1,91 @@
 import numpy as np
-import astropy.constants as const
+import sys
+import pandas as pd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
+import data_practice as dp
 
+class GenerateMLEvent(object):
+    """This class will generate a microlensing event.
+            It takes 10 parameters: 
+            t_0, p, v_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type
+    """
 
-class GenerateMicrolensingEvent(object):
-    """This class will generate a random microlensing event. All of the parameters are randomly generated."""
-
-    '''
-    def get_pi_rel(self):
-        pi_rel = np.random.uniform(low=0.01, high=0.1) # pi_rel (\pi_{\rm rel}) is the relative parallax between the
-        # lens and the source, measured in milli-arcseconds.
-        return pi_rel
-    '''
-
-    def __init__(self):
-        self.Ds, self.Dl, self.Drel = self.get_Dist()
-        self.Mass = self.get_Mass()
-        self.ImpactParameter = self.get_ImpactParameter()
-        self.t_0 = self.get_t_0()
-        self.t_max = self.get_t_max()
-
-    def get_Dist(self):
-        Ds = np.random.uniform(low=1000, high=20000)  # Ds is the distance from the observer to the source.
-        Dl = np.random.uniform(low=0.1 * Ds, high=Ds)  # Dl is the distance from the observer to the lens.
-        #Ds = 1000
-        #Dl = 500
-        Drel = Ds - Dl  # Drel is the relative distance between the lens and the source.
-        return [Ds, Dl, Drel]
-
-    def get_Mass(self):
-        M = np.random.uniform(low=0.1,
-                              high=100) * const.M_sun.value  # the mass of the lens, relative to solar mass.
-        return M
-
-    def get_t_max(self):  # time of maximum approach, in years since the start of DES.. for now
-        t_max = np.random.uniform(low=1.0, high=4.0)
-        print 't_max is'
-        print t_max
-        return t_max
-
-    def get_ImpactParameter(self):
-        p = np.random.uniform(low=0.0,
-                              high=0.8)  # p is the impact paramater, lower p indicates a smaller lens to  # source
-        print 'p is'
-        print p
-        return p
-
+    def __init__(self, t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff = 0, curve_type = 1):
+        self.M_lens = M_lens                #Lens mass,             solar masses 
+        self.Ds = Ds                        #Dist to source         kpc
+        self.x = x                          #% of Dl compared to Ds  (0, 1)
+        self.r_E = self.get_r_E()
+        self.V_t = V_t * 5.775e-4             #transverse velocity, in AU/day, input in km/s
+        self.t_E = self.get_t_E()           #lensing timescale
+        self.u_0 = u_0            #min dist betwn obj and line of sight at t_0, unitless
+        self.t_0 = t_0                      #Time of maximum light distortion
+        self.times = MJD_list               #list of times source was observed, in days
+        self.u = self.get_u()
+        self.A = self.get_A()               #amplification of magnification
+        self.delta_mag = self.get_delta_mag()
+        self.m_0 = m_0                      #Avg magnitude of src   
+        self.light_curve = self.generate_data()
+        self.t_eff = self.generate_noise(t_eff)                          
+    
+    """ get_r_E(): Calculates radius of the Einstein ring given M, Ds, and x."""
     def get_r_E(self):  # r_E is the Einstein ring radius in units of.. not sure yet
-        M = self.Mass
-        Ds, Dl = self.Ds, self.Dl
-        # r_E = np.sqrt( (4*const.G * M)/const.c ** 2 * ( (Ds - Dl)/(Ds*Dl) ) )
-        r_E = 0.902 * np.sqrt(M / const.M_sun.value) * np.sqrt(10000 / Dl) * np.sqrt(
-            1 - Dl / Ds)  # in milli arcseconds
+        m_denominator = 1.0
+        d_denominator = 10.
+        M = self.M_lens
+        Ds = self.Ds
+        x = self.x
+        r_E = 4.54 * np.sqrt(M / m_denominator)*np.sqrt(Ds/d_denominator)*(np.sqrt((x*(1-x)))/(0.5)) #in AU
         return r_E
 
-    def get_r_dot(self):  # relative proper motion between the lens and the source
-        Ds, Dl = self.Ds, self.Dl
-        V = np.random.uniform(low=100, high=200) # relative transverse velocity of the lens with respect to the source
-        # V = 150
-        r_dot = 4.22 * (V / 200.0) * (10000 / Ds)
-        return r_dot
+    """ get_t_E(): Calculates time it take source to travel the radius of the Einstein ring given r_E and V_t. """
+    def get_t_E(self):  # time it takes the source to move a distance equal to the Einstein ring radius
+        t_E = self.r_E / self.V_t #needs the same units as r_E to get out seconds
+        return t_E
 
-    def get_t_0(self):  # time it takes the source to move a distance equal to the Einstein ring radius
-        t_0 = self.get_r_E() / self.get_r_dot()
-        print 't_0 is'
-        print t_0
-        return t_0
-
-    def get_u(self, t):
-        p = self.ImpactParameter
+    """ get_u(): Calculates distance from source to lens' line of sight given u_0, t_E, and t_0. """
+    def get_u(self):
+        t = self.times
+        p = self.u_0
+        t_E = self.t_E              #convert to days for MJD division
         t_0 = self.t_0
-        t_max = self.t_max
-        u = np.sqrt(p ** 2 + ((t - t_max) / t_0) ** 2)
+        u = np.zeros(len(t))
+        for i in range(0, len(t)):
+            sign = 1
+            if t[i] - t_0 < 0:
+                sign = 1
+            u[i] = sign * np.sqrt(p ** 2 + ((t[i] - t_0) / t_E) ** 2)
         return u
 
-    def get_delta_mag(self, t):  # change in the magnitude of the star due to the lensing
-        u = self.get_u(t)
+    """ get_A(): Calculates the amplitude of the light curve due to a lensing event given u. """
+    def get_A(self):
+        u = self.u
         A = (u ** 2 + 2) / (u * np.sqrt(u ** 2 + 4))
-        delta_mag = 2.5 * np.log10(A)
+        return A        
+
+    """ get_delta_mag(): Calculates the change in magnitude of the light source due to lensing, given A.  """
+    def get_delta_mag(self):  # change in the magnitude of the star due to the lensing
+        A = self.A
+        delta_mag = 2.5 * np.log10(np.absolute(A))
         return delta_mag
 
-    def generate_times(self):
-        # t = np.random.uniform(low=0, high=5, size=50)  # 10 random points to mimic the DES fields
-        # t = np.sort(t)
-        # print t
-        t = np.linspace(0, 5, 10)
-        return t
+    """ generate_noise(t): Calculates noise due to interference given t. """
+    def generate_noise(self, t_eff):
+        self.t_eff  = t_eff
+        return self.t_eff
 
+    """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
     def generate_data(self):
-        t = self.generate_times()
-        delta_mag = self.get_delta_mag(t) - self.generate_noise(t)
-        errors = self.generate_errors(t)
-        data = {"delta_mag": delta_mag, "time": t, "errors": errors}
-        return data
+        mag_list = self.m_0 + self.delta_mag
+        final_mag_list = mag_list + self.generate_noise(self.times)
+        return final_mag_list
 
-    def simple_fake(self):
-        t = self.generate_times()
-        p = 0.7
-        t_max = 2.
-        t_0 = 0.5
-        u = np.sqrt(p ** 2 + ((t - t_max) / t_0) ** 2)
-        A = (u ** 2 + 2) / (u * np.sqrt(u ** 2 + 4))
-        delta_mag = 2.5 * np.log10(A)
-        data = {"delta_mag": delta_mag, "time": t}
-        return data
+    def get_curve_type(self):
+        curve_type = self.curve_type
+        #Put curve type loop here, return value of curve type
+        #1. Paci 2. Ellipse 3. Parallax 4. Cluster
+        return 0
 
     def save_data(self, data):  # save the data as a text file
         delta_mag = np.reshape(data['delta_mag'], (len(data['delta_mag']), 1))
@@ -110,10 +93,3 @@ class GenerateMicrolensingEvent(object):
         data = np.concatenate((delta_mag, time), axis=1)
         np.savetxt('sample_microevent.txt', data)
 
-    def generate_errors(self, t):
-        errors = abs(np.random.normal(0.05, 0.01, len(t)))
-        return errors
-
-    def generate_noise(self, t):
-        noise = np.random.normal(0.0, 0.035, len(t))
-        return noise
