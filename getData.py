@@ -32,6 +32,14 @@ class getData(object):
         duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
         self.ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
 
+    def isStar(self, ID):
+        #for i in self.uniqueIDs:
+            #if star == True:
+            #    stars.append(ID)
+            #else:
+            #    nothing
+        #return stars
+
     def get_MJD(self, index =1000, bandpass='g'):
         quick_id = self.list_times[index]
         myobj_df = self.ecat.loc[quick_id]
@@ -42,6 +50,18 @@ class getData(object):
         return MJD_list
     
     def get_timesByIDs(self, IDs, bandpass='g'):
+        myobj_df = self.ecat.loc[IDs]
+        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(IDs, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
+        MJD_list = myobj_r['MJD_OBS']
+        return MJD_list   
+
+    def get_RA(self, IDs, bandpass='g'):
+        myobj_df = self.ecat.loc[IDs]
+        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(IDs, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
+        MJD_list = myobj_r['MJD_OBS']
+        return MJD_list   
+
+    def get_DEC(self, IDs, bandpass='g'):
         myobj_df = self.ecat.loc[IDs]
         myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(IDs, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
         MJD_list = myobj_r['MJD_OBS']
@@ -59,7 +79,7 @@ class getData(object):
         maths = 0
         myobj_df = self.ecat.loc[IDs]
         myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(IDs, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
-        m_0s = myobj_r['MJD_OBS']
+        m_0s = myobj_r['MAG_PSF']
         for i in m_0s:
             maths += i
         m_0 = float(maths/len(m_0s))
@@ -68,13 +88,12 @@ class getData(object):
 
     def get_t_eff(self, quick_id):
         t_eff, magerr = self.grab_details_for_error(quick_id)
-        N_list = ((-2.5)**2/((np.square(magerr)*np.log(10))))*5/90*t_eff
         print "teff:", t_eff
-        print "magerr:", magerr
-        print "Nlist:", N_list
-        N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff
+       # print "magerr:", magerr
+       # N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff
        # N_list = 1
-        return N_list
+       # print "Nlist:", N_list
+        return t_eff
 
     def unit_test(self, mjd_list, x):
         u = x.get_u(mjd_list)

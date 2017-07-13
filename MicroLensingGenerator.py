@@ -26,7 +26,8 @@ class GenerateMLEvent(object):
         self.A = self.get_A()               #amplification of magnification
         self.delta_mag = self.get_delta_mag()
         self.m_0 = m_0                      #Avg magnitude of src   
-        self.light_curve, self.mag_list = self.generate_data()
+        self.mag_list = []
+        self.light_curve = self.generate_data()
         self.t_eff = self.generate_noise(t_eff)                          
     
     """ get_r_E(): Calculates radius of the Einstein ring given M, Ds, and x."""
@@ -73,17 +74,16 @@ class GenerateMLEvent(object):
     """ generate_noise(t): Calculates noise due to interference given t. """
     def generate_noise(self, t_eff):
         self.t_eff  = t_eff
-        mag_list = self.mag_list ##has mag_0 and delta_mag added
-        counts_list = mag_list*5*self.t_eff/90 ##convert mag_list to counts_list
-        counts_sigma_list = np.square(counts_list)
+        counts_list = self.mag_list*5*self.t_eff/90 ##convert mag_list to counts_list
+        counts_sigma_list = np.sqrt(counts_list)
         mag_sigma_list = (6.25/((np.square(counts_sigma_list)*np.log(10)**2)))
         return mag_sigma_list 
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
     def generate_data(self):
-        mag_list = self.m_0 + self.delta_mag
+        self.mag_list = self.m_0 + self.delta_mag
         final_mag_list = mag_list + self.generate_noise(self.times)
-        return final_mag_list, mag_list
+        return final_mag_list 
 
     def get_curve_type(self):
         curve_type = self.curve_type
