@@ -89,10 +89,10 @@ class getData(object):
     def get_t_eff(self, quick_id):
         t_eff, magerr = self.grab_details_for_error(quick_id)
         print "teff:", t_eff
-       # print "magerr:", magerr
-       # N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff
+        #print "magerr:", magerr
+        #print "Nlist:", N_list
+        #N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff
        # N_list = 1
-       # print "Nlist:", N_list
         return t_eff
 
     def unit_test(self, mjd_list, x):
@@ -111,3 +111,21 @@ class getData(object):
                 return False
         return True 
 
+    def isStar(self, quick_id, mjd):
+
+        stars = []
+        myobj_df = self.ecat.loc[quick_id]
+        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
+        wavg = myobj_r['WAVG_SPREAD_MODEL']
+        spreaderr = myobj_r['SPREADERR_MODEL']
+
+        isStar_array = False
+        for n in range(0, len(mjd)):
+            if abs(wavg[n])<(0.003 +  spreaderr[n]):
+                isStar_array = True
+            else:
+                isStar_array = False
+                break
+        if isStar_array == True:
+            stars.append(quick_id)
+        return stars

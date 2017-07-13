@@ -10,19 +10,20 @@ import getData
 import star
 import getHPIX
 from astropy.io import fits
+import pyfits
 
 class driver(object):
 
     def __init__(self):
-	#self.clearDir()
-	self.file_name = ""
-	a = np.array([1,2,3,4,5])
-        self.hpix = getHPIX.pix() #list of all pixels in survey
-	for i in self.hpix:
-		
-		self.file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/lc-curves" + str(i) + ".fits"
-		pyfits.writeto(self.file_name, a, clobber = True)
-  
+        #self.clearDir()
+        self.file_name = ""
+        a = np.array([1,2,3,4,5])
+        self.hpix = getHPIX.pix() #list of all pixels in survey 
+        for i in self.hpix:
+            
+            self.file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + str(i) + ".fits"
+            pyfits.writeto(self.file_name, a, clobber=True)
+ 
        # print "in driver- teff:", data.get_t_eff(data.uniqueIDs[0])
 
     def nike(self):
@@ -51,7 +52,11 @@ class driver(object):
             index =+ 1
         print "index:", index 
         return 0
-
+    
+    def clearDir():
+        
+        return 0
+    
     def save_data(self, pix, events):
         
         #get the different columns that we want to return
