@@ -10,6 +10,8 @@ import getData
 import itertools
 class star(object):
 
+    def __init__(self, debug = 'n'):
+        self.lightcurve = []
  
     #need to loop over Parameter Limits:
     #Mlens   [10,100,1]             -Mass of the deflector
@@ -22,36 +24,25 @@ class star(object):
 
     """ star_object(MJD_list): takes  a list of integers and returns a list of Mircolensing events. """
     def get_curves(self, MJD_list, t_eff = 1, m_0=30, Ds=20,curve_type =1):
-        self.lightcurve = []             
-
-        m_0 = 15                    #eventually will need to call data.get_m_0()
-#        Ds = 20                     #eventually will need to call data.get_Ds()
 
         """The loop below takes approximately 3 minutes per mass producing 640,200 light curves. The complete loop would produce 6.4 million light curves in 30 minutes."""
         urange = self.get_drange(0,2,.1) #.1
         x_range = self.get_drange(0.1,1,.1) #.1
         mrange = range(10,101,10)
-        M_step = len(mrange)
-        x_step = len(x_range)
-        u_step = len(urange)
         v_t = 220
         index = 0
-        print "u step:", u_step
-        print "x step:", x_step
-        print "M step:", M_step
         
-        #currently in data_practice, there is a method that gets t_eff and magerr from data/objID
-         
-
        # for t_0 in range(int(min(MJD_list)-365), int(max(MJD_list)+365), 20): #30        
         for t_0 in range(56900, 57000, 5):        
-            print "t_0 index: ", t_0, index
+            if debug == 'y':
+                print "t_0 index: ", t_0, index
             for u_0 in urange:
                 for x in x_range:
                     for M in mrange: 
                         self.lightcurve.append(MicroLensingGenerator.GenerateMLEvent(t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, t_eff, curve_type))
                         index += 1
-        print "total index:", index
+        if debug == 'y':
+            print "total index:", index
         return self.lightcurve 
 
     def get_drange(self, start, stop, step): #function that returns a list of decimals in a given range

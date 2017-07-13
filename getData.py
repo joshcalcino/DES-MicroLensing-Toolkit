@@ -50,14 +50,28 @@ class getData(object):
     def grab_details_for_error(self, quick_id, bandpass = 'r'):
         myobj_df = self.ecat.loc[quick_id]
         #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
-        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
+        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'T_EFF']]
         t_eff = myobj_r['T_EFF']
         magerr = myobj_r['MAGERR_PSF']
         return t_eff, magerr
 
+    def get_m_0(self, ID):
+        maths = 0
+        myobj_df = self.ecat.loc[IDs]
+        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(IDs, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
+        m_0s = myobj_r['MJD_OBS']
+        for i in m_0s:
+            maths += i
+        m_0 = float(maths/len(m_0s))
+        return m_0   
+        
+
     def get_t_eff(self, quick_id):
         t_eff, magerr = self.grab_details_for_error(quick_id)
         N_list = ((-2.5)**2/((np.square(magerr)*np.log(10))))*5/90*t_eff
+        print "teff:", t_eff
+        print "magerr:", magerr
+        print "Nlist:", N_list
        # N_list = 1
         return N_list
 
