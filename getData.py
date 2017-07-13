@@ -38,7 +38,7 @@ class getData(object):
             #    stars.append(ID)
             #else:
             #    nothing
-        #return stars
+        return stars
 
     def get_MJD(self, index =1000, bandpass='g'):
         quick_id = self.list_times[index]
