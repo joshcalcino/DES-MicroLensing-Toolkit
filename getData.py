@@ -72,6 +72,7 @@ class getData(object):
         print "teff:", t_eff
         print "magerr:", magerr
         print "Nlist:", N_list
+        N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff
        # N_list = 1
         return N_list
 
