@@ -16,7 +16,7 @@ class getData(object):
         cat = load_cat(hpix, long=True)
         cat_cols = ['QUICK_OBJECT_ID', 'BAND', 'EXPNUM']
         epoch_cols = ['QUICK_OBJECT_ID', 'EXPNUM', 'MJD_OBS', 'BAND', 'T_EFF',
-              'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO']
+              'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']
        # cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC', 'HPX2048', 'BAND',
        #     'NEPOCHS', 'FLAGS', 'WAVG_FLAGS', 'EXPNUM',
        #     'WAVG_MAG_PSF', 'WAVG_MAGERR_PSF',
@@ -111,21 +111,25 @@ class getData(object):
                 return False
         return True 
 
-    def isStar(self, quick_id, mjd):
+    def isStar(self, quick_id_list, mjd):
 
-        stars = []
-        myobj_df = self.ecat.loc[quick_id]
-        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
-        wavg = myobj_r['WAVG_SPREAD_MODEL']
-        spreaderr = myobj_r['SPREADERR_MODEL']
+        for quick_id in range(0, len(mjd)):
+            stars = []
+            myobj_df = self.ecat.loc[quick_id_list[quick_id]]
+            myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
+            wavg = myobj_r['WAVG_SPREAD_MODEL']
+            spreaderr = myobj_r['SPREADERR_MODEL']
 
-        isStar_array = False
-        for n in range(0, len(mjd)):
-            if abs(wavg[n])<(0.003 +  spreaderr[n]):
-                isStar_array = True
-            else:
-                isStar_array = False
-                break
-        if isStar_array == True:
-            stars.append(quick_id)
+            isStar_truth = False
+
+            for n in range(0, len(mjd)):
+                if abs(wavg[n])<(0.003 +  spreaderr[n]):
+                    isStar_truth = True
+                else:
+                    isStar_truth = False
+                    break
+
+            if isStar_array == True:
+                stars.append(quick_id_list[quick_id])
+        
         return stars
