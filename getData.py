@@ -90,4 +90,18 @@ class getData(object):
             else:
                 return False
         return True 
+    def isStar(self, quick_id, mjd):
+        myobj_df = self.ecat.loc[quick_id]
+        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
+        wavg = myobj_r['WAVG_SPREAD_MODEL']
+        spreaderr = myobj_r['SPREADERR_MODEL']
 
+        isStar_array = []
+        for id in range(0, len(mjd)):
+            if abs(wavg[n])<(0.003 +  spreaderr[n]):
+                isStar = True
+            else:
+                isStar_array = False
+                break
+
+        return isStar_array
