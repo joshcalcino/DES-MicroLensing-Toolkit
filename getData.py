@@ -68,13 +68,12 @@ class getData(object):
 
     def get_t_eff(self, quick_id):
         t_eff, magerr = self.grab_details_for_error(quick_id)
-        N_list = ((-2.5)**2/((np.square(magerr)*np.log(10))))*5/90*t_eff
         print "teff:", t_eff
-        print "magerr:", magerr
-        print "Nlist:", N_list
-        N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff
+        #print "magerr:", magerr
+        #print "Nlist:", N_list
+        #N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff
        # N_list = 1
-        return N_list
+        return t_eff
 
     def unit_test(self, mjd_list, x):
         u = x.get_u(mjd_list)

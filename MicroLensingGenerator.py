@@ -75,7 +75,7 @@ class GenerateMLEvent(object):
         self.t_eff  = t_eff
         mag_list = self.mag_list ##has mag_0 and delta_mag added
         counts_list = mag_list*5*self.t_eff/90 ##convert mag_list to counts_list
-        counts_sigma_list = np.square(counts_list)
+        counts_sigma_list = np.sqrt(counts_list)
         mag_sigma_list = (6.25/((np.square(counts_sigma_list)*np.log(10)**2)))
         return mag_sigma_list 
 
