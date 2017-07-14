@@ -1,4 +1,5 @@
 import numpy as np
+import get_error
 import sys
 import pandas as pd
 #import matplotlib as mpl
@@ -73,7 +74,9 @@ class getData(object):
         myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'T_EFF']]
         t_eff = myobj_r['T_EFF']
         magerr = myobj_r['MAGERR_PSF']
-        return t_eff, magerr
+        mag_psf = myobj_r['MAG_PSF']
+        mjd = myobj_r['MJD_OBS']
+        return t_eff, magerr, mag_psf, mjd
 
     def get_m_0(self, ID):
         maths = 0
@@ -86,14 +89,15 @@ class getData(object):
         return m_0   
         
 
-    def get_t_eff(self, quick_id):
-        t_eff, magerr = self.grab_details_for_error(quick_id)
+    def get_error_details(self, quick_id):
+        t_eff, magerr , mag_psf, mjd= self.grab_details_for_error(quick_id)
         print "teff:", t_eff
+        error = get_error.get_error(mag_psf, t_eff, magerr, mjd)
         #print "magerr:", magerr
         #print "Nlist:", N_list
         #N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff
        # N_list = 1
-        return t_eff
+        return t_eff, magerr, mag_psf, mjd
 
     def unit_test(self, mjd_list, x):
         u = x.get_u(mjd_list)

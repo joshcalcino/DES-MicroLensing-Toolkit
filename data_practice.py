@@ -75,9 +75,9 @@ class data_practice(object):
     #@profile
     def avg_mag(self):
         mag_file = open('delete_me.txt', 'w')
-        avg_file = open('mag_averages_short.txt', 'w')
-        err_file = open('magerr_short.txt', 'w')
-        eff_file = open('t_eff_short.txt', 'w')
+        avg_file = open('mag_averages_short_2.txt', 'w')
+        err_file = open('magerr_short_2.txt', 'w')
+        eff_file = open('t_eff_short_2.txt', 'w')
         mag_list = []
 
         myobj_rband = self.ecat.query("BAND=='{}'".format('r'))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']]
@@ -98,7 +98,7 @@ class data_practice(object):
             #print("quick id: ", self.quick_id_list[1]) 
             #print("quick id: ", self.quick_id_list[2]) 
             while quick_id == current_quick_id:
-                if abs(wavg[n])<(0.003 +  spreaderr[n]) and (index < len(self.quick_id_list)-1) and (t_eff[n]>= 0.7) and (t_eff[n]<=0.9):
+                if abs(wavg[n])<(0.003 +  spreaderr[n]) and (index < len(self.quick_id_list)-1) and (t_eff[n]>= 0.2) and (t_eff[n]<=0.35):
                     print("Found a star")
                     print("obj mag: " + str(obj_mag[n]))
                     acceptable_mag.append(obj_mag[n])
