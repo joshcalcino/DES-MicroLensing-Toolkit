@@ -74,12 +74,6 @@ class GenerateMLEvent(object):
     """ generate_noise(t): Calculates noise due to interference given t. """
     def generate_noise(self, t_eff):
         self.t_eff  = t_eff
-<<<<<<< HEAD
-        counts_list = self.mag_list*5*self.t_eff/90 ##convert mag_list to counts_list
-=======
-        mag_list = self.mag_list ##has mag_0 and delta_mag added
-        counts_list = mag_list*5*self.t_eff/90 ##convert mag_list to counts_list
->>>>>>> d1225710ed75243326db0527bab52b338965b8ce
         counts_sigma_list = np.sqrt(counts_list)
         mag_sigma_list = (6.25/((np.square(counts_sigma_list)*np.log(10)**2)))
         return mag_sigma_list 

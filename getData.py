@@ -32,13 +32,13 @@ class getData(object):
         duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
         self.ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
 
-    def isStar(self, ID):
+    #def isStar(self, ID):
         #for i in self.uniqueIDs:
             #if star == True:
             #    stars.append(ID)
             #else:
             #    nothing
-        return stars
+        #return stars
 
     def get_MJD(self, index =1000, bandpass='g'):
 	quick_id = self.list_times[index]
