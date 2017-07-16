@@ -21,6 +21,7 @@ class star(object):
     #Ds      20 kpc                 -distance to the source, based on actually calculations, not varied
     #x       (0,1,0.05)             -percentage of distance from Dl to Ds (Dl/Ds)
     #m_0                            -average magnitude of source
+    #bandpass   {g,r,Y...etc.}
 
     """ star_object(MJD_list): takes  a list of integers and returns a list of Mircolensing events. """
     def get_curves(self, MJD_list, t_eff = 1, m_0=30, Ds=20,curve_type =1):
@@ -34,15 +35,13 @@ class star(object):
         
        # for t_0 in range(int(min(MJD_list)-365), int(max(MJD_list)+365), 20): #30        
         for t_0 in range(56900, 57000, 5):        
-            if debug == 'y':
-                print "t_0 index: ", t_0, index
+            print "t_0 index: ", t_0, index
             for u_0 in urange:
                 for x in x_range:
                     for M in mrange: 
                         self.lightcurve.append(MicroLensingGenerator.GenerateMLEvent(t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, t_eff, curve_type))
                         index += 1
-        if debug == 'y':
-            print "total index:", index
+        print "total index:", index
         return self.lightcurve 
 
     def get_drange(self, start, stop, step): #function that returns a list of decimals in a given range
