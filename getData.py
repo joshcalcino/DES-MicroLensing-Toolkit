@@ -11,7 +11,7 @@ class getData(object):
 
     def __init__(self, hpix=11737):
         self.list_times, self.uniqueIDs, self.ecat = self.pull_data(hpix)
-        self.star_list = self.star_list()
+        #self.star_list = self.star_list()
 
     def get_MJD(self, index =1000, bandpass='g'):
         quick_id = self.list_times[index]
@@ -124,14 +124,14 @@ class getData(object):
             print "ObjID", ID, "is NOT at star."
         return test
             
-    def star_list(self): #takes ALL ids from data and returns a list of only stars from data
+    def star_list(self, bandpass = 'g'): #takes ALL ids from data and returns a list of only stars from data
         stars = []
         for ID in self.uniqueIDs:
-            #if isStar(ID):
+            #if isStar(ID, bandpass):
                 #stars.append(ID)
             isStar_truth = False
-            wavg = self.get_spread(ID)
-            spreaderr = self.get_spread_err(ID)
+            wavg = self.get_spread(ID, bandpass)
+            spreaderr = self.get_spread_err(ID, bandpass)
             for n in range(0, len(wavg)):
                 if abs(wavg[n])<(0.003 +  spreaderr[n]):
                     isStar_truth = True
