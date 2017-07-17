@@ -19,16 +19,17 @@ class GenerateMLEvent(object):
         self.r_E = self.get_r_E()
         self.V_t = V_t * 5.775e-4             #transverse velocity, in AU/day, input in km/s
         self.t_E = self.get_t_E()           #lensing timescale
-        self.u_0 = u_0            #min dist betwn obj and line of sight at t_0, unitless
+        self.u_0 = u_0                      #min dist betwn obj and line of sight at t_0, unitless
         self.t_0 = t_0                      #Time of maximum light distortion
         self.times = MJD_list               #list of times source was observed, in days
         self.u = self.get_u()
         self.A = self.get_A()               #amplification of magnification
-        self.delta_mag = self.get_delta_mag()
         self.m_0 = m_0                      #Avg magnitude of src   
-        self.mag_list = []
-        self.light_curve = self.generate_data()
-        self.t_eff = self.generate_noise(t_eff)                          
+        self.t_eff = t_eff
+        self.curve_type = curve_type
+        self.delta_mag = self.get_delta_mag()   #calculates change in magnitude
+        self.noise = self.generate_noise()      #noise due to t_eff                           
+        self.light_curve = self.generate_data() #list of mag at times accounting for noise, delta and initial magnitudes
     
     """ get_r_E(): Calculates radius of the Einstein ring given M, Ds, and x."""
     def get_r_E(self):  # r_E is the Einstein ring radius in units of.. not sure yet
@@ -72,23 +73,22 @@ class GenerateMLEvent(object):
         return delta_mag
 
     """ generate_noise(t): Calculates noise due to interference given t. """
-    def generate_noise(self, t_eff):
-        self.t_eff  = t_eff
+    def generate_noise(self):
+        mag_list = self.m_0 + self.delta_mag
+        counts_list = mag_list*5*self.t_eff/90 ##convert mag_list to counts_list
         counts_sigma_list = np.sqrt(counts_list)
         mag_sigma_list = (6.25/((np.square(counts_sigma_list)*np.log(10)**2)))
         return mag_sigma_list 
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
     def generate_data(self):
-        self.mag_list = self.m_0 + self.delta_mag
-        final_mag_list = mag_list + self.generate_noise(self.times)
+        final_mag_list = self.m_0 + self.delta_mag + self.noise
         return final_mag_list 
 
     def get_curve_type(self):
-        curve_type = self.curve_type
         #Put curve type loop here, return value of curve type
         #1. Paci 2. Ellipse 3. Parallax 4. Cluster
-        return 0
+        return 1
 
     def save_data(self, data):  # save the data as a text file
         delta_mag = np.reshape(data['delta_mag'], (len(data['delta_mag']), 1))
