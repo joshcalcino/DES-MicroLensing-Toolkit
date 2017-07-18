@@ -33,7 +33,7 @@ class star(object):
         
        # for t_0 in range(int(min(MJD_list)-365), int(max(MJD_list)+365), 20): #30        
         for t_0 in range(56900, 57000, 20):        
-            print "t_0 index: ", t_0, index
+            #print "t_0 index: ", t_0, index
             for u_0 in urange:
                 for x in x_range:
                     for M in mrange: 
@@ -41,6 +41,7 @@ class star(object):
                         self.final_mag_list.append(self.lightcurve)
                         index += 1
         print "total index:", index
+        print self.final_mag_list
         return self.lightcurve, self.final_mag_list
 
     def get_drange(self, start, stop, step): #function that returns a list of decimals in a given range
