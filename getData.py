@@ -1,5 +1,5 @@
 import numpy as np
-import get_error
+import get_errors
 import sys
 import pandas as pd
 #import matplotlib as mpl
@@ -32,14 +32,6 @@ class getData(object):
         obj_expnum_counts.columns = ['QUICK_OBJECT_ID', 'EXPNUM', 'COUNTS']
         duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
         self.ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
-
-    def isStar(self, ID):
-        #for i in self.uniqueIDs:
-            #if star == True:
-            #    stars.append(ID)
-            #else:
-            #    nothing
-        return stars
 
     def get_MJD(self, index =1000, bandpass='g'):
         quick_id = self.list_times[index]
@@ -76,6 +68,7 @@ class getData(object):
         magerr = myobj_r['MAGERR_PSF']
         mag_psf = myobj_r['MAG_PSF']
         mjd = myobj_r['MJD_OBS']
+        print("finished grabbing error details")
         return t_eff, magerr, mag_psf, mjd
 
     def get_m_0(self, ID):
@@ -91,8 +84,13 @@ class getData(object):
 
     def get_error_details(self, quick_id):
         t_eff, magerr , mag_psf, mjd= self.grab_details_for_error(quick_id)
-        print "teff:", t_eff
-        error = get_error.get_error(mag_psf, t_eff, magerr, mjd)
+        mag_psf = np.asarray(mag_psf, dtype = float)
+        t_eff = np.asarray(t_eff, dtype = float)
+        magerr = np.asarray(magerr, dtype = float)
+        mjd = np.asarray(mjd, dtype = float)
+        testing = get_errors.return_error(mag_psf, t_eff, magerr, mjd)
+        print("stop")
+        np.savetxt( "newdata.txt", np.array([mag_psf, magerr, teff, quick_id]).T, "%.5.2f %5.2f %5.2f %d") 
         #print "magerr:", magerr
         #print "Nlist:", N_list
         #N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff

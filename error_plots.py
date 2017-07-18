@@ -14,7 +14,10 @@ import pandas as pd
 import matplotlib as mpl
 
 
-def error_plots(magnitude, magerr, t_eff, magnitude2, magerr2, t_eff2):
+def error_plots(teff_low, teff_hi,input_file = "error_data.txt"):
+
+    mag,magerr,teff,quick_id = np.genfromtxt(input_file,unpack=True)
+
 
     mag_plot = []
     magerr_plot = []
@@ -24,7 +27,7 @@ def error_plots(magnitude, magerr, t_eff, magnitude2, magerr2, t_eff2):
     magerr_plot2 = []
     t_eff_plot2 = []
 
-
+    """
     for line in magnitude:
         current_line = line
         current_line.rstrip("\n")
@@ -45,6 +48,8 @@ def error_plots(magnitude, magerr, t_eff, magnitude2, magerr2, t_eff2):
         total1 = total1 + current_line
         t_eff_plot.append(current_line)
 
+    print(len(t_eff_plot))
+
     for line in magnitude2:
         current_line = line
         current_line.rstrip("\n")
@@ -64,13 +69,13 @@ def error_plots(magnitude, magerr, t_eff, magnitude2, magerr2, t_eff2):
         current_line = float(current_line)
         total2 = total2 + current_line
         t_eff_plot2.append(current_line)
-    
-    total1 = total1/len(t_eff_plot)
-    total2 = total2/len(t_eff_plot2)
+    """ 
+    #total1 = total1/len(t_eff_plot)
+    #total2 = total2/len(t_eff_plot2)
     
 
-    print("Total1: " + str(total1))
-    print("Total2: " + str(total2))
+    #print("Total1: " + str(total1))
+    #print("Total2: " + str(total2))
 
     mag_plot = np.array(mag_plot)
     magerr_plot = np.array(magerr_plot)
@@ -87,14 +92,60 @@ def error_plots(magnitude, magerr, t_eff, magnitude2, magerr2, t_eff2):
 
     plt.clf()
 
-    x_axis = mag_plot
-    interp = interp1d(mag_plot, magerr_plot, bounds_error = False)
-    interp_mag = interp(x_axis)
+    # training set the high teff set
+    teff_low_ref = 0.7
+    teff_hi_ref = 0.9
+    teff_ref = (teff_low_ref+teff_hi_ref)/2.
+    ix, = np.where((teff >= teff_low_ref ) & ( teff < teff_hi_ref))
+    mag_training = mag[ix]
+    magerr_training=magerr[ix]
+    teff_training = teff[ix]
 
-    error = interp_mag + (-2.5 * np.log10(t_eff_plot / total1 )*.5)
+    interp = interp1d(mag_training, magerr_training, bounds_error = False)
+
+    ix, = np.where((teff >= teff_low ) & ( teff < teff_hi))
+    ix, = np.where((mag > 21) & (mag < 22))
+    mag_testing = mag[ix]
+    magerr_testing=magerr[ix]
+    teff_testing = teff[ix]
+
+    predicted_mag_error = interp(mag_testing)
+
+    error = predicted_mag_error + (-2.5 * np.log10(teff_testing / teff_ref )*.5)
+    print (teff_testing/teff_ref).min()
+    print (teff_testing/teff_ref).max()
+    print (teff_testing/teff_ref).mean()
+
+
+    #predicted_mag_error = np.log10(teff_testing/teff_ref)
+    #magerr_testing = (-2.5 * np.log10(teff_testing / teff_ref )*.5)
+
+    predicted_mag_error = teff_testing
+    magerr_testing =  magerr_testing
     
-    print error
-    stopity
+    #print error
+    denominator = (np.square(magerr_plot)*np.log(10)**2)*90
+    numerator = 6.25*t_eff_plot*5
+    calculated = abs(numerator/denominator)
+    #calculated = (6.25)/(np.square(magerr_plot)*np.log(10)**2)*t_eff_plot
+    #print calculated
+    print(len(error))
+    print(len(predicted_mag_error))
+    plt.scatter(predicted_mag_error, magerr_testing, color = 'blue')
+    plt.xlabel("Calculated error")
+    plt.ylabel("measured magnitude error")
+    #plt.plot([0, 1], [0, 1], c = 'r')
+    #plt.xlim(0, .3)
+    #plt.ylim(0, .3)
+    
+    #plt.xlim(0, predicted_mag_error.max())
+    #plt.ylim(0, magerr_testing.max())
+    #plt.scatter(mag_plot, calculated, color = 'red')
+    #plt.scatter(mag_plot, error, color = 'green')
+    plt.show()
+    plt.savefig("temp.png")
+    
+    """
 
     #ratio of t_eff: denominator is average t_eff for plot, numerator is from each individual magnitude measurement
     #-2.5*log(that)*.5
@@ -109,3 +160,5 @@ def error_plots(magnitude, magerr, t_eff, magnitude2, magerr2, t_eff2):
     #plt.axhline(y = 0.0085, color = 'r')
     plt.savefig("t_eff_overlap.png")
     plt.show()
+
+    """
