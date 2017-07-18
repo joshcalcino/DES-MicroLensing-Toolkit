@@ -38,7 +38,7 @@ class star(object):
                 for x in x_range:
                     for M in mrange: 
                         self.lightcurve.append(MicroLensingGenerator.GenerateMLEvent(t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, t_eff, curve_type))
-                        self.final_mag_list.append(self.lightcurve.light_curve)
+                        self.final_mag_list.append(self.lightcurve)
                         index += 1
         print "total index:", index
         return self.lightcurve, self.final_mag_list
