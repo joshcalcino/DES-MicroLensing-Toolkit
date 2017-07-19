@@ -14,8 +14,21 @@ class driver(object):
 
     def __init__(self):
         self.hpix = getHPIX.pix() #list of all pixels in survey 
-        self.data = self.all_data()
-        print "in driver- teff:", self.data[0].get_t_eff(self.data[0].uniqueIDs[0])
+        """
+        for i in self.hpix:
+            self.file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + str(i) + ".fits"
+            pyfits.writeto(self.file_name, a, clobber=True)
+        """
+
+       # print "in driver- teff:", data.get_t_eff(data.uniqueIDs[0])
+        """
+        #Example:
+        #$col1 = pyfits.Column(name = 'ID', format = 'D', array = wv_full_test)
+        #$col2 = pyfits.Column(name = 'RA', format = 'D', array = fx_full_test)
+        #$col3 = pyfits.Column(name = 'DEC', format = 'D', array = (wv_full_test*.1))
+        #$col4 = pyfits.Column(name = 'MAG_LIST', format = 'D', array = wv_full_test)
+        #$col5 = pyfits.Column(name = 'MJD_LIST', format = 'D', array = fx_full_test)
+        """
 
     def nike(self, test):
         for pix in self.hpix:
@@ -43,23 +56,43 @@ class driver(object):
             index =+ 1
         print "index:", index 
         return 0
+    
+    def clearDir():
+        return 0
+    
+    def save_data(self, pix, events, ID, mjd, RA, DEC, final_mag_list):
+        print "save_data" 
+        
+        #file_name = ""
+        #file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + pix + ".fits"
+        #data_table = pyfits.open(file_name)
 
-    def all_MJDs(self):
-        for i in range(0,len(data),1):
-            for index in range(0,len(data),1): 
-                for bandpass in ['y','r','g']:
-                    mjd = data[i].get_MJD(index, bandpass)
+        #for i in range(0, len(final_mag_list),1): #len(final_mag_list) ~ 600,000
+            #data_event = [ID, RA, DEC, mjd[i], final_mag_list[i]]
 
+        
+        #data_table.append(file_name, data_event)
             
-   # @profile
-    def plot_many(self, start, stop, step=1):
-        fake_plots.clear()
-        index = 0
-        while start < stop:
-            fake_plots.plot_many(self.event_list[start])
-            start += step
-            index += 1
-        return index
+        """
+        #$cols = pyfits.ColDefs([col1, col2, col3, col4, col5])
+        #$tbhdu = pyfits.new_table(cols)
+        #$hdu = pyfits.PrimaryHDU()
+        #$thdulist + 'ID'  = pyfits.HDUList([hdu, tbhdu])
+        #$tbhdu.writeto('file_name.fits')
+        """
+
+        #get the different columns that we want to return
+        #for i in events:
+            #RA = RA
+            #DEC = DEC
+            #MJD_LIST = mjd
+            #MAG_LIST = final_mag_list
+            #           filename, data, header=None, checksum=False, verify=True, **kwargs
+            #fits.append(pix, ID, OBJECT_ID)
+            #fits.append(pix, RA, RA)
+            #fits.append(pix, DEC, DEC)
+            #fits.append(pix, MAG_LIST[j], MAG)
+            #fits.append(pix, MJD_LIST[j], MDJ_LIST)
 
     def save_data():
         stuff = 0
