@@ -14,7 +14,7 @@ class GenerateMLEvent(object):
             t_0, p, v_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type
     """
 
-    def __init__(self, t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff = 0, curve_type = 1, bandpass):
+    def __init__(self, t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, bandpass, t_eff = 0, curve_type = 1):
         self.M_lens = M_lens                #Lens mass,             solar masses 
         self.Ds = Ds                        #Dist to source         kpc
         self.x = x                          #% of Dl compared to Ds  (0, 1)
@@ -33,7 +33,9 @@ class GenerateMLEvent(object):
         self.error_file = pickle.load(open("magerr_model_{}.pickle".format(bandpass), 'rb'))
         self.interp = interp1d(self.error_file[0], self.error_file[1], bounds_error = False)
         self.light_curve = self.generate_data() #list of mag at times accounting for noise, delta and initial magnitudes
-        self.generate_noise = generate_noise()
+        print(self.light_curve)
+        self.generate_noise = self.generate_noise()
+        print(self.generate_noise)
 
     """ get_r_E(): Calculates radius of the Einstein ring given M, Ds, and x."""
     def get_r_E(self):  # r_E is the Einstein ring radius in units of.. not sure yet
@@ -78,8 +80,6 @@ class GenerateMLEvent(object):
 
     """ generate_noise(t): Calculates noise due to interference given t. """
     def generate_noise(self):
-        print "self.light_curve:", self.light_curve
-        print "delta mag:", self.delta_mag
         noise = self.interp(self.light_curve)
         return noise
 
