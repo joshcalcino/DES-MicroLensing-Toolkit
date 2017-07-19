@@ -20,17 +20,7 @@ class driver(object):
             pyfits.writeto(self.file_name, a, clobber=True)
         """
 
-       # print "in driver- teff:", data.get_t_eff(data.uniqueIDs[0])
-        """
-        #Example:
-        #$col1 = pyfits.Column(name = 'ID', format = 'D', array = wv_full_test)
-        #$col2 = pyfits.Column(name = 'RA', format = 'D', array = fx_full_test)
-        #$col3 = pyfits.Column(name = 'DEC', format = 'D', array = (wv_full_test*.1))
-        #$col4 = pyfits.Column(name = 'MAG_LIST', format = 'D', array = wv_full_test)
-        #$col5 = pyfits.Column(name = 'MJD_LIST', format = 'D', array = fx_full_test)
-        """
-
-    def nike(self):
+    def nike(self): #loads data from one pixel, from 1 star object within pixel
         index = 0
         for pix in self.hpix:
             if pix != "11737": continue
@@ -111,9 +101,6 @@ class driver(object):
             self.plots(star_event, 100, 110, 1)
         return 0
     
-    def clearDir():
-        return 0
-
     def plot1(self,event):
         fake_plots.clear()
         fake_plots.plot_many(event)    
