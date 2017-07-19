@@ -51,6 +51,18 @@ class getData(object):
         spreaderr = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['SPREADERR_MODEL']
         return spreaderr
         
+    """
+    def grab_details_for_error(self, quick_id, bandpass = 'r'):
+        myobj_df = self.ecat.loc[quick_id]
+        #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
+        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'T_EFF']]
+        t_eff = myobj_r['T_EFF']
+        magerr = myobj_r['MAGERR_PSF']
+        mag_psf = myobj_r['MAG_PSF']
+        mjd = myobj_r['MJD_OBS']
+        print("finished grabbing error details")
+        return t_eff, magerr, mag_psf, mjd
+    """
 
     def grab_details_for_error(self, ID, bandpass = 'r'):
         t_eff = self.get_t_eff(ID, bandpass) 
@@ -58,7 +70,7 @@ class getData(object):
         mag_psf = self.get_mag(ID, bandpass)
         mjd = self.get_timesByIDs(ID, bandpass)
         return t_eff, magerr, mag_psf, mjd
-
+    
     def get_m_0(self, ID, bandpass = 'g'):
         maths = 0
         m_0s = self.get_mag(ID, bandpass)
@@ -94,7 +106,7 @@ class getData(object):
         mjd = np.asarray(mjd, dtype = float)
         testing = get_errors.return_error(mag_psf, t_eff, magerr, mjd)
         print("stop")
-        np.savetxt( "newdata.txt", np.array([mag_psf, magerr, teff, quick_id]).T, "%.5.2f %5.2f %5.2f %d") 
+        #np.savetxt( "newdata.txt", np.array([mag_psf, magerr, t_eff, quick_id]).T, "%5.3f %5.2f %5.2f %d") 
         #print "magerr:", magerr
         #print "Nlist:", N_list
         #N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff

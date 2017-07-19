@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import MicroLensingGenerator
 import matplotlib.pyplot as plt
 import matplotlib
+import pickle
 from astropy.io import fits
 import numpy as np
 import astropy.table as t
@@ -14,7 +15,7 @@ import pandas as pd
 import matplotlib as mpl
 
 
-def error_plots(teff_low, teff_hi,input_file = "error_data.txt"):
+def error_plots(teff_low, teff_hi,input_file = "error_data.txt", bandpass = 'r'):
 
     mag,magerr,teff,quick_id = np.genfromtxt(input_file,unpack=True)
 
@@ -104,12 +105,15 @@ def error_plots(teff_low, teff_hi,input_file = "error_data.txt"):
     interp = interp1d(mag_training, magerr_training, bounds_error = False)
 
     ix, = np.where((teff >= teff_low ) & ( teff < teff_hi))
-    ix, = np.where((mag > 21) & (mag < 22))
+    #ix, = np.where((mag > 21) & (mag < 22))
     mag_testing = mag[ix]
     magerr_testing=magerr[ix]
     teff_testing = teff[ix]
 
     predicted_mag_error = interp(mag_testing)
+    fd = open("magerr_model_{}.pickle".format(bandpass), 'wb')
+    pickle.dump([mag_training, magerr_training], fd)
+    fd.close()
 
     error = predicted_mag_error + (-2.5 * np.log10(teff_testing / teff_ref )*.5)
     print (teff_testing/teff_ref).min()
@@ -120,8 +124,8 @@ def error_plots(teff_low, teff_hi,input_file = "error_data.txt"):
     #predicted_mag_error = np.log10(teff_testing/teff_ref)
     #magerr_testing = (-2.5 * np.log10(teff_testing / teff_ref )*.5)
 
-    predicted_mag_error = teff_testing
-    magerr_testing =  magerr_testing
+    #predicted_mag_error = teff_testing
+    #magerr_testing =  magerr_testing
     
     #print error
     denominator = (np.square(magerr_plot)*np.log(10)**2)*90
@@ -131,7 +135,11 @@ def error_plots(teff_low, teff_hi,input_file = "error_data.txt"):
     #print calculated
     print(len(error))
     print(len(predicted_mag_error))
+    print("**********************")
+    print(mag_training)
+    print(magerr_training)
     plt.scatter(predicted_mag_error, magerr_testing, color = 'blue')
+    #plt.scatter(mag_training, magerr_training, color = 'blue')
     plt.xlabel("Calculated error")
     plt.ylabel("measured magnitude error")
     #plt.plot([0, 1], [0, 1], c = 'r')
