@@ -14,110 +14,137 @@ import fitsio
 class driver(object):
 
     def __init__(self):
-        self.star = star.star()
-        self.file_name = ""
         self.hpix = getHPIX.pix() #list of all pixels in survey 
-    """
+        """
         for i in self.hpix:
             self.file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + str(i) + ".fits"
             pyfits.writeto(self.file_name, a, clobber=True)
-    """
+        """
+
        # print "in driver- teff:", data.get_t_eff(data.uniqueIDs[0])
+        """
+        #Example:
+        #$col1 = pyfits.Column(name = 'ID', format = 'D', array = wv_full_test)
+        #$col2 = pyfits.Column(name = 'RA', format = 'D', array = fx_full_test)
+        #$col3 = pyfits.Column(name = 'DEC', format = 'D', array = (wv_full_test*.1))
+        #$col4 = pyfits.Column(name = 'MAG_LIST', format = 'D', array = wv_full_test)
+        #$col5 = pyfits.Column(name = 'MJD_LIST', format = 'D', array = fx_full_test)
+        """
 
     def nike(self):
-        for pix in range(11737, 11738, 1): #in aelf.hpix:
+        index = 0
+        for pix in self.hpix:
+            if pix != "11737": continue
             data = getData.getData(pix) #160,000 objects with seperate obs
-            self.file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + str(pix) + ".fits"
-            fits = fitsio.FITS(self.file_name,'rw')
-            #empty arrays
-            mjd_total = np.array([])
-            mag_total = np.array([])
-            magerrs = np.array([])
-            qid = np.array([])
-            ra = np.array([])
-            dec = np.array([])
-            for i in range(0,10,1): #final_IDs:
-                ID = data.uniqueIDs[i]
-                if data.isStar(ID):
-                
-                    #variables from data
-                    mjd = data.get_timesByIDs(ID)
-                    t_eff = data.get_t_eff(ID)
-                    mag_list = data.get_m_0(ID)
-                    RA = data.get_RA(ID)
-                    DEC = data.get_DEC(ID)
-                    #ra.append(RA)
-                    #dec.append(DEC) 
-                    """
-                    Ds = data.get_Ds(objID[i])
-                    curve_type = data.get_curve_type(objID[i])
-                    """
-		    
-                    #calculated variables 
-                    star_events, final_mag_list = self.star.get_curves(mjd, t_eff, mag_list) #returns 600,000 light curves for the object 
-                     
-                    self.save_data(pix, star_events, ID,  mjd, RA, DEC, final_mag_list)
+            objID = data.uniqueIDs #list of all objects
+            for i in range(4,5,1): #for i in data:
+                #variables from data
+                mjd = data.get_timesByIDs(objID[i])
+                t_eff = data.get_t_eff(objID[i])
+                m_0 = data.get_m_0(objID[i]) 
+                is_star = data.isStar(objID[i])
+                RA = data.get_RA(objID[i])
+                DEC = data.get_DEC(objID[i])
+                """
+                Ds = data.get_Ds(objID[i])
+                curve_type = data.get_curve_type(objID[i])
+                """
 
-                    #call the save to fits file method
-                    #self.plot_many(0,100)
+                item = star.star()
 
-	    index =+ 1
+                #calculated variables
+                if is_star == True:
+                    star_event = item.get_curves(mjd, t_eff, m_0) #returns about 36000 light curves 
+                    self.save_data(pix, star_event, objID[i], mjd, RA, DEC)
+                    self.plots( star_event[0] )
+                #call the save to fits file method
+                #self.plot_many(0,100)
+            index += 1
         print "index:", index 
         return 0
 
+    def nike2(self):
+        index = 0
+        mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list  = \
+            np.array([]), np.array([]), np.array([]), np.array([]), np.array([]), np.array([])
+        for pix in self.hpix:
+            if pix != "11737": continue
+            data = getData.getData(pix) #160,000 objects with seperate obs
+            objID = data.uniqueIDs #list of all objects
+            for i in range(4,30,1): #for i in data:
+                #variables from data
+                mjd = data.get_timesByIDs(objID[i])
+                t_eff = data.get_t_eff(objID[i])
+                m_0 = data.get_m_0(objID[i]) 
+                is_star = data.isStar(objID[i])
+                RA = data.get_RA(objID[i])
+                DEC = data.get_DEC(objID[i])
+                if is_star:
+                    mjd_list = np.vstack([mjd_list, mjd])
+                    teff_list = np.vstack([teff_list, t_eff])
+                    m0_list = np.vstack([m0_list, m_0])
+                    ra_list = np.vstack([ra_list, RA])
+                    dec_list = np.vstack([dec_list, DEC])
+                    objID_list = np.vstack([objID_list, objID[i]])
+                """
+                Ds = data.get_Ds(objID[i])
+                curve_type = data.get_curve_type(objID[i])
+                """
+        return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list
+
+    def plot_curves(self, mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, index):
+        size =  len(ra_list)
+        for i in range(size): #for i in data:
+            if i != index: continue
+            item = star.star()
+            #calculated variables
+            mjd = mjd_list[i]
+            t_eff= teff_list[i]
+            m_0 = m0_list[i]
+            ra = ra_list[i]
+            dec = dec_list[i]
+            objID = objID_list[i]
+            print mjd_list
+            print type(mjd)
+            print np.shape(mjd), np.shape(t_eff), np.shape(m_0),np.shape(ra), np.shape(dec)
+            star_event = item.get_curves(mjd, t_eff, m_0) #returns about 36000 light curves 
+            print np.shape(star_event)
+            self.plots(star_event, 100, 110, 1)
+        return 0
     
-    def save_data(self, pix, star_events, ID,  mjd, RA, DEC, final_mag_list):
-        mjd_total = np.array([mjd])
-        mag_total = np.array([final_mag_list])
-        magerrs = np.array([])
-        qid = np.array([ID])
-        ra = np.array([RA])
-        dec = np.array([DEC])
+    def clearDir():
+        return 0
 
-        array_list = [mjd_total, final_mag_list, magerrs, qid, ra, dec]
-        names = ['mjd_total', 'final_mag_list', 'magerrs', 'qid', 'ra', 'dec'] 
-        fits.write(array_list, names=names)
+    def plot1(self,event):
+        fake_plots.clear()
+        fake_plots.plot_many(event)    
+        return 0
 
+    def plots(self,event, start =0, stop = 2, step=1):
+        fake_plots.clear()
+        for i in range(start, stop, step):
+            fake_plots.plot_many(event[i])    
+        return 0
 
-         """mjd_total = np.array([])
-            loop over stars:
-                mjd, mags, magerrs, qid, ra, dec = marikas_code()
-                mjd_total = np.array(mjd_total, mjd)
-                mag_total = np.array(mag_total, mjd)
-            write)fits(mag_total, mag_err_total....)
-            mjd, mag, magerr, qid, ra, dec
-            mjd, mag, magerr, qid, ra, dec
-            mjd, mag, magerr, qid, ra, dec
-            mjd, mag, magerr, qid, ra, dec
-            50000., 17., 0.1, 10, 0, 0.
-            50001., 17.1, 0.1, 10, 0, 0.
-            50002., 17.2, 0.1, 10, 0, 0.
-            501002., 19.2, 0.3, 1010, 10, 10.
-            501002., 19.2, 0.3, 1010, 10, 10.
-            501002., 19.2, 0.3, 1010, 10, 10.
-            ix, = np.where(qid == 10)
-            nrows = nstars* nlightcurves/star * number_of_mags/star
-                10000    600,000              len(mjd_list)"""
+    def save_data(self, pix, events, ID, mjd, RA, DEC):
+        print "save_data" 
+        
+        #file_name = ""
+        #file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + pix + ".fits"
+        #data_table = pyfits.open(file_name)
 
+        #for i in range(0, len(final_mag_list),1): #len(final_mag_list) ~ 600,000
+            #data_event = [ID, RA, DEC, mjd[i], final_mag_list[i]]
 
- 
-        #data_table = pyfits.open(file_name.fits)
-
-        #for i in final_mag_list: #len(final_mag_list) ~ 600,000
-            #data_event = [ID, RA, DEC, mjd, final_mag_list[i]]
-            #data_table.append(file_name, data_event)
+        
+        #data_table.append(file_name, data_event)
             
         """
-        #Example:
-        #$col1 = pyfits.Column(name = 'wave', format = 'D', array = wv_full_test)
-        #$col2 = pyfits.Column(name = 'fx', format = 'D', array = fx_full_test)
-        #$col3 = pyfits.Column(name = 'fx_error', format = 'D', array = (wv_full_test*.1))
-
-        #$cols = pyfits.ColDefs([col1, col2, col3])
+        #$cols = pyfits.ColDefs([col1, col2, col3, col4, col5])
         #$tbhdu = pyfits.new_table(cols)
         #$hdu = pyfits.PrimaryHDU()
-        #$thdulist = pyfits.HDUList([hdu, tbhdu])
-        #$tbhdu.writeto('filename.fits')
+        #$thdulist + 'ID'  = pyfits.HDUList([hdu, tbhdu])
+        #$tbhdu.writeto('file_name.fits')
         """
 
         #get the different columns that we want to return
@@ -132,6 +159,4 @@ class driver(object):
             #fits.append(pix, DEC, DEC)
             #fits.append(pix, MAG_LIST[j], MAG)
             #fits.append(pix, MJD_LIST[j], MDJ_LIST)
-
-        #save all data per pixel, that way, there are only 1800 total files
         return "saved!!!"

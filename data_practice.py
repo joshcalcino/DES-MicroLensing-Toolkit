@@ -73,7 +73,7 @@ class data_practice(object):
         return mag_list
 
     #@profile
-    def avg_mag(self):
+    def avg_mag(self, outfile = "error_data.txt"):
         mag_file = open('delete_me.txt', 'w')
         avg_file = open('mag_averages_short_2.txt', 'w')
         err_file = open('magerr_short_2.txt', 'w')
@@ -86,28 +86,33 @@ class data_practice(object):
         quick_id = self.quick_id_list[0]
         current_quick_id = self.quick_id_list[0]
         index = 0
+        error_mag = []
+        magerr_final = []
+        t_eff_final = []
+        quick_id_final  = []
+
         while index in range(0, len(self.quick_id_list)-1):
             print("index at top: ", index)    
             obj_mag, wavg, spreaderr, magerr, t_eff = self.grab_details(quick_id, bandpass = 'r')
             acceptable_mag = []
-            error_mag = []
-            magerr_final = []
-            t_eff_final = []
             n = 0
             #print("quick id: ", self.quick_id_list[0]) 
             #print("quick id: ", self.quick_id_list[1]) 
             #print("quick id: ", self.quick_id_list[2]) 
             while quick_id == current_quick_id:
-                if abs(wavg[n])<(0.003 +  spreaderr[n]) and (index < len(self.quick_id_list)-1) and (t_eff[n]>= 0.2) and (t_eff[n]<=0.35):
+                if abs(wavg[n])<(0.003 +  spreaderr[n]) and (index < len(self.quick_id_list)-1):
                     print("Found a star")
                     print("obj mag: " + str(obj_mag[n]))
                     acceptable_mag.append(obj_mag[n])
                     magerr_final.append(magerr[n])
                     error_mag.append(obj_mag[n])
+                    print("here is error: ")
+                    print(error_mag)
                     t_eff_final.append(t_eff[n])
                     avg_file.write(str(obj_mag[n])+"\n")
                     err_file.write(str(magerr[n])+"\n")
                     eff_file.write(str(t_eff[n])+"\n")
+                    quick_id_final.append(self.quick_id_list[index+n])
                     current_quick_id = self.quick_id_list[index+n+1]
                     n = n+1
                     print("current quick id: ", current_quick_id)
@@ -136,8 +141,10 @@ class data_practice(object):
                 mag_file.write(str(total)+"\n")
             #print("index: ", index)        
             acceptable_mag = []
-            if(index >=10000):
+            if(index >=2000):
                 #print("mag_list", mag_list)
+                np.savetxt(outfile, np.array([error_mag, magerr_final, t_eff_final, quick_id_final]).T,
+                        "%5.2f %5.2f %5.2f %d")
                 return error_mag, magerr_final, t_eff_final
         return mag_list
 

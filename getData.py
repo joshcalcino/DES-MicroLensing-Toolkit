@@ -45,10 +45,12 @@ class getData(object):
     def get_spread(self, ID, bandpass = 'g'):
         wavg  = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['WAVG_SPREAD_MODEL'] #WAVG_SPREAD_MODEL keeps returning error message.
         return wavg
+       
 
     def get_spread_err(self, ID, bandpass='g'):
         spreaderr = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['SPREADERR_MODEL']
         return spreaderr
+        
 
     def grab_details_for_error(self, ID, bandpass = 'r'):
         t_eff = self.get_t_eff(ID, bandpass) 
@@ -86,8 +88,13 @@ class getData(object):
 
     def get_error_details(self, quick_id):
         t_eff, magerr , mag_psf, mjd= self.grab_details_for_error(quick_id)
-        print "teff:", t_eff
-        error = get_error.get_error(mag_psf, t_eff, magerr, mjd)
+        mag_psf = np.asarray(mag_psf, dtype = float)
+        t_eff = np.asarray(t_eff, dtype = float)
+        magerr = np.asarray(magerr, dtype = float)
+        mjd = np.asarray(mjd, dtype = float)
+        testing = get_errors.return_error(mag_psf, t_eff, magerr, mjd)
+        print("stop")
+        np.savetxt( "newdata.txt", np.array([mag_psf, magerr, teff, quick_id]).T, "%.5.2f %5.2f %5.2f %d") 
         #print "magerr:", magerr
         #print "Nlist:", N_list
         #N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff

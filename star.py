@@ -11,7 +11,6 @@ import itertools
 class star(object):
 
     def __init__(self, debug = 'n'):
-        self.lightcurve = []
         self.final_mag_list = [] 
     #need to loop over Parameter Limits:
     #Mlens   [10,100,1]             -Mass of the deflector
@@ -25,6 +24,8 @@ class star(object):
 
     """ star_object(MJD_list): takes  a list of integers and returns a list of Mircolensing events. """
     def get_curves(self, MJD_list, t_eff = 1, m_0=30, Ds=20,curve_type =1):
+
+        """The loop below takes approximately 3 minutes per mass producing 640,200 light curves. The complete loop would produce 6.4 million light curves in 30 minutes."""
         urange = self.get_drange(0,2,.1) #.1
         x_range = self.get_drange(0.1,1,.1) #.1
         mrange = range(10,101,10)
@@ -42,7 +43,12 @@ class star(object):
                         index += 1
         print "total index:", index
         print self.final_mag_list
-        return self.lightcurve, self.final_mag_list
+        #return self.lightcurve, self.final_mag_list
+         #               new = MicroLensingGenerator.GenerateMLEvent(t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, t_eff, curve_type)
+          #              lightcurve.append(new)
+           #             index += 1
+        #print "total index:", index
+        #return lightcurve
 
     def get_drange(self, start, stop, step): #function that returns a list of decimals in a given range
         """ get_drange(start, stop, step): takes 3 float parameters and returns a list from start to stop with the step interval. """
