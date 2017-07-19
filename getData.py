@@ -13,72 +13,57 @@ class getData(object):
         self.list_times, self.uniqueIDs, self.ecat = self.pull_data(hpix)
         #self.star_list = self.star_list()
 
-    def get_MJD(self, index =1000, bandpass='g'):
+    def get_MJD(self, index =1000):
         quick_id = self.list_times[index]
-        MJD_list = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))['MJD_OBS']
+        MJD_list = self.ecat.query("QUICK_OBJECT_ID== {}".format(quick_id))['MJD_OBS']
         return MJD_list
     
-    def get_timesByIDs(self, ID, bandpass='g'):
-        MJD_list = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['MJD_OBS']
+    def get_timesByIDs(self, ID):
+        MJD_list = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['MJD_OBS']
         return MJD_list   
 
-    def get_RA(self, IDs, bandpass='g'):
-        ra = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(IDs, bandpass))['RA']
+    def get_RA(self, IDs):
+        ra = self.ecat.query("QUICK_OBJECT_ID== {}".format(IDs))['RA']
         return ra   
 
-    def get_DEC(self, IDs, bandpass='g'):
-        dec = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(IDs, bandpass))['DEC']
+    def get_DEC(self, IDs):
+        dec = self.ecat.query("QUICK_OBJECT_ID== {}".format(IDs))['DEC']
         return dec   
 
-    def get_t_eff(self, ID, bandpass='g'):
-        t_eff = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['T_EFF']
+    def get_t_eff(self, ID):
+        t_eff = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['T_EFF']
         return t_eff
 
-    def get_magerr(self, ID, bandpass='g'):
-        magerr  = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['MAGERR_PSF']
+    def get_magerr(self, ID):
+        magerr  = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['MAGERR_PSF']
         return magerr
 
-    def get_mag(self, ID, bandpass='g'):
-        mag = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['MAG_PSF']
+    def get_mag(self, ID):
+        mag = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['MAG_PSF']
         return mag
 
-    def get_spread(self, ID, bandpass = 'g'):
-        wavg  = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['WAVG_SPREAD_MODEL'] #WAVG_SPREAD_MODEL keeps returning error message.
+    def get_bandpass(self, ID):
+        band = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['BAND']
+        return band
+
+    def get_spread(self, ID):
+        wavg  = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_SPREAD_MODEL'] 
         return wavg
        
 
-    def get_spread_err(self, ID, bandpass='g'):
-        spreaderr = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['SPREADERR_MODEL']
+    def get_spread_err(self, ID):
+        spreaderr = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['SPREADERR_MODEL']
         return spreaderr
         
-    """
-    def grab_details_for_error(self, quick_id, bandpass = 'r'):
-        myobj_df = self.ecat.loc[quick_id]
-        #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
-        myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'T_EFF']]
-        t_eff = myobj_r['T_EFF']
-        magerr = myobj_r['MAGERR_PSF']
-        mag_psf = myobj_r['MAG_PSF']
-        mjd = myobj_r['MJD_OBS']
-        print("finished grabbing error details")
-        return t_eff, magerr, mag_psf, mjd
-    """
 
-    def grab_details_for_error(self, ID, bandpass = 'r'):
-        t_eff = self.get_t_eff(ID, bandpass) 
-        magerr = self.get_magerr(ID, bandpass)
-        mag_psf = self.get_mag(ID, bandpass)
-        mjd = self.get_timesByIDs(ID, bandpass)
-        return t_eff, magerr, mag_psf, mjd
+    def grab_details_for_error(self, ID):
+        t_eff = self.get_t_eff(ID) 
+        magerr = self.get_magerr(ID)
+        mag_psf = self.get_mag(ID)
+        mjd = self.get_timesByIDs(ID)
+        band = self.get_bandpass(ID)
+        return t_eff, magerr, mag_psf, mjd, band
     
-    def get_m_0(self, ID, bandpass = 'g'):
-        maths = 0
-        m_0s = self.get_mag(ID, bandpass)
-        for i in m_0s:
-            maths += i
-        m_0 = float(maths/len(m_0s))
-        return m_0   
-        
     def pull_data(self,hpix):
         hpix = int(hpix)
         sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
@@ -99,19 +84,20 @@ class getData(object):
         return list_times, uniqueIDs, ecat
 
     def get_error_details(self, quick_id):
-        t_eff, magerr , mag_psf, mjd= self.grab_details_for_error(quick_id)
+        t_eff, magerr , mag_psf, mjd, bandpass = self.grab_details_for_error(quick_id)
         mag_psf = np.asarray(mag_psf, dtype = float)
         t_eff = np.asarray(t_eff, dtype = float)
         magerr = np.asarray(magerr, dtype = float)
         mjd = np.asarray(mjd, dtype = float)
-        testing = get_errors.return_error(mag_psf, t_eff, magerr, mjd)
+        bandpass = np.asarray(bandpass, dtype = float)
+        testing = get_errors.return_error(mag_psf, t_eff, magerr, mjd, bandpass)
         print("stop")
         #np.savetxt( "newdata.txt", np.array([mag_psf, magerr, t_eff, quick_id]).T, "%5.3f %5.2f %5.2f %d") 
         #print "magerr:", magerr
         #print "Nlist:", N_list
         #N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff
        # N_list = 1
-        return t_eff, magerr, mag_psf, mjd
+        return t_eff, magerr, mag_psf, mjd, bandpass
 
     def unit_test(self, mjd_list, x):
         u = x.get_u(mjd_list)
@@ -130,19 +116,20 @@ class getData(object):
         return True 
 
 
-    def isStar(self, ID, bandpass = 'g'): #takes individual object and returns true if is a star, false if galaxy
+    def isStar(self, ID): #takes individual object and returns true if is a star, false if galaxy
         test = False
-        wavg = self.get_spread(ID, bandpass)
-        spreaderr = self.get_spread_err(ID, bandpass)
+        wavg = self.get_spread(ID)
+        spreaderr = self.get_spread_err(ID)
         for n in range(0, len(wavg)):
-            if abs(wavg[n]) < (0.003 + spreaderr[n]):
+            if abs(wavg[n]) < (0.003 + spreaderr[n]): #is this for a particular bandpass?
                 test = True
         if test == True:
             print "ObjID", ID, "is a star!!"
         else:
             print "ObjID", ID, "is NOT at star."
         return test
-            
+
+    """
     def star_list(self, bandpass = 'g'): #takes ALL ids from data and returns a list of only stars from data
         stars = []
         for ID in self.uniqueIDs:
@@ -160,3 +147,4 @@ class getData(object):
             else:
                 print "no star"
         return stars
+    """
