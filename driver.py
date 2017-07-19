@@ -9,16 +9,10 @@ import fake_plots
 import getData
 import star
 import getHPIX
-from astropy.io import fits
-import pyfits
 
 class driver(object):
 
     def __init__(self):
-        self.star = star.star()
-        #self.clearDir()
-        self.file_name = ""
-        a = np.array([1,2,3,4,5])
         self.hpix = getHPIX.pix() #list of all pixels in survey 
         """
         for i in self.hpix:
@@ -36,41 +30,34 @@ class driver(object):
         #$col5 = pyfits.Column(name = 'MJD_LIST', format = 'D', array = fx_full_test)
         """
 
-    def nike(self):
-        for pix in range(11737, 11738, 1): #in aelf.hpix:
+    def nike(self, test):
+        for pix in self.hpix:
             data = getData.getData(pix) #160,000 objects with seperate obs
-            #final_IDs = data.star_list() #list of objects that are stars
-            #print "individual stars in pixel:", len(final_IDs)
-            for i in range(0,10,1): #final_IDs:
-                ID = data.uniqueIDs[i]
-                if data.isStar(ID):
-                
-                    #variables from data
-                    mjd = data.get_timesByIDs(ID)
-                    t_eff = data.get_t_eff(ID)
-                    mag_list = data.get_m_0(ID)
-                    RA = data.get_RA(ID)
-                    DEC = data.get_DEC(ID) 
-                    """
-                    Ds = data.get_Ds(objID[i])
-                    curve_type = data.get_curve_type(objID[i])
-                    """
+            objID = data.uniqueIDs #list of all objects
+            for i in range(0,10,1): #for i in data:
+                #variables from data
+                mjd = data.get_timesByIDs(objID[i])
+                t_eff = data.get_t_eff(objID[i])
+                m_0 = data.get_m_0(objID[i]) 
+                is_star = data.isStar(objID[i], mjd)
+                """
+                Ds = data.get_Ds(objID[i])
+                curve_type = data.get_curve_type(objID[i])
+                """
 
-                    self.star = star.star()
+                star = star.star()
 
-                    #calculated variables 
-                    star_events, final_mag_list = self.star.get_curves(mjd, t_eff, mag_list) #returns 600,000 light curves for the object  
-                    
-                    self.save_data(pix, star_events, ID,  mjd, RA, DEC, final_mag_list)
-
-                    #call the save to fits file method
-                    #self.plot_many(0,100)
+                #calculated variables
+                if is_star = True:
+                    star_event = star.get_curves(self.mjd, t_eff, m_0)  
+                    self.event_list.append(star_event)
+                #call the save to fits file method
+                #self.plot_many(0,100)
             index =+ 1
         print "index:", index 
         return 0
     
     def clearDir():
-        
         return 0
     
     def save_data(self, pix, events, ID, mjd, RA, DEC, final_mag_list):
@@ -107,5 +94,7 @@ class driver(object):
             #fits.append(pix, MAG_LIST[j], MAG)
             #fits.append(pix, MJD_LIST[j], MDJ_LIST)
 
-        #save all data per pixel, that way, there are only 1800 total files
+    def save_data():
+        stuff = 0
+        self.fits_file.append(stuff)
         return "saved!!!"

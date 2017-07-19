@@ -9,37 +9,59 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-def get_errors(mag_plot, t_eff, magerr_plot, mjd_list):
+"""
+    def __init__(self, mag_plot, t_eff, magerr_plot, mjd_list):
+        print(mag_plot)
+        print(t_eff)
+        self.mag_plot = mag_plot
+        self.t_eff = t_eff
+        self.magerr_plot = magerr_plot
+        self.mjd_list = mjd_list
+        print("getting errors")
+"""
+def return_error(mag_plot, t_eff, magerr_plot, mjd_list):
 
-    print t_eff
+        #Manual calcultion of magerr
+        mag_plot = mag_plot
+        N = (6.25)/(np.square(magerr_plot)*np.log(10)**2)
+        N = N * t_eff
+        print("Calculated error: ")
+        print(N)
+        print("**************")
+        print("Magerr given: ")
+        print(magerr_plot)
+        print("**************")
 
-    total = 0
-    for line in range(0, len(t_eff)):
-        total = total + t_eff[line]
+        magerr_plot = N*5/90
+        print(magerr_plot)
 
-    avg_t_eff = total/len(t_eff)
-    print(avg_t_eff)
-    avg_t_eff  = np.mean(t_eff)
-    print(avg_t_eff)
+        total = 0
+        for line in range(0, len(t_eff)):
+            total = total + t_eff[line]
 
-    mag_plot = np.array(mag_plot)
-    magerr_plot = np.array(magerr_plot)
-    t_eff_plot = np.array(t_eff)
+        avg_t_eff = total/len(t_eff)
+        print(avg_t_eff)
+        avg_t_eff  = np.mean(t_eff)
+        print(avg_t_eff)
 
-    ix = np.argsort(mag_plot)
-    mag_plot = mag_plot[ix]
-    magerr_plot = magerr_plot[ix]
+        mag_plot = np.array(mag_plot)
+        magerr_plot = np.array(magerr_plot)
+        t_eff_plot = np.array(t_eff)
 
-    plt.clf()
+        ix = np.argsort(mag_plot)
+        mag_plot = mag_plot[ix]
+        magerr_plot = magerr_plot[ix]
 
-    x_axis = mag_plot
-    interp = interp1d(mag_plot, magerr_plot, bounds_error = False)
-    interp_mag = interp(x_axis)
+        plt.clf()
 
-    error = interp_mag + (-2.5 * np.log10(t_eff / total )*.5)
+        x_axis = mag_plot
+        interp = interp1d(mag_plot, magerr_plot, bounds_error = False)
+        interp_mag = interp(x_axis)
 
-    plt.errorbar(mjd_list, mag_plot, error, fmt = 'o', color = 'green', ecolor = 'r', capsize = 20, elinewidth = 1.5)
-    plt.scatter(mjd_list, mag_plot, c = 'r')
-    plt.savefig("errorbarsyay.png")
-    plt.show()
-    #return error
+        error = interp_mag + (-2.5 * np.log10(t_eff / total )*.5)
+
+        plt.errorbar(mjd_list, mag_plot, error, fmt = 'o', color = 'green', ecolor = 'r', capsize = 20, elinewidth = 1.5)
+        plt.scatter(mjd_list, mag_plot, c = 'r')
+        plt.savefig("errorbarsyay.png")
+        plt.show()
+        return error
