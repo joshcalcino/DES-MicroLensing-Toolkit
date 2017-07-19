@@ -14,7 +14,8 @@ import fitsio
 class driver(object):
 
     def __init__(self):
-        self.hpix = getHPIX.pix() #list of all pixels in survey 
+        self.hpix = getHPIX.pix() #list of all pixels in survey
+        #self.event_list = events 
         """
         for i in self.hpix:
             self.file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + str(i) + ".fits"
@@ -66,7 +67,7 @@ class driver(object):
     def nike2(self):
         index = 0
         mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list  = \
-            np.array([]), np.array([]), np.array([]), np.array([]), np.array([]), np.array([])
+        [], [], [], [], [], []
         for pix in self.hpix:
             if pix != "11737": continue
             data = getData.getData(pix) #160,000 objects with seperate obs
@@ -80,18 +81,19 @@ class driver(object):
                 RA = data.get_RA(objID[i])
                 DEC = data.get_DEC(objID[i])
                 if is_star:
-                    mjd_list = np.vstack([mjd_list, mjd])
-                    teff_list = np.vstack([teff_list, t_eff])
-                    m0_list = np.vstack([m0_list, m_0])
-                    ra_list = np.vstack([ra_list, RA])
-                    dec_list = np.vstack([dec_list, DEC])
-                    objID_list = np.vstack([objID_list, objID[i]])
+                    mjd_list.append( mjd )
+                    teff_list.append( t_eff )
+                    m0_list.append( m_0 )
+                    ra_list.append( RA )
+                    dec_list.append( DEC )
+                    objID_list.append( objID[i] )
                 """
                 Ds = data.get_Ds(objID[i])
                 curve_type = data.get_curve_type(objID[i])
                 """
+            self.save_data(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix)    
         return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list
-
+    
     def plot_curves(self, mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, index):
         size =  len(ra_list)
         for i in range(size): #for i in data:
@@ -111,9 +113,15 @@ class driver(object):
             print np.shape(star_event)
             self.plots(star_event, 100, 110, 1)
         return 0
-    
-    def clearDir():
-        return 0
+
+    def plot_many(self, start, stop, step=1):
+        fake_plots.clear()
+        index = 0
+        while start < stop:
+             fake_plots.plot_many(self.event_list[start])
+             start += step
+             index += 1
+        return index
 
     def plot1(self,event):
         fake_plots.clear()
@@ -126,37 +134,17 @@ class driver(object):
             fake_plots.plot_many(event[i])    
         return 0
 
-    def save_data(self, pix, events, ID, mjd, RA, DEC):
-        print "save_data" 
-        
-        #file_name = ""
-        #file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + pix + ".fits"
-        #data_table = pyfits.open(file_name)
+    def save_data(self, mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix):
+        mjd_array = np.asarray(mjd_list)
+        teff_array = np.asarray(teff_list)
+        m0_array = np.asarray(m0_list)
+        ra_array = np.asarray(ra_list)
+        dec_array = np.asarray(dec_list)
+        objID_array = np.asarray(objID_list)
 
-        #for i in range(0, len(final_mag_list),1): #len(final_mag_list) ~ 600,000
-            #data_event = [ID, RA, DEC, mjd[i], final_mag_list[i]]
-
-        
-        #data_table.append(file_name, data_event)
-            
-        """
-        #$cols = pyfits.ColDefs([col1, col2, col3, col4, col5])
-        #$tbhdu = pyfits.new_table(cols)
-        #$hdu = pyfits.PrimaryHDU()
-        #$thdulist + 'ID'  = pyfits.HDUList([hdu, tbhdu])
-        #$tbhdu.writeto('file_name.fits')
-        """
-
-        #get the different columns that we want to return
-        #for i in events:
-            #RA = RA
-            #DEC = DEC
-            #MJD_LIST = mjd
-            #MAG_LIST = final_mag_list
-            #           filename, data, header=None, checksum=False, verify=True, **kwargs
-            #fits.append(pix, ID, OBJECT_ID)
-            #fits.append(pix, RA, RA)
-            #fits.append(pix, DEC, DEC)
-            #fits.append(pix, MAG_LIST[j], MAG)
-            #fits.append(pix, MJD_LIST[j], MDJ_LIST)
-        return "saved!!!"
+        self.file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + str(pix) + ".fits"
+        fits = fitsio.FITS(self.file_name,'rw')
+        array_list = [mjd_array, teff_array, m0_array, ra_array, dec_array, objID_array]
+        names = ['mjd_list', 'teff_list', 'm0_list', 'ra_list', 'dec_list', 'objID_list'] 
+        fits.write(array_list, names=names, clobber = True)
+        print "saved!"        
