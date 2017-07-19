@@ -20,12 +20,21 @@ class driver(object):
         self.file_name = ""
         a = np.array([1,2,3,4,5])
         self.hpix = getHPIX.pix() #list of all pixels in survey 
-    """
+        """
         for i in self.hpix:
             self.file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + str(i) + ".fits"
             pyfits.writeto(self.file_name, a, clobber=True)
-    """
+        """
+
        # print "in driver- teff:", data.get_t_eff(data.uniqueIDs[0])
+        """
+        #Example:
+        #$col1 = pyfits.Column(name = 'ID', format = 'D', array = wv_full_test)
+        #$col2 = pyfits.Column(name = 'RA', format = 'D', array = fx_full_test)
+        #$col3 = pyfits.Column(name = 'DEC', format = 'D', array = (wv_full_test*.1))
+        #$col4 = pyfits.Column(name = 'MAG_LIST', format = 'D', array = wv_full_test)
+        #$col5 = pyfits.Column(name = 'MJD_LIST', format = 'D', array = fx_full_test)
+        """
 
     def nike(self):
         for pix in range(11737, 11738, 1): #in aelf.hpix:
@@ -66,23 +75,23 @@ class driver(object):
     
     def save_data(self, pix, events, ID, mjd, RA, DEC, final_mag_list):
         print "save_data" 
-        #data_table = pyfits.open(file_name.fits)
+        
+        #file_name = ""
+        #file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + pix + ".fits"
+        #data_table = pyfits.open(file_name)
 
-        #for i in final_mag_list: #len(final_mag_list) ~ 600,000
-            #data_event = [ID, RA, DEC, mjd, final_mag_list[i]]
-            #data_table.append(file_name, data_event)
+        #for i in range(0, len(final_mag_list),1): #len(final_mag_list) ~ 600,000
+            #data_event = [ID, RA, DEC, mjd[i], final_mag_list[i]]
+
+        
+        #data_table.append(file_name, data_event)
             
         """
-        #Example:
-        #$col1 = pyfits.Column(name = 'wave', format = 'D', array = wv_full_test)
-        #$col2 = pyfits.Column(name = 'fx', format = 'D', array = fx_full_test)
-        #$col3 = pyfits.Column(name = 'fx_error', format = 'D', array = (wv_full_test*.1))
-
-        #$cols = pyfits.ColDefs([col1, col2, col3])
+        #$cols = pyfits.ColDefs([col1, col2, col3, col4, col5])
         #$tbhdu = pyfits.new_table(cols)
         #$hdu = pyfits.PrimaryHDU()
-        #$thdulist = pyfits.HDUList([hdu, tbhdu])
-        #$tbhdu.writeto('filename.fits')
+        #$thdulist + 'ID'  = pyfits.HDUList([hdu, tbhdu])
+        #$tbhdu.writeto('file_name.fits')
         """
 
         #get the different columns that we want to return
