@@ -10,7 +10,6 @@ import MicroLensingGenerator
 class getData(object):
 
     def __init__(self, hpix=11737):
-<<<<<<< HEAD
         sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
         from desqcat import load_hpx, load_cat, load_cat_epochs
       #  mpl.rcParams['figure.figsize'] = (8, 5)
@@ -69,7 +68,7 @@ class getData(object):
         wavg  = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['WAVG_SPREAD_MODEL'] #WAVG_SPREAD_MODEL keeps returning error message.
         return wavg
 
-<<<<<<< HEAD
+    """
     def grab_details_for_error(self, quick_id, bandpass = 'r'):
         myobj_df = self.ecat.loc[quick_id]
         #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
@@ -79,19 +78,20 @@ class getData(object):
         mag_psf = myobj_r['MAG_PSF']
         mjd = myobj_r['MJD_OBS']
         print("finished grabbing error details")
-=======
+        return t_eff, magerr, mag_psf, mjd
+    """
+
     def get_spread_err(self, ID, bandpass='g'):
         spreaderr = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(ID, bandpass))['SPREADERR_MODEL']
         return spreaderr
-
+    
     def grab_details_for_error(self, ID, bandpass = 'r'):
         t_eff = self.get_t_eff(ID, bandpass) 
         magerr = self.get_magerr(ID, bandpass)
         mag_psf = self.get_mag(ID, bandpass)
         mjd = self.get_timesByIDs(ID, bandpass)
->>>>>>> 49f4bf4e93b239feeab46efa39a8d2e6de2689e5
         return t_eff, magerr, mag_psf, mjd
-
+    
     def get_m_0(self, ID, bandpass = 'g'):
         maths = 0
         m_0s = self.get_mag(ID, bandpass)
@@ -127,7 +127,7 @@ class getData(object):
         mjd = np.asarray(mjd, dtype = float)
         testing = get_errors.return_error(mag_psf, t_eff, magerr, mjd)
         print("stop")
-        np.savetxt( "newdata.txt", np.array([mag_psf, magerr, teff, quick_id]).T, "%.5.2f %5.2f %5.2f %d") 
+        #np.savetxt( "newdata.txt", np.array([mag_psf, magerr, t_eff, quick_id]).T, "%5.3f %5.2f %5.2f %d") 
         #print "magerr:", magerr
         #print "Nlist:", N_list
         #N_list = (6.25/((np.square(magerr)*np.log(10)**2)))*5/90*t_eff

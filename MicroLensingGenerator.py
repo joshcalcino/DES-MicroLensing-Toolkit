@@ -1,5 +1,7 @@
 import numpy as np
 import sys
+import pickle
+from scipy.interpolate import interp1d
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -12,7 +14,7 @@ class GenerateMLEvent(object):
             t_0, p, v_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type
     """
 
-    def __init__(self, t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff = 0, curve_type = 1):
+    def __init__(self, t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, t_eff = 0, curve_type = 1, bandpass):
         self.M_lens = M_lens                #Lens mass,             solar masses 
         self.Ds = Ds                        #Dist to source         kpc
         self.x = x                          #% of Dl compared to Ds  (0, 1)
@@ -28,9 +30,11 @@ class GenerateMLEvent(object):
         self.t_eff = t_eff
         self.curve_type = curve_type
         self.delta_mag = self.get_delta_mag()   #calculates change in magnitude
-        self.noise = self.generate_noise()      #noise due to t_eff                           
+        self.error_file = pickle.load(open("magerr_model_{}.pickle".format(bandpass), 'rb'))
+        self.interp = interp1d(self.error_file[0], self.error_file[1])
         self.light_curve = self.generate_data() #list of mag at times accounting for noise, delta and initial magnitudes
-    
+        self.generate_noise = generate_noise()
+
     """ get_r_E(): Calculates radius of the Einstein ring given M, Ds, and x."""
     def get_r_E(self):  # r_E is the Einstein ring radius in units of.. not sure yet
         m_denominator = 1.0
@@ -74,15 +78,12 @@ class GenerateMLEvent(object):
 
     """ generate_noise(t): Calculates noise due to interference given t. """
     def generate_noise(self):
-        mag_list = self.m_0 + self.delta_mag
-        counts_list = mag_list*5*self.t_eff/90 ##convert mag_list to counts_list
-        counts_sigma_list = np.sqrt(counts_list)
-        mag_sigma_list = (6.25/((np.square(counts_sigma_list)*np.log(10)**2)))
+        self.interp(self.light_curve)
         return mag_sigma_list 
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
     def generate_data(self):
-        final_mag_list = self.m_0 + self.delta_mag + self.noise
+        final_mag_list = self.m_0 + self.delta_mag # + self.generate_noise
         return final_mag_list 
 
     def get_curve_type(self):
