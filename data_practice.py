@@ -79,7 +79,7 @@ class data_practice(object):
         err_file = open('magerr_short_2.txt', 'w')
         eff_file = open('t_eff_short_2.txt', 'w')
         mag_list = []
-        outfile = outfile.format(bandpass)
+        #outfile = outfile.format(bandpass)
 
         myobj_rband = self.ecat.query("BAND=='{}'".format(bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']]
         self.quick_id_list = myobj_rband['QUICK_OBJECT_ID']     
@@ -143,7 +143,7 @@ class data_practice(object):
             if(index >=2000):
                 #print("mag_list", mag_list)
                 np.savetxt(outfile, np.array([error_mag, magerr_final, t_eff_final, quick_id_final]).T,
-                        "%5.2f %6.3f %5.2f %d")
+                        "%7.4f %7.4f %7.4f %d")
                 return error_mag, magerr_final, t_eff_final
         return mag_list
 
