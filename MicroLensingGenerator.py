@@ -78,8 +78,8 @@ class GenerateMLEvent(object):
 
     """ generate_noise(t): Calculates noise due to interference given t. """
     def generate_noise(self):
-        self.interp(self.light_curve)
-        return mag_sigma_list 
+        noise = self.interp(self.light_curve)
+        return noise
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
     def generate_data(self):
