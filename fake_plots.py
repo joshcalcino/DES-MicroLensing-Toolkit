@@ -55,11 +55,15 @@ def nike(event) :
 #    return u, delta_mag
 
 def get_dm(MJD_list, t_max):
-    x = MicroLensingGenerator.GenerateMicrolensingEvent(t_max, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12, 1, 1)
+    x = MicroLensingGenerator.GenerateMLEvent(t_max, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12, 1, 1)
     A = x.A
     t = x.times
-    u = x.get_u(t)
+    u = x.get_u()
     return A
+
+def quickTest():
+    x = MicroLensingGenerator.GenerateMLEvent(56870, 0.1, 220, 30, 4.5, 0.5, [56877,56234,56589,56900,56824], 12, 1, 1)
+    return x
 
 def clear():
     plt.clf()
