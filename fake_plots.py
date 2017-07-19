@@ -73,8 +73,8 @@ def plot_many(event):
     A = event.A
     delta_mag = event.delta_mag  # change in the magnitude of the star due to the lensing
     
-    mpl.rcParams['figure.figsize'] = (8, 5)
-    sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
+    #mpl.rcParams['figure.figsize'] = (8, 5)
+    #sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
 
     t_time = np.arange(t.min(),t.max(),0.01)
     interp = interp1d(t, delta_mag, bounds_error =  False, kind = 'linear')
