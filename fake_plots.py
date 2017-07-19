@@ -61,8 +61,8 @@ def get_dm(MJD_list, t_max):
     u = x.get_u()
     return A
 
-def quickTest():
-    x = MicroLensingGenerator.GenerateMLEvent(56870, 0.1, 220, 30, 4.5, 0.5, [56877,56234,56589,56900,56824], 12,'z', 1, 1)
+def quickTest(m):
+    x = MicroLensingGenerator.GenerateMLEvent(56870, 0.1, 220, 30, 4.5, 0.5, [56877,56234,56589,56900,56824], m,'z', 1, 1)
     return x
 
 def clear():

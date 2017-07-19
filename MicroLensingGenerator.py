@@ -81,6 +81,7 @@ class GenerateMLEvent(object):
     """ generate_noise(t): Calculates noise due to interference given t. """
     def generate_noise(self):
         print "self.light_curve:", self.light_curve
+        print "delta mag:", self.delta_mag
         noise = self.interp(self.light_curve)
         return noise
 
