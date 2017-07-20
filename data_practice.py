@@ -79,7 +79,7 @@ class data_practice(object):
         err_file = open('magerr_short_2.txt', 'w')
         eff_file = open('t_eff_short_2.txt', 'w')
         mag_list = []
-        #outfile = outfile.format(bandpass)
+        outfile = outfile.format(bandpass)
 
         myobj_rband = self.ecat.query("BAND=='{}'".format(bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']]
         self.quick_id_list = myobj_rband['QUICK_OBJECT_ID']     

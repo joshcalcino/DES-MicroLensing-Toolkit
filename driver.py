@@ -10,6 +10,7 @@ import getData
 import star
 import getHPIX
 import fitsio
+import os
 
 def load_data():
     hpix = getHPIX.pix() #list of all pixels in survey
@@ -89,18 +90,22 @@ def plot1(event):
     fake_plots.plot_many(event)    
     return 0
 
-
-def save_data( mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix):
+def save_data(self, mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix):
     mjd_array = np.asarray(mjd_list)
     teff_array = np.asarray(teff_list)
-    m0_array = np.asarray(m0_list)
+    m0_array = np.asarray(m0_list) 
     ra_array = np.asarray(ra_list)
     dec_array = np.asarray(dec_list)
     objID_array = np.asarray(objID_list)
-    return
-    file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + str(pix) + ".fits"
-    fits = fitsio.FITS(file_name,'rw')
+        
+    self.file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
+    if os.path.exists(self.file_name):
+        os.remove(self.file_name)
+        print "removed the file!"
+    print "cool!"
+        
+    fits = fitsio.FITS(self.file_name,'rw')
     array_list = [mjd_array, teff_array, m0_array, ra_array, dec_array, objID_array]
-    names = ['mjd_list', 'teff_list', 'm0_list', 'ra_list', 'dec_list', 'objID_list'] 
-    fits.write(array_list, names=names, clobber = True)
+    names = ['mjd_array', 'teff_array', 'm0_array', 'ra_array', 'dec_array', 'objID_array'] 
+    fits.write(array_list, names=names, overwrite = True)
     print "saved!"        
