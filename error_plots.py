@@ -15,7 +15,7 @@ import pandas as pd
 import matplotlib as mpl
 
 
-def error_plots(teff_low, teff_hi,input_file = "r_error_data.txt", bandpass = 'r'):
+def error_plots(teff_low, teff_hi,input_file = "Y_error_data.txt", bandpass = 'Y'):
 
     mag,magerr,teff,quick_id = np.genfromtxt(input_file,unpack=True)
 
@@ -126,17 +126,14 @@ def error_plots(teff_low, teff_hi,input_file = "r_error_data.txt", bandpass = 'r
 
     #predicted_mag_error = teff_testing
     #magerr_testing =  magerr_testingi
-    bandpass = 'r'
     error_file = pickle.load(open("magerr_model_{}.pickle".format(bandpass), 'rb'))
     interp_woo = interp1d(error_file[0], error_file[1], bounds_error = False)
     timey = np.arange(error_file[0].min(),error_file[0].max(),0.05)
-    plot_me = interp_woo(mag_testing)
+    plot_me = interp_woo(np.sort(mag_testing))
     wimey = interp_woo(timey)
     #print error
 
-    print(error_file[0])
-    print(error_file[1])
-
+    print(np.sort(mag_testing))
 
     denominator = (np.square(magerr_plot)*np.log(10)**2)*90
     numerator = 6.25*t_eff_plot*5
@@ -144,8 +141,8 @@ def error_plots(teff_low, teff_hi,input_file = "r_error_data.txt", bandpass = 'r
     #calculated = (6.25)/(np.square(magerr_plot)*np.log(10)**2)*t_eff_plot
     #print calculated
     plt.scatter(mag_testing, magerr_testing, color = 'blue')
-    plt.plot(mag_testing, plot_me, c = 'g')
-    plt.plot(timey, wimey, c = 'r')
+    plt.plot(np.sort(mag_testing), plot_me, c = 'y')
+    #plt.plot(timey, wimey, c = 'r')
     #plt.scatter(mag_training, magerr_training, color = 'blue')
     plt.xlabel("Stellar Magnitude")
     plt.ylabel("Measured Magnitude error")
