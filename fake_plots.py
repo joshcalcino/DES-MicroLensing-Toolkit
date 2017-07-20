@@ -55,11 +55,15 @@ def nike(event) :
 #    return u, delta_mag
 
 def get_dm(MJD_list, t_max):
-    x = MicroLensingGenerator.GenerateMicrolensingEvent(t_max, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12, 1, 1)
+    x = MicroLensingGenerator.GenerateMLEvent(t_max, 0.1, 220, 30, 4.5, 0.5, MJD_list, 12, 1, 1)
     A = x.A
     t = x.times
-    u = x.get_u(t)
+    u = x.get_u()
     return A
+
+def quickTest(m):
+    x = MicroLensingGenerator.GenerateMLEvent(56870, 0.1, 220, 30, 4.5, 0.5, [56877,56234,56589,56900,56824], m,'r', 1, 1)
+    return x
 
 def clear():
     plt.clf()
@@ -73,8 +77,8 @@ def plot_many(event):
     A = event.A
     delta_mag = event.delta_mag  # change in the magnitude of the star due to the lensing
     
-    mpl.rcParams['figure.figsize'] = (8, 5)
-    sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
+    #mpl.rcParams['figure.figsize'] = (8, 5)
+    #sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
 
     t_time = np.arange(t.min(),t.max(),0.01)
     interp = interp1d(t, delta_mag, bounds_error =  False, kind = 'linear')
