@@ -10,6 +10,7 @@ import getData
 import star
 import getHPIX
 import fitsio
+import os
 
 class driver(object):
 
@@ -141,10 +142,15 @@ class driver(object):
         ra_array = np.asarray(ra_list)
         dec_array = np.asarray(dec_list)
         objID_array = np.asarray(objID_list)
-
-        self.file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/lc_curves" + str(pix) + ".fits"
+        
+        self.file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
+        if os.path.exists(self.file_name):
+            os.remove(self.file_name)
+            print "removed the file!"
+        print "cool!"
+        
         fits = fitsio.FITS(self.file_name,'rw')
         array_list = [mjd_array, teff_array, m0_array, ra_array, dec_array, objID_array]
-        names = ['mjd_list', 'teff_list', 'm0_list', 'ra_list', 'dec_list', 'objID_list'] 
-        fits.write(array_list, names=names, clobber = True)
+        names = ['mjd_array', 'teff_array', 'm0_array', 'ra_array', 'dec_array', 'objID_array'] 
+        fits.write(array_list, names=names, overwrite = True)
         print "saved!"        
