@@ -28,22 +28,23 @@ class GenerateMLEvent(object):
         self.A = self.get_A()               #amplification of magnification
         self.m_0 = m_0                      #magnitude per observation, list   
         self.t_eff = t_eff
+        self.bandpass = bandpass
         self.curve_type = curve_type
         self.delta_mag = self.get_delta_mag()   #calculates change in magnitude
-        self.interp_r, self.interp_Y, self.interp_g, self.interp_z, self.interp_i = self.get_error_files(bandpass)
-
+        self.interp_r, self.interp_Y, self.interp_g, self.interp_z, self.interp_i = self.get_error_files()
         self.light_curve_r, self.light_curve_Y, self.light_curve_g, self.light_curve_z, self.light_curve_i = self.generate_data(bandpass) #list of mag at times accounting for noise, delta and initial magnitudes
         self.generate_noise = self.generate_noise()
 
     def get_error_files(self):
-        er = pickle.load(open("magerr_model_r.pickle", 'rb'))
-        eY = pickle.load(open("magerr_model_Y.pickle", 'rb'))
-        eg = pickle.load(open("magerr_model_g.pickle", 'rb'))
-        ez= pickle.load(open("magerr_model_z.pickle", 'rb')) 
-        ei = pickle.load(open("magerr_model_i.pickle", 'rb'))
+        fr = pickle.load(open("magerr_model_r.pickle", 'rb'))
+        fY = pickle.load(open("magerr_model_r.pickle", 'rb'))
+        fg = pickle.load(open("magerr_model_g.pickle", 'rb'))
+        fz= pickle.load(open("magerr_model_z.pickle", 'rb')) 
+        fi = pickle.load(open("magerr_model_i.pickle", 'rb'))
+        er, eY, eg, ez, ei = self.get_interps(fr, fY, fg, fz, fi)
         return er, eY, eg, ez, ei
 
-    def get_interps(self, er, eY, eg, ez, ei) 
+    def get_interps(self, er, eY, eg, ez, ei): 
         ir = interp1d(er[0], er[1], bounds_error = False)    
         iY = interp1d(eY[0], eY[1], bounds_error = False)    
         ig = interp1d(eg[0], eg[1], bounds_error = False)    
@@ -94,12 +95,15 @@ class GenerateMLEvent(object):
 
     """ generate_noise(t): Calculates noise due to interference given t. """
     def generate_noise(self):
-        noise = self.interp(self.light_curve)
-        return noise
+        nr = self.interp_r(np.sort(self.light_curve_r))
+        nY = self.interp_Y(np.sort(self.light_curve_Y))
+        ng = self.interp_g(np.sort(self.light_curve_g))
+        nz = self.interp_z(np.sort(self.light_curve_z))
+        ni = self.interp_i(np.sort(self.light_curve_i))
+        return nr, nY, ng, nz, ni
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
     def generate_data(self, bandpass):
-        print "m0:", self.m_0, "del mag:", self.delta_mag
         ir, = np.where(bandpass=='r')
         iY, = np.where(bandpass=='Y')
         ig, = np.where(bandpass=='g')
