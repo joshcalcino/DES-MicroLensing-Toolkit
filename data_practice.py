@@ -35,7 +35,7 @@ class data_practice(object):
         self.ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
 
     #@profile
-    def grab_details(self, quick_id, bandpass='r'):
+    def grab_details(self, quick_id, bandpass):
         myobj_df = self.ecat.loc[quick_id]
       #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
         myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
@@ -49,7 +49,7 @@ class data_practice(object):
         #print "list: ", new_list
         return new_list, wavg, spreaderr, magerr, t_eff
 
-    def grab_detalis_for_error(self, quick_id, bandpass = 'r'):
+    def grab_detalis_for_error(self, quick_id, bandpass):
         myobj_df = self.ecat.loc[quick_id]
         #  myobj_r = self.ecat.query("QUICK_OBJECT_ID==" + str(quick_ID) + " & BAND==", bandpass)[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'BAND']]
         myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
@@ -73,14 +73,15 @@ class data_practice(object):
         return mag_list
 
     #@profile
-    def avg_mag(self, outfile = "error_data.txt"):
+    def avg_mag(self, outfile = "{}_error_data.txt", bandpass = 'r'):
         mag_file = open('delete_me.txt', 'w')
         avg_file = open('mag_averages_short_2.txt', 'w')
         err_file = open('magerr_short_2.txt', 'w')
         eff_file = open('t_eff_short_2.txt', 'w')
         mag_list = []
+        #outfile = outfile.format(bandpass)
 
-        myobj_rband = self.ecat.query("BAND=='{}'".format('r'))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']]
+        myobj_rband = self.ecat.query("BAND=='{}'".format(bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']]
         self.quick_id_list = myobj_rband['QUICK_OBJECT_ID']     
         #need a list of the times only for the r band!
         quick_id = self.quick_id_list[0]
@@ -93,21 +94,17 @@ class data_practice(object):
 
         while index in range(0, len(self.quick_id_list)-1):
             print("index at top: ", index)    
-            obj_mag, wavg, spreaderr, magerr, t_eff = self.grab_details(quick_id, bandpass = 'r')
+            obj_mag, wavg, spreaderr, magerr, t_eff = self.grab_details(quick_id, bandpass)
             acceptable_mag = []
             n = 0
-            #print("quick id: ", self.quick_id_list[0]) 
-            #print("quick id: ", self.quick_id_list[1]) 
-            #print("quick id: ", self.quick_id_list[2]) 
+            print(self.quick_id_list)
             while quick_id == current_quick_id:
-                if abs(wavg[n])<(0.003 +  spreaderr[n]) and (index < len(self.quick_id_list)-1):
+                if (len(wavg)>0) and (abs(wavg[n])<(0.003 +  spreaderr[n])) and (index < len(self.quick_id_list)-1):
                     print("Found a star")
                     print("obj mag: " + str(obj_mag[n]))
                     acceptable_mag.append(obj_mag[n])
                     magerr_final.append(magerr[n])
                     error_mag.append(obj_mag[n])
-                    print("here is error: ")
-                    print(error_mag)
                     t_eff_final.append(t_eff[n])
                     avg_file.write(str(obj_mag[n])+"\n")
                     err_file.write(str(magerr[n])+"\n")
@@ -115,6 +112,8 @@ class data_practice(object):
                     quick_id_final.append(self.quick_id_list[index+n])
                     current_quick_id = self.quick_id_list[index+n+1]
                     n = n+1
+                    print(len(wavg))
+                    print(len(spreaderr))
                     print("current quick id: ", current_quick_id)
                     print("quick id: ", quick_id)
                 else:
@@ -144,7 +143,7 @@ class data_practice(object):
             if(index >=2000):
                 #print("mag_list", mag_list)
                 np.savetxt(outfile, np.array([error_mag, magerr_final, t_eff_final, quick_id_final]).T,
-                        "%5.2f %5.2f %5.2f %d")
+                        "%7.4f %7.4f %7.4f %d")
                 return error_mag, magerr_final, t_eff_final
         return mag_list
 

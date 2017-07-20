@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import MicroLensingGenerator
 import matplotlib.pyplot as plt
 import matplotlib
+import pickle
 from astropy.io import fits
 import numpy as np
 import astropy.table as t
@@ -14,7 +15,7 @@ import pandas as pd
 import matplotlib as mpl
 
 
-def error_plots(teff_low, teff_hi,input_file = "error_data.txt"):
+def error_plots(teff_low, teff_hi,input_file = "r_error_data.txt", bandpass = 'r'):
 
     mag,magerr,teff,quick_id = np.genfromtxt(input_file,unpack=True)
 
@@ -104,12 +105,15 @@ def error_plots(teff_low, teff_hi,input_file = "error_data.txt"):
     interp = interp1d(mag_training, magerr_training, bounds_error = False)
 
     ix, = np.where((teff >= teff_low ) & ( teff < teff_hi))
-    ix, = np.where((mag > 21) & (mag < 22))
+    #ix, = np.where((mag > 21) & (mag < 22))
     mag_testing = mag[ix]
     magerr_testing=magerr[ix]
     teff_testing = teff[ix]
 
     predicted_mag_error = interp(mag_testing)
+    fd = open("magerr_model_{}.pickle".format(bandpass), 'wb')
+    pickle.dump([mag_training, magerr_training], fd)
+    fd.close()
 
     error = predicted_mag_error + (-2.5 * np.log10(teff_testing / teff_ref )*.5)
     print (teff_testing/teff_ref).min()
@@ -120,20 +124,32 @@ def error_plots(teff_low, teff_hi,input_file = "error_data.txt"):
     #predicted_mag_error = np.log10(teff_testing/teff_ref)
     #magerr_testing = (-2.5 * np.log10(teff_testing / teff_ref )*.5)
 
-    predicted_mag_error = teff_testing
-    magerr_testing =  magerr_testing
-    
+    #predicted_mag_error = teff_testing
+    #magerr_testing =  magerr_testingi
+    bandpass = 'r'
+    error_file = pickle.load(open("magerr_model_{}.pickle".format(bandpass), 'rb'))
+    interp_woo = interp1d(error_file[0], error_file[1], bounds_error = False)
+    timey = np.arange(error_file[0].min(),error_file[0].max(),0.05)
+    plot_me = interp_woo(mag_testing)
+    wimey = interp_woo(timey)
     #print error
+
+    print(error_file[0])
+    print(error_file[1])
+
+
     denominator = (np.square(magerr_plot)*np.log(10)**2)*90
     numerator = 6.25*t_eff_plot*5
     calculated = abs(numerator/denominator)
     #calculated = (6.25)/(np.square(magerr_plot)*np.log(10)**2)*t_eff_plot
     #print calculated
-    print(len(error))
-    print(len(predicted_mag_error))
-    plt.scatter(predicted_mag_error, magerr_testing, color = 'blue')
-    plt.xlabel("Calculated error")
-    plt.ylabel("measured magnitude error")
+    plt.scatter(mag_testing, magerr_testing, color = 'blue')
+    plt.plot(mag_testing, plot_me, c = 'g')
+    plt.plot(timey, wimey, c = 'r')
+    #plt.scatter(mag_training, magerr_training, color = 'blue')
+    plt.xlabel("Stellar Magnitude")
+    plt.ylabel("Measured Magnitude error")
+    plt.suptitle("Interpolated and Measured Error for ~500 stars")
     #plt.plot([0, 1], [0, 1], c = 'r')
     #plt.xlim(0, .3)
     #plt.ylim(0, .3)
@@ -143,7 +159,7 @@ def error_plots(teff_low, teff_hi,input_file = "error_data.txt"):
     #plt.scatter(mag_plot, calculated, color = 'red')
     #plt.scatter(mag_plot, error, color = 'green')
     plt.show()
-    plt.savefig("temp.png")
+    plt.savefig("error_temp.png")
     
     """
 

@@ -5,22 +5,19 @@ import matplotlib.image as img
 from scipy.optimize import newton
 from scipy.interpolate import interp1d
 import sys
+import pickle
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-"""
-    def __init__(self, mag_plot, t_eff, magerr_plot, mjd_list):
-        print(mag_plot)
-        print(t_eff)
-        self.mag_plot = mag_plot
-        self.t_eff = t_eff
-        self.magerr_plot = magerr_plot
-        self.mjd_list = mjd_list
-        print("getting errors")
-"""
-def return_error(mag_plot, t_eff, magerr_plot, mjd_list):
+def return_error(mag_plot, t_eff, magerr_plot, bandpass):
 
+        error_file = pickle.load(open("magerr_model_{}.pickle".format(bandpass), 'rb'))
+        interp = interp1d(jack[0], jack[1])
+
+        return interp
+        
+        """
         #Manual calcultion of magerr
         mag_plot = mag_plot
         N = (6.25)/(np.square(magerr_plot)*np.log(10)**2)
@@ -65,3 +62,4 @@ def return_error(mag_plot, t_eff, magerr_plot, mjd_list):
         plt.savefig("errorbarsyay.png")
         plt.show()
         return error
+        """
