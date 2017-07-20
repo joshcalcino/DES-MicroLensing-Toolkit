@@ -24,11 +24,15 @@ def load_data():
             #variables from data
             mjd = data.get_timesByIDs(objID[i])
             t_eff = data.get_t_eff(objID[i])
-            m_0 = data.get_m_0(objID[i]) 
+            m_0 = data.get_mag(objID[i]) 
             is_star = data.isStar(objID[i])
             RA = data.get_RA(objID[i])
             DEC = data.get_DEC(objID[i])
             bandpass = data.get_bandpass(objID[i])
+            print "mjd", len(mjd)
+            print "RA", len(RA)
+            print "bandpass", len(bandpass)
+
             if is_star:
                 mjd_list.append( mjd )
                 teff_list.append( t_eff )
@@ -45,27 +49,67 @@ def load_data():
     return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list
 
 def nike(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, index):
+    
     size =  len(ra_list)
     for i in range(size): #for i in data:
         if i != index: continue
         star_set = star.star()
         #calculated variables
-        mjd = mjd_list[i]
         t_eff= teff_list[i]
         m_0 = m0_list[i]
         ra = ra_list[i]
         dec = dec_list[i]
         objID = objID_list[i]
+        mjd = mjd_list[i]
         band = band_list[i]
-        #print mjd_list
-        #print type(mjd)
-        curves = star_set.get_curves(mjd, band, t_eff, m_0) #returns about 36000 light curves 
-        plots(curves, 100, 110, 1)
+   
+        curves = [] 
+        curves = star_set.get_curves(mjd,band , t_eff, m_0)
+    plots(curves)
+    """
+        curves1 = [] 
+        curves2 = [] 
+        curves3 = [] 
+        curves4 = []
+ 
+        r, Y, g, z, eye = np.array([]),np.array([]),np.array([]),np.array([]),np.array([])
+
+        for a in range(0, len(mjd),1):
+            print type(z)
+            if band[a] == 'r':
+                r = np.append(r, mjd[a])
+            if band[a] == 'Y':
+                Y = np.append(Y, mjd[a])
+            if band[a] == 'g':
+                g = np.append(g, mjd[a])
+            if band[a] == 'z':
+                z = np.append(z, mjd[a])
+            if band[a] == 'i':
+                eye = np.append(eye, mjd[a])
+        print "lens of r, Y, g, z, eye:", len(r), len(Y), len(g), len(z), len(eye)
+        for j in r:
+            curves = star_set.get_curves(r, 'r', t_eff, m_0) #returns about 36000 light curves 
+        for j in Y:
+            curves1 = star_set.get_curves(Y, 'Y', t_eff, m_0) #returns about 36000 light curves 
+        for j in g:
+            curves2 = star_set.get_curves(g, 'g', t_eff, m_0) #returns about 36000 light curves 
+        for j in z:
+            curves3 = star_set.get_curves(z, 'z', t_eff, m_0) #returns about 36000 light curves 
+        for j in eye:
+            curves4 = star_set.get_curves(eye, 'i', t_eff, m_0) #returns about 36000 light curves 
+        
+    fake_plots.clear()
+    plots(curves1)
+    plots(curves2)
+    plots(curves3)
+    plots(curves4)
+    """
     return 0
 
 def plots(event, start =0, stop = 2, step=1):
-    fake_plots.clear()
+    print "event len:", len(event)
     for i in range(start, stop, step):
+        print "i", i
         fake_plots.plot_many(event[i])    
     return 0
 

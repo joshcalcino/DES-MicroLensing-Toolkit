@@ -26,14 +26,30 @@ class GenerateMLEvent(object):
         self.times = MJD_list               #list of times source was observed, in days
         self.u = self.get_u()
         self.A = self.get_A()               #amplification of magnification
-        self.m_0 = m_0                      #Avg magnitude of src   
+        self.m_0 = m_0                      #magnitude per observation, list   
         self.t_eff = t_eff
         self.curve_type = curve_type
         self.delta_mag = self.get_delta_mag()   #calculates change in magnitude
-        self.error_file = pickle.load(open("magerr_model_{}.pickle".format(bandpass), 'rb'))
-        self.interp = interp1d(self.error_file[0], self.error_file[1], bounds_error = False)
-        self.light_curve = self.generate_data() #list of mag at times accounting for noise, delta and initial magnitudes
+        self.interp_r, self.interp_Y, self.interp_g, self.interp_z, self.interp_i = self.get_error_files(bandpass)
+
+        self.light_curve_r, self.light_curve_Y, self.light_curve_g, self.light_curve_z, self.light_curve_i = self.generate_data(bandpass) #list of mag at times accounting for noise, delta and initial magnitudes
         self.generate_noise = self.generate_noise()
+
+    def get_error_files(self):
+        er = pickle.load(open("magerr_model_r.pickle", 'rb'))
+        eY = pickle.load(open("magerr_model_Y.pickle", 'rb'))
+        eg = pickle.load(open("magerr_model_g.pickle", 'rb'))
+        ez= pickle.load(open("magerr_model_z.pickle", 'rb')) 
+        ei = pickle.load(open("magerr_model_i.pickle", 'rb'))
+        return er, eY, eg, ez, ei
+
+    def get_interps(self, er, eY, eg, ez, ei) 
+        ir = interp1d(er[0], er[1], bounds_error = False)    
+        iY = interp1d(eY[0], eY[1], bounds_error = False)    
+        ig = interp1d(eg[0], eg[1], bounds_error = False)    
+        iz = interp1d(ez[0], ez[1], bounds_error = False)    
+        ii = interp1d(ei[0], ei[1], bounds_error = False)    
+        return ir, iY, ig, iz, ii 
 
     """ get_r_E(): Calculates radius of the Einstein ring given M, Ds, and x."""
     def get_r_E(self):  # r_E is the Einstein ring radius in units of.. not sure yet
@@ -82,9 +98,19 @@ class GenerateMLEvent(object):
         return noise
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
-    def generate_data(self):
-        final_mag_list = self.m_0 + self.delta_mag # + self.generate_noise
-        return final_mag_list 
+    def generate_data(self, bandpass):
+        print "m0:", self.m_0, "del mag:", self.delta_mag
+        ir, = np.where(bandpass=='r')
+        iY, = np.where(bandpass=='Y')
+        ig, = np.where(bandpass=='g')
+        iz, = np.where(bandpass=='z')
+        ii, = np.where(bandpass=='i')
+        final_mag_list_r = self.m_0[ir] + self.delta_mag[ir] # + self.generate_noise
+        final_mag_list_Y = self.m_0[iY] + self.delta_mag[iY] # + self.generate_noise
+        final_mag_list_g = self.m_0[ig] + self.delta_mag[ig] # + self.generate_noise
+        final_mag_list_z = self.m_0[iz] + self.delta_mag[iz] # + self.generate_noise
+        final_mag_list_i = self.m_0[ii] + self.delta_mag[ii] # + self.generate_noise
+        return final_mag_list_r, final_mag_list_Y,final_mag_list_g,final_mag_list_z,final_mag_list_i 
 
     def get_curve_type(self):
         #Put curve type loop here, return value of curve type
