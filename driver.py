@@ -131,7 +131,7 @@ def plot1(event):
 def save_data(self, mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix):
     mjd_array = np.asarray(mjd_list)
     teff_array = np.asarray(teff_list)
-    m0_array = np.asarray(m0_list)
+    m0_array = np.asarray(m0_list) 
     ra_array = np.asarray(ra_list)
     dec_array = np.asarray(dec_list)
     objID_array = np.asarray(objID_list)
