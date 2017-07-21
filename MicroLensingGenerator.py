@@ -43,7 +43,7 @@ class GenerateMLEvent(object):
         ei = pickle.load(open("magerr_model_i.pickle", 'rb'))
         return er, eY, eg, ez, ei
 
-    def get_interps(self, er, eY, eg, ez, ei) 
+    def get_interps(self, er, eY, eg, ez, ei): 
         ir = interp1d(er[0], er[1], bounds_error = False)    
         iY = interp1d(eY[0], eY[1], bounds_error = False)    
         ig = interp1d(eg[0], eg[1], bounds_error = False)    

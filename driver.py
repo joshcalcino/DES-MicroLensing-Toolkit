@@ -17,8 +17,8 @@ def load_data():
     index = 0
     mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list  = \
         [], [], [], [], [], [], []
-    for pix in hpix:
-        if pix != "11737": continue
+    for pix in range(11737, 11741): #for pix in hpix
+        #if pix != "11737": continue
         data = getData.getData(pix) #160,000 objects with seperate obs
         objID = data.uniqueIDs #list of all objects
         for i in range(4,30,1): #for i in data:
@@ -35,18 +35,19 @@ def load_data():
             print "bandpass", len(bandpass)
 
             if is_star:
-                mjd_list.append( mjd )
-                teff_list.append( t_eff )
-                m0_list.append( m_0 )
-                ra_list.append( RA )
-                dec_list.append( DEC )
-                objID_list.append( objID[i] )
-                band_list.append( bandpass )
+                for i in mjd:
+                    mjd_list.append( mjd )
+                    teff_list.append( t_eff )
+                    m0_list.append( m_0 )
+                    ra_list.append( RA )
+                    dec_list.append( DEC )
+                    objID_list.append( objID[i] )
+                    band_list.append( bandpass )
             """
             Ds = data.get_Ds(objID[i])
             curve_type = data.get_curve_type(objID[i])
             """
-        #save_data(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix)    
+        save_data(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix) 
     return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list
 
 def nike(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, index):
@@ -63,7 +64,6 @@ def nike(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list,
         objID = objID_list[i]
         mjd = mjd_list[i]
         band = band_list[i]
-   
         curves = [] 
         curves = star_set.get_curves(mjd,band , t_eff, m_0)
     plots(curves)
@@ -128,22 +128,23 @@ def plot1(event):
     fake_plots.plot_many(event)    
     return 0
 
-def save_data(self, mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix):
+def save_data(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix):
     mjd_array = np.asarray(mjd_list)
     teff_array = np.asarray(teff_list)
     m0_array = np.asarray(m0_list) 
     ra_array = np.asarray(ra_list)
     dec_array = np.asarray(dec_list)
     objID_array = np.asarray(objID_list)
+    #band_array = np.asarray(band_list)
         
-    self.file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
-    if os.path.exists(self.file_name):
-        os.remove(self.file_name)
+    file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
+    if os.path.exists(file_name):
+        os.remove(file_name)
         print "removed the file!"
     print "cool!"
         
-    fits = fitsio.FITS(self.file_name,'rw')
+    fits = fitsio.FITS(file_name,'rw')
     array_list = [mjd_array, teff_array, m0_array, ra_array, dec_array, objID_array]
-    names = ['mjd_array', 'teff_array', 'm0_array', 'ra_array', 'dec_array', 'objID_array'] 
+    names = ['mjd_array', 'teff_array', 'm0_array', 'ra_array', 'dec_array', 'objID_array']
     fits.write(array_list, names=names, overwrite = True)
     print "saved!"        
