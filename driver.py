@@ -18,10 +18,10 @@ def load_data():
     mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list  = \
         [], [], [], [], [], [], []
     for pix in hpix:
-        if pix != "11737": continue
+        if pix != "11200": continue
         data = getData.getData(pix) #160,000 objects with seperate obs
         objID = data.uniqueIDs #list of all objects
-        for i in range(4,5,1): #for i in data:
+        for i in range(0,5,1): #for i in data:
             #variables from data
             mjd = data.get_timesByIDs(objID[i])
             t_eff = data.get_t_eff(objID[i])
@@ -75,19 +75,6 @@ def plots(event, start =0, stop = 2, step=1):
     for i in range(start, stop, step):
         print "i", i
         fake_plots.plot_many(event[i])    
-    return 0
-
-def plot_many( start, stop, step=1):
-    index = 0
-    while start < stop:
-         fake_plots.plot_many(event_list[start])
-         start += step
-         index += 1
-    return index
-
-def plot1(event):
-    fake_plots.clear()
-    fake_plots.plot_many(event)    
     return 0
 
 def save_data(self, mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix):
