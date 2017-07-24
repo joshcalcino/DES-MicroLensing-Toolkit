@@ -9,6 +9,7 @@ import fake_plots
 import getData
 import star
 import getHPIX
+import fitsio
 
 class driver(object):
 
