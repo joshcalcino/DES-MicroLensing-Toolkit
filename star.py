@@ -28,12 +28,12 @@ class star(object):
         """
 
     """ Takes a various arguments and returns a list of Mircolensing events. """
-    def get_curves(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=20,curve_type =1):
+    def get_curves(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=5,curve_type =1):
         v_t = 220
         index = 0
         
         # for t_0 in range(int(min(MJD_list)-365), int(max(MJD_list)+365), 20): #30        
-        for t_0 in range(int(min(MJD_list))-100, int(max(MJD_list))+100, 200):        
+        for t_0 in range(int(min(MJD_list))-100, int(max(MJD_list))+100, 200): #oct 31, 2014 (MJD = 56961)        
             print "t_0 index: ", t_0, index
             for u_0 in np.arange(0,2,.1):
                 for x in np.arange(0.1,1,.1):

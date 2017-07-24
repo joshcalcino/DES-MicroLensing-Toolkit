@@ -12,13 +12,13 @@ import getHPIX
 import fitsio
 import os
 
-def load_data():
+def load_data(pixel="11200"):
     hpix = getHPIX.pix() #list of all pixels in survey
     index = 0
     mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list  = \
         [], [], [], [], [], [], []
     for pix in hpix:
-        if pix != "11200": continue
+        if pix != pixel: continue
         data = getData.getData(pix) #160,000 objects with seperate obs
         objID = data.uniqueIDs #list of all objects
         for i in range(0,5,1): #for i in data:
