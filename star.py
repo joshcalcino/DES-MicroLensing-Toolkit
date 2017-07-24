@@ -31,6 +31,7 @@ class star(object):
     def get_curves(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=20,curve_type =1):
         v_t = 220
         index = 0
+        t_0 = 56961
         
         # for t_0 in range(int(min(MJD_list)-365), int(max(MJD_list)+365), 20): #30        
         for t_0 in range(int(min(MJD_list))-100, int(max(MJD_list))+100, 200):        
