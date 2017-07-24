@@ -10,14 +10,7 @@ import getData
 import star
 import getHPIX
 import fitsio
-
-class driver(object):
-
-    def __init__(self):
-        self.hpix = getHPIX.pix() #list of all pixels in survey 
-        self.data = self.all_data()
-        print "in driver- teff:", self.data[0].get_t_eff(self.data[0].uniqueIDs[0])
-    
+ 
     def mishelleCode():
         hpix = getHPIX.pix() #list of all pixels in survey
         index = 0
@@ -28,9 +21,9 @@ class driver(object):
             data = getData.getData(pix) #160,000 objects with seperate obs
             objID = data.uniqueIDs #list of all objects
             for i in range(4,30,1): #for i in range(1, len(objID)).
-                mjd = data.get_timesByIDs(objID[i])i
-                mag = #get mag for each bandpass?
-                magerr = data.get_magerr(objID[i])
+                mjd = data.get_timesByIDs(objID[i])
+                #mag = 
+                #magerr = data.get_magerr(objID[i])
                 error = #get error bars
                 t_eff = data.get_t_eff(objID[i])
                 ra = data.get_RA(objID[i])
@@ -41,9 +34,15 @@ class driver(object):
                 curve_type = data.get_curve_type(objID[i])"""
 
                 if is_star:
-                    for j in mjd:
-                        MJD = np.asarray(mjd)
-                        MAG = np.asarray(mag)
+                    star_event = star.get_curves(mjd, teff, m_0)
+                    
+                    for k in len(star_event):
+                        mag_r = star_event[k].light_curve_ + "bandpass"
+                        mag_Y = star_event[k].light_curve_Y
+
+                        for j in mjd:
+                            MJD = np.asarray(mjd)
+                            MAG = np.asarray(mag)
                         MAGERR = np.asarray(magerr)
                         ERROR = np.asarray(error)
                         TEFF = np.asarray(t_eff)
