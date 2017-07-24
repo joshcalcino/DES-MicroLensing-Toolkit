@@ -140,12 +140,12 @@ def error_plots(teff_low, teff_hi,input_file = "Y_error_data.txt", bandpass = 'Y
     calculated = abs(numerator/denominator)
     #calculated = (6.25)/(np.square(magerr_plot)*np.log(10)**2)*t_eff_plot
     #print calculated
-    plt.scatter(mag_testing, magerr_testing, color = 'blue')
-    plt.plot(np.sort(mag_testing), plot_me, c = 'y')
+    plt.scatter(mag_testing, magerr_testing, color = 'blue', s = 15)
+    plt.plot(np.sort(mag_testing), plot_me, c = 'crimson')
     #plt.plot(timey, wimey, c = 'r')
     #plt.scatter(mag_training, magerr_training, color = 'blue')
     plt.xlabel("Stellar Magnitude")
-    plt.ylabel("Measured Magnitude error")
+    plt.ylabel("Measured Magnitude Error")
     plt.suptitle("Interpolated and Measured Error for ~500 stars")
     #plt.plot([0, 1], [0, 1], c = 'r')
     #plt.xlim(0, .3)
@@ -156,7 +156,7 @@ def error_plots(teff_low, teff_hi,input_file = "Y_error_data.txt", bandpass = 'Y
     #plt.scatter(mag_plot, calculated, color = 'red')
     #plt.scatter(mag_plot, error, color = 'green')
     plt.show()
-    plt.savefig("error_temp.png")
+    plt.savefig("error_for_paper_06-1.5.png")
     
     """
 
