@@ -31,13 +31,17 @@ class star(object):
     def get_curves(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=20,curve_type =1):
         v_t = 220
         index = 0
-        
+        t_0 = 56961        
         # for t_0 in range(int(min(MJD_list)-365), int(max(MJD_list)+365), 20): #30        
+        """
         for t_0 in range(int(min(MJD_list))-100, int(max(MJD_list))+100, 200):        
             print "t_0 index: ", t_0, index
             for u_0 in np.arange(0,2,.1):
+        """
+        for number in range(0, 1, 1):
+            for u_0 in np.linspace(0, 2, 10):
                 for x in np.arange(0.1,1,.1):
-                    for M in range(10,101,10): 
+                    for M in range(10,100,10): 
                         self.lightcurve.append(MicroLensingGenerator.GenerateMLEvent(
                             t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, bandpass, t_eff, curve_type))
                         #self.final_mag_list.append(self.lightcurve)
