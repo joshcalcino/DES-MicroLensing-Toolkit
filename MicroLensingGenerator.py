@@ -14,7 +14,7 @@ class GenerateMLEvent(object):
             t_0, u_0, v_t, M_lens, Ds, x, MJD_list, m_0, bandpass, t_eff, curve_type
     """
 
-    def __init__(self, t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, bandpass, objID, t_eff = 0, curve_type = 1):
+    def __init__(self, t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, bandpass, objID, ra, dec, t_eff = 0, curve_type = 1):
         self.M_lens = M_lens                #Lens mass,             solar masses 
         self.Ds = Ds                        #Dist to source         kpc
         self.x = x                          #% of Dl compared to Ds  (0, 1)
@@ -35,6 +35,8 @@ class GenerateMLEvent(object):
         self.light_curve = self.generate_data(bandpass) #list of mag at times, accounting for delta and initial magnitudes
         self.light_curve_error = self.generate_error(bandpass)
         self.quickid = np.ones(bandpass.size)*objID
+        self.ra = np.ones(bandpass.size)*ra
+        self.dec = np.ones(bandpass.size)*dec
 
     def get_error_files(self):
         fr = pickle.load(open("magerr_model_r.pickle", 'rb'))

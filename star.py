@@ -64,7 +64,7 @@ class star(object):
             index += 1
         return self.lightcurve
 
-    def get_curves(self, MJD_list, bandpass, objID, t_eff = 1, m_0=30, Ds=5,curve_type =1):
+    def get_curves(self, MJD_list, bandpass, objID, ra, dec, t_eff = 1, m_0=30, Ds=5,curve_type =1):
         v_t = 220
         index = 0
         t_0 = 56961        
@@ -73,11 +73,11 @@ class star(object):
         for t_0 in range(int(min(MJD_list))-100, int(max(MJD_list))+100, 200):        
             print "t_0 index: ", t_0, index
             for u_0 in np.arange(0,2,.1):
-        """
         for number in range(0, 1, 1):
             for u_0 in np.linspace(0, 2, 10):
                 for x in np.arange(0.1,1,.1):
                     for M in range(10,100,10): 
+        """
         #for t_0 in range(int(min(MJD_list))-100, int(max(MJD_list))+100, 200): #oct 31, 2014 (MJD = 56961)        
         for marika in range(0,1,1):
             t_0 = 56961
@@ -86,7 +86,7 @@ class star(object):
                 for x in np.arange(0.1,1,0.1):
                     for M in range(10,101,10): 
                         self.lightcurve.append(MicroLensingGenerator.GenerateMLEvent(
-                            t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, bandpass, objID, t_eff, curve_type))
+                            t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, bandpass, objID, ra, dec, t_eff, curve_type))
                         #self.final_mag_list.append(self.lightcurve)
                         index += 1
         print "total index:", index
