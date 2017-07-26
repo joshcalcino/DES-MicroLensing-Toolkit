@@ -32,12 +32,18 @@ class GenerateMLEvent(object):
         self.curve_type = curve_type
         self.delta_mag = self.get_delta_mag()   #calculates change in magnitude
         self.interp_r, self.interp_Y, self.interp_g, self.interp_z, self.interp_i = self.get_error_files()
-        self.light_curve_r, self.light_curve_Y, self.light_curve_g, self.light_curve_z, self.light_curve_i = self.generate_data(bandpass) #list of mag at times accounting for noise, delta and initial magnitudes
+        self.light_curve_r, self.light_curve_Y, self.light_curve_g, self.light_curve_z, self.light_curve_i = self.generate_data(bandpass) #list of mag at times, accounting for delta and initial magnitudes
         self.generate_noise = self.generate_noise()
+        self.all_curves = self.get_curves()
+        self.mags = np.concatenate([self.light_curve_g,self.light_curve_r,self.light_curve_i,self.light_curve_z,self.light_curve_Y])
+        #self_mags_err = 
+        #self_mjd = 
+        #self_bandpass = 
+        #self_quickid = 
 
     def get_error_files(self):
         fr = pickle.load(open("magerr_model_r.pickle", 'rb'))
-        fY = pickle.load(open("magerr_model_r.pickle", 'rb'))
+        fY = pickle.load(open("magerr_model_Y.pickle", 'rb'))
         fg = pickle.load(open("magerr_model_g.pickle", 'rb'))
         fz= pickle.load(open("magerr_model_z.pickle", 'rb')) 
         fi = pickle.load(open("magerr_model_i.pickle", 'rb'))
@@ -100,6 +106,11 @@ class GenerateMLEvent(object):
         ng = self.interp_g(np.sort(self.light_curve_g))
         nz = self.interp_z(np.sort(self.light_curve_z))
         ni = self.interp_i(np.sort(self.light_curve_i))
+        ix = ((ng < 0.005) | np.isnan(ng)); if np.any(ix): print "FIX ME PLEASE! THIS IS A HACK"; ng[ix] = 0.005
+        ix = ((nr < 0.005) | np.isnan(nr)); if np.any(ix): print "FIX ME PLEASE! THIS IS A HACK"; nr[ix] = 0.005
+        ix = ((ni < 0.005) | np.isnan(ni)); if np.any(ix): print "FIX ME PLEASE! THIS IS A HACK"; ni[ix] = 0.005
+        ix = ((nz < 0.005) | np.isnan(nz)); if np.any(ix): print "FIX ME PLEASE! THIS IS A HACK"; nz[ix] = 0.005
+        ix = ((nY < 0.005) | np.isnan(nY)); if np.any(ix): print "FIX ME PLEASE! THIS IS A HACK"; nY[ix] = 0.005
         return nr, nY, ng, nz, ni
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
@@ -115,6 +126,14 @@ class GenerateMLEvent(object):
         final_mag_list_z = self.m_0[iz] + self.delta_mag[iz] # + self.generate_noise
         final_mag_list_i = self.m_0[ii] + self.delta_mag[ii] # + self.generate_noise
         return final_mag_list_r, final_mag_list_Y,final_mag_list_g,final_mag_list_z,final_mag_list_i 
+        #final_mag_list = np.zeros(bandpass.size)
+        #final_mag_list[ir] = self.m_0[ir]+self.data_mag[ir]
+        #final_mag_list[iY] = self.m_0[iY]+self.data_mag[iY]
+        #return final_mag_list
+    
+    def get_curves(self):
+        lc = self.m_0 + self.delta_mag
+        return lc
 
     def get_curve_type(self):
         #Put curve type loop here, return value of curve type
