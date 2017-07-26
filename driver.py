@@ -113,13 +113,15 @@ def nike(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list,
         mjd = mjd_list[i]
         band = band_list[i]
    
-        curves = star_set.get_curves(mjd,band , t_eff, m_0)
+        curves = star_set.get_curves(mjd, band, objID, t_eff, m_0)
         tmp2 = dict()
-        tmp2("mag,g")  = curves.light_curves_g; tmp2("mag,r")  = curves.light_curves_r tmp2("mag,i")  = curves.light_curves_i tmp2("mag,z")  = curves.light_curves_z tmp2("mag,y")  = curves.light_curves_Y
-        nr, nY, ng, nz, ni = curves.generate_noise
-        tmp2("magerr,g")  = n_g; tmp2("magerr,r")  = nr; tmp2("magerr,i")  = n_i; tmp2("magerr,z")  = n_z ;tmp2("magerr,y")  = n_Y
-        tmp2("mjd") = mjd
-        tmp.append(curves)
+        for l in range(0,len(curves),1):
+            tmp2["mag"]  = curves[l].light_curve
+            tmp2["magerr"]  = curves[l].light_curve_error
+            tmp2["mjd"]  = curves[l].times
+            tmp2["delmag"]  = curves[l].delta_mag
+            tmp2["objID"] = curves[l].quickid
+        tmp.append(tmp2)
         #self.save_data(curves)
     pickle.dump(tmp, open("data_july_25.pickle","wb"))
     return curves
