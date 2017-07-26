@@ -11,6 +11,7 @@ class getData(object):
 
     def __init__(self, hpix=11737):
         self.list_times, self.uniqueIDs, self.ecat = self.pull_data(hpix)
+        self.index = 0
         #self.star_list = self.star_list()
 
     def get_MJD(self, index =1000):
@@ -53,6 +54,18 @@ class getData(object):
     def get_spread_err(self, ID):
         spreaderr = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['SPREADERR_MODEL']
         return spreaderr
+<<<<<<< HEAD
+       
+    def find20mag(self):
+        for x in range(0, len(self.uniqueIDs)):
+            Id = self.uniqueIDs[self.index]
+            mag = self.get_mag(Id)
+            mag = mag[0]
+            if (mag < 20.05 and mag > 19.95):
+                print("ID is: " + str(Id))
+                print("********************")
+            self.index += 1
+=======
 
     def get_wavgs(self, ID):
         wg = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_MAG_PSF_G']
@@ -62,6 +75,7 @@ class getData(object):
         wy = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_MAG_PSF_Y']
         return wg, wr, wi, wz, wy
         
+>>>>>>> 2c8a38a0be1f9e470da13744cc90dd772dc86163
 
     def grab_details_for_error(self, ID):
         t_eff = self.get_t_eff(ID) 

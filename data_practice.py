@@ -26,6 +26,7 @@ class data_practice(object):
         ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
         #ecat = ecat.query('QUICK_OBJECT_ID == 11173700000000')
         ecat = ecat.query('MAG_PSF < 30')
+        self.ecat = ecat
         self.list_times = ecat['QUICK_OBJECT_ID']
         #self.list_wavg = cat['WAVG_SPREAD_MODEL_R']
         #self.list_wavgerr = cat['SPREADERR_MODEL_R']
@@ -71,6 +72,25 @@ class data_practice(object):
                 mag_file.write(str(test_list[n])+"\n")
         #print mag_list
         return mag_list
+
+    def magdetails20(self):
+        #myobj_r = self.ecat.query("QUICK_OBJECT_ID== {} & BAND=='{}'".format(quick_id, bandpass))[['MJD_OBS','MAG_PSF', 'MAGERR_PSF', 'QUICK_OBJECT_ID', 'BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL', 'T_EFF']]
+        magnitude = self.ecat['MAG_PSF']
+        return magnitude
+
+    def starmag20(self):
+        list_times = np.unique(self.list_times)
+        print("starting starmag")
+        print(len(list_times))
+        for i in range(0, len(list_times)):
+            new_list, no1, no2, no3, no4 = self.grab_details(list_times[i], 'r')
+            if (new_list[0] > 19.95 and new_list[0] < 20.05):
+                print("**********************")
+                print("Found a good star: ")
+                print(grab_details(list_times[i], 'r'))
+                print(list_times[i])
+                print("***********************")
+
 
     #@profile
     def avg_mag(self, outfile = "{}_error_data.txt", bandpass = 'r'):
