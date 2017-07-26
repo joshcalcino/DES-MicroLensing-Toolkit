@@ -82,6 +82,11 @@ def plot_many(event):
     #error_bars = event.generate_noise
     u = event.u
     A = event.A
+    magg = event.light_curve_g
+    magr = event.light_curve_r
+    magi = event.light_curve_i
+    magz = event.light_curve_z
+    magY = event.light_curve_Y
     delta_mag = event.delta_mag  # change in the magnitude of the star due to the lensing
     
     mpl.rcParams['figure.figsize'] = (8, 5)
@@ -98,27 +103,32 @@ def plot_many(event):
 
 
     plt.axvline(x=t_0, label="t_0", color ='orange') 
-    plt.plot(t_time, dm, c = "rosybrown", zorder=1)
+    #plt.plot(t_time, dm, c = "rosybrown", zorder=1)
     for i in range(0, len(b), 1):
         if b[i] == 'r':
-            plt.scatter(t[i],delta_mag[i], s= 50, c = "r",marker='s', edgecolor='black', zorder=2)
-            plt.errorbar(t[i],delta_mag[i],error_bars_r[r_index], capsize =4, c='tomato', elinewidth=1 )
+            #plt.scatter(t[i],delta_mag[i], s= 50, c = "r",marker='s', edgecolor='black', zorder=2)
+            #plt.errorbar(t[i],delta_mag[i],error_bars_r[r_index], capsize =4, c='tomato', elinewidth=1 )
+            plt.scatter(t[i], magr[r_index], c = "r")
             r_index += 1
         if b[i] == 'Y':
-            plt.scatter(t[i],delta_mag[i], s= 50, c = "gold",marker='8', edgecolor='black', zorder=6)
-            plt.errorbar(t[i], delta_mag[i],error_bars_Y[Y_index], capsize =4, c='goldenrod', elinewidth=1)
+            #plt.scatter(t[i],delta_mag[i], s= 50, c = "gold",marker='8', edgecolor='black', zorder=6)
+            #plt.errorbar(t[i], delta_mag[i],error_bars_Y[Y_index], capsize =4, c='goldenrod', elinewidth=1)
+            plt.scatter(t[i], magY[Y_index], c = "gold")
             Y_index += 1
         if b[i] == 'g':
-            plt.scatter(t[i],delta_mag[i], s= 50, c = "g",marker='D', edgecolor='black', zorder=3)
-            plt.errorbar(t[i], delta_mag[i],error_bars_g[g_index], capsize =4, c='lime', elinewidth=1)
+            #plt.scatter(t[i],delta_mag[i], s= 50, c = "g",marker='D', edgecolor='black', zorder=3)
+            #plt.errorbar(t[i], delta_mag[i],error_bars_g[g_index], capsize =4, c='lime', elinewidth=1)
+            plt.scatter(t[i], magg[g_index], c = "g")
             g_index += 1
         if b[i] == 'z':
-            plt.scatter(t[i],delta_mag[i], s= 50, c = "m",marker='p', edgecolor='black', zorder=4)
-            plt.errorbar(t[i], delta_mag[i],error_bars_z[z_index], capsize =4, c='mediumorchid', elinewidth =1)
+            #plt.scatter(t[i],delta_mag[i], s= 50, c = "m",marker='p', edgecolor='black', zorder=4)
+            #plt.errorbar(t[i], delta_mag[i],error_bars_z[z_index], capsize =4, c='mediumorchid', elinewidth =1)
+            plt.scatter(t[i], magz[z_index], c = "m")
             z_index += 1
         if b[i] == 'i':
-            plt.scatter(t[i],delta_mag[i], s= 50, c = "mediumblue",marker='>', edgecolor='black', zorder=5)
-            plt.errorbar(t[i], delta_mag[i],error_bars_i[i_index], capsize =4, c='royalblue', elinewidth=1)
+            #plt.scatter(t[i],delta_mag[i], s= 50, c = "mediumblue",marker='>', edgecolor='black', zorder=5)
+            #plt.errorbar(t[i], delta_mag[i],error_bars_i[i_index], capsize =4, c='royalblue', elinewidth=1)
+            plt.scatter(t[i], magi[i_index], c = "mediumblue")
             i_index += 1
     plt.xlabel("MJD")
     plt.ylabel("Magnitude Difference")

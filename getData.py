@@ -11,6 +11,7 @@ class getData(object):
 
     def __init__(self, hpix=11737):
         self.list_times, self.uniqueIDs, self.ecat = self.pull_data(hpix)
+        self.index = 0
         #self.star_list = self.star_list()
 
     def get_MJD(self, index =1000):
@@ -54,7 +55,16 @@ class getData(object):
     def get_spread_err(self, ID):
         spreaderr = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['SPREADERR_MODEL']
         return spreaderr
-        
+       
+    def find20mag(self):
+        for x in range(0, len(self.uniqueIDs)):
+            Id = self.uniqueIDs[self.index]
+            mag = self.get_mag(Id)
+            mag = mag[0]
+            if (mag < 20.05 and mag > 19.95):
+                print("ID is: " + str(Id))
+                print("********************")
+            self.index += 1
 
     def grab_details_for_error(self, ID):
         t_eff = self.get_t_eff(ID) 

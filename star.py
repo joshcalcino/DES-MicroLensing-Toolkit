@@ -28,7 +28,7 @@ class star(object):
         """
 
     """ Takes a various arguments and returns a list of Mircolensing events. """
-    def get_curves(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=20,curve_type =1):
+    def get_curves(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=5,curve_type =1):
         v_t = 220
         index = 0
         t_0 = 56961        
