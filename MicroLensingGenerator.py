@@ -10,11 +10,11 @@ import data_practice as dp
 
 class GenerateMLEvent(object):
     """This class will generate a microlensing event.
-            It takes 10 parameters: 
-            t_0, p, v_t, M_lens, Ds, x, MJD_list, m_0, t_eff, curve_type
+            It takes 11 parameters: 
+            t_0, u_0, v_t, M_lens, Ds, x, MJD_list, m_0, bandpass, t_eff, curve_type
     """
 
-    def __init__(self, t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, bandpass, t_eff = 0, curve_type = 1):
+    def __init__(self, t_0, u_0, V_t, M_lens, Ds, x, MJD_list, m_0, bandpass, objID, ra, dec, t_eff = 0, curve_type = 1):
         self.M_lens = M_lens                #Lens mass,             solar masses 
         self.Ds = Ds                        #Dist to source         kpc
         self.x = x                          #% of Dl compared to Ds  (0, 1)
@@ -32,12 +32,15 @@ class GenerateMLEvent(object):
         self.curve_type = curve_type
         self.delta_mag = self.get_delta_mag()   #calculates change in magnitude
         self.interp_r, self.interp_Y, self.interp_g, self.interp_z, self.interp_i = self.get_error_files()
-        self.light_curve_r, self.light_curve_Y, self.light_curve_g, self.light_curve_z, self.light_curve_i = self.generate_data(bandpass) #list of mag at times accounting for noise, delta and initial magnitudes
-        self.generate_noise = self.generate_noise()
+        self.light_curve = self.generate_data(bandpass) #list of mag at times, accounting for delta and initial magnitudes
+        self.light_curve_error = self.generate_error(bandpass)
+        self.quickid = np.ones(bandpass.size)*objID
+        self.ra = np.ones(bandpass.size)*ra
+        self.dec = np.ones(bandpass.size)*dec
 
     def get_error_files(self):
         fr = pickle.load(open("magerr_model_r.pickle", 'rb'))
-        fY = pickle.load(open("magerr_model_r.pickle", 'rb'))
+        fY = pickle.load(open("magerr_model_Y.pickle", 'rb'))
         fg = pickle.load(open("magerr_model_g.pickle", 'rb'))
         fz= pickle.load(open("magerr_model_z.pickle", 'rb')) 
         fi = pickle.load(open("magerr_model_i.pickle", 'rb'))
@@ -94,13 +97,37 @@ class GenerateMLEvent(object):
         return delta_mag
 
     """ generate_noise(t): Calculates noise due to interference given t. """
-    def generate_noise(self):
-        nr = self.interp_r(np.sort(self.light_curve_r))
-        nY = self.interp_Y(np.sort(self.light_curve_Y))
-        ng = self.interp_g(np.sort(self.light_curve_g))
-        nz = self.interp_z(np.sort(self.light_curve_z))
-        ni = self.interp_i(np.sort(self.light_curve_i))
-        return nr, nY, ng, nz, ni
+    def generate_error(self, bandpass):
+        hack_index = 0
+        ir, = np.where(bandpass=='r')
+        iY, = np.where(bandpass=='Y')
+        ig, = np.where(bandpass=='g')
+        iz, = np.where(bandpass=='z')
+        ii, = np.where(bandpass=='i')
+        nr = self.interp_r(self.light_curve[ir])
+        nY = self.interp_Y(self.light_curve[iY])
+        ng = self.interp_g(self.light_curve[ig])
+        nz = self.interp_z(self.light_curve[iz])
+        ni = self.interp_i(self.light_curve[ii])
+        #Below is a HACK. FIX THIS!!!
+        ix = ((ng < 0.005) | np.isnan(ng)) 
+        if np.any(ix): ng[ix] = 0.005
+        ix = ((nr < 0.005) | np.isnan(nr)) 
+        if np.any(ix): nr[ix] = 0.005
+        ix = ((ni < 0.005) | np.isnan(ni)) 
+        if np.any(ix): ni[ix] = 0.005
+        ix = ((nz < 0.005) | np.isnan(nz)) 
+        if np.any(ix): nz[ix] = 0.005
+        ix = ((nY < 0.005) | np.isnan(nY)) 
+        if np.any(ix): nY[ix] = 0.005
+        #Above is a HACK. FIX THIS!!
+        error = np.zeros(bandpass.size)
+        error[ig] = ng
+        error[ir] = nr
+        error[ii] = ni
+        error[iz] = nz
+        error[iY] = nY
+        return error
 
     """ generate_data(): Calculates the resulting change in magnitude of the source (including compensation for noise) given initial mag and change in mag. """
     def generate_data(self, bandpass):
@@ -114,8 +141,20 @@ class GenerateMLEvent(object):
         final_mag_list_g = self.m_0[ig] + self.delta_mag[ig] # + self.generate_noise
         final_mag_list_z = self.m_0[iz] + self.delta_mag[iz] # + self.generate_noise
         final_mag_list_i = self.m_0[ii] + self.delta_mag[ii] # + self.generate_noise
-        return final_mag_list_r, final_mag_list_Y,final_mag_list_g,final_mag_list_z,final_mag_list_i 
-
+        #return final_mag_list_r, final_mag_list_Y,final_mag_list_g,final_mag_list_z,final_mag_list_i 
+        final_mag_list = np.zeros(bandpass.size)
+        final_mag_list[ig] = self.m_0[ig]+self.delta_mag[ig]
+        final_mag_list[ir] = self.m_0[ir]+self.delta_mag[ir]
+        final_mag_list[ii] = self.m_0[ii]+self.delta_mag[ii]
+        final_mag_list[iz] = self.m_0[iz]+self.delta_mag[iz]
+        final_mag_list[iY] = self.m_0[iY]+self.delta_mag[iY]
+        return final_mag_list
+    """ 
+    was in the structure as self.all_curves 
+    def get_curves(self):
+        lc = self.m_0 + self.delta_mag
+        return lc
+    """
     def get_curve_type(self):
         #Put curve type loop here, return value of curve type
         #1. Paci 2. Ellipse 3. Parallax 4. Cluster
