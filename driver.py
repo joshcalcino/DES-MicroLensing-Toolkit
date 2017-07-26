@@ -12,6 +12,68 @@ import getHPIX
 import fitsio
 import os
 
+def mishelleCode():
+    hpix = getHPIX.pix() #list of all pixels in survey
+    index = 0
+    for pix in hpix:
+        if pix != "11737": continue
+        mjd_list, mag_list, magerr_list, error_list, teff_list, ra_list, dec_list, band_list, objID_list = \
+            np.array([]), np.array([]), np.array([]), np.array([]), np.array([]), np.array([]), np.array([]), np.array([]), np.array([])
+        data = getData.getData(pix) #160,000 objects with seperate obs
+        objID = data.uniqueIDs #list of all objects
+        for i in range(4,30,1): #for i in range(1, len(objID)).
+            mjd = data.get_timesByIDs(objID[i])
+            mag = #get mag for each bandpass?
+            magerr = data.get_magerr(objID[i])
+            error = #get error bars
+            t_eff = data.get_t_eff(objID[i])
+            ra = data.get_RA(objID[i])
+            dec = data.get_DEC(objID[i])
+            bandpass = data.get_bandpass(objID[i])
+            is_star = data.isStar(objID[i])
+            """Ds = data.get_Ds(objID[i])
+            curve_type = data.get_curve_type(objID[i])"""
+
+            if is_star:
+                for j in mjd:
+
+                    #star_event = star.get_curves(mjd, teff, m_0)
+                    #for k in len(star_event):
+                        #mag_r = star_event[k].light_curve_ + "bandpass"
+                        #mag_Y = star_event[k].light_curve_Y
+
+                    MJD = np.asarray(mjd)
+                    MAG = np.asarray(mag)
+                    MAGERR = np.asarray(magerr)
+                    ERROR = np.asarray(error)
+                    TEFF = np.asarray(t_eff)
+                    RA = np.asarray(ra)
+                    DEC = np.asarray(dec)
+                    BAND = np.asarray(bandpass)
+                    obj_id = np.asarray(objID[i]).astype(int)
+                    obj_id =obj_id*np.ones(m0.size).astype(int)
+
+                    mjd_list = np.append(mjd_list, MJD)
+                    mag_list = np.append(mag_list, MAG)
+                    magerr_list = np.append(magerr_list, MAGERR)
+                    error_list = np.append(error_list, ERROR)
+                    teff_list = np.append(teff_list, TEFF)
+                    ra_list = np.append(ra_list, RA)
+                    dec_list = np.append(dec_list, DEC)
+                    band_list = np.append(band_list, BAND)
+                    objID_list = np.append(objID_list, obj_id)
+            
+            filters = np.zeros(m0_list.size)
+            ix = band_list == "u"; filters[ix] = 0
+            ix = band_list == "g"; filters[ix] = 1
+            ix = band_list == "r"; filters[ix] = 2
+            ix = band_list == "i"; filters[ix] = 3
+            ix = band_list == "z"; filters[ix] = 4
+            ix = band_list == "Y"; filters[ix] = 5
+            ix = band_list == "y"; filters[ix] = 5
+ 
+            save_data(mjd_list, mag_list, magerr_list, error_list, teff_list, ra_list, dec_list, filters, objID_list, pix)
+
 def load_data(pixel="11200", test_ID = 11173700000150):
     hpix = getHPIX.pix() #list of all pixels in survey
     index = 0
@@ -175,22 +237,15 @@ def plots2(event1, event2, event3, start, stop, step):
             fake_plots.plot_many(event3[i], "red")
     return 0
 
-def save_data(self, mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix):
-    mjd_array = np.asarray(mjd_list)
-    teff_array = np.asarray(teff_list)
-    m0_array = np.asarray(m0_list) 
-    ra_array = np.asarray(ra_list)
-    dec_array = np.asarray(dec_list)
-    objID_array = np.asarray(objID_list)
-        
-    self.file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
-    if os.path.exists(self.file_name):
-        os.remove(self.file_name)
+def save_data(mjd_list, mag_list, magerr_list, error_list, teff_list, ra_list, dec_list, filters, objID_list, pix):
+    file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
+    if os.path.exists(file_name):
+        os.remove(file_name)
         print "removed the file!"
     print "cool!"
         
-    fits = fitsio.FITS(self.file_name,'rw')
-    array_list = [mjd_array, teff_array, m0_array, ra_array, dec_array, objID_array]
-    names = ['mjd_array', 'teff_array', 'm0_array', 'ra_array', 'dec_array', 'objID_array'] 
+    fits = fitsio.FITS(file_name,'rw')
+    array_list = [mjd_list, mag_list, magerr_list, error_list, teff_list, ra_list, dec_list, filters, objID_list] 
+    names = ['mjd', 'mag', 'magerr', 'error', 'teff', 'ra', 'dec', 'filters', 'objID']
     fits.write(array_list, names=names, overwrite = True)
     print "saved!"        
