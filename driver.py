@@ -21,9 +21,9 @@ def load_data(pixel="11200", test_ID = 11120000000150):
         if pix != pixel: continue
         data = getData.getData(pix) #160,000 objects with seperate obs
         objID = data.uniqueIDs #list of all objects
-        for i in range(0,1,1): #for i in data:
+        for i in range(0,2,1): #for i in objID:
             #variables from data
-            objID = [test_ID]
+            #objID = [test_ID]
             mjd = data.get_timesByIDs(objID[i])
             t_eff = data.get_t_eff(objID[i])
             m_0 = data.get_mag(objID[i]) 
@@ -43,11 +43,6 @@ def load_data(pixel="11200", test_ID = 11120000000150):
                 dec_list.append( DEC )
                 objID_list.append( objID[i] )
                 band_list.append( bandpass )
-            """
-            Ds = data.get_Ds(objID[i])
-            curve_type = data.get_curve_type(objID[i])
-            """
-        #save_data(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, pix)    
     return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, pix
 
 
@@ -79,7 +74,7 @@ def nike(data, index=0):
 
     for i in range(size): #for i in data:
         print "i:", i
-        if i != index: continue
+        #if i != index: continue
         star_set = star.star()
         #calculated variables
         t_eff= teff_list[i]
@@ -90,7 +85,8 @@ def nike(data, index=0):
         mjd = mjd_list[i]
         band = band_list[i]
    
-        curves = star_set.get_curves(mjd, band, objID, ra, dec, t_eff, m_0)
+        tmp = star_set.get_curves(mjd, band, objID, ra, dec, t_eff, m_0)
+        curves.append(tmp)
         """
         tmp2 = dict()
         for l in range(0,len(curves),1):
@@ -101,7 +97,7 @@ def nike(data, index=0):
             tmp2["objID"] = curves[l].quickid
         tmp.append(tmp2)
         """
-        save_data(curves, pix)
+    save_data(curves, pix)
     #pickle.dump(tmp, open("data_july_25.pickle","wb"))
     return curves
 
@@ -187,7 +183,7 @@ def plots2(event1, event2, event3, start, stop, step):
             fake_plots.plot_many(event3[i], "red")
     return 0
 
-def save_data(curves, pix):
+def save_data(data, pix):
     objID_list = [] 
     ra_list = []
     dec_list = []
@@ -195,14 +191,16 @@ def save_data(curves, pix):
     magerr_list = [] #error bar
     mjd_list = []
     bandpass_list = []
-    for i in range(0, len(curves), 1):
-        objID_list = np.append(objID_list, curves[i].quickid)
-        ra_list = np.append(ra_list, curves[i].ra)
-        dec_list = np.append(dec_list, curves[i].dec)
-        mag_list = np.append(mag_list, curves[i].light_curve)
-        magerr_list = np.append(magerr_list, curves[i].light_curve_error)
-        mjd_list = np.append(mjd_list, curves[i].times)
-        bandpass_list = np.append(bandpass_list, curves[i].bandpass)
+
+    for list_of_curves in data:
+        for curve in list_of_curves:
+            objID_list = np.append(objID_list, curve.quickid)
+            ra_list = np.append(ra_list, curve.ra)
+            dec_list = np.append(dec_list,curve.dec)
+            mag_list = np.append(mag_list, curve.light_curve)
+            magerr_list = np.append(magerr_list, curve.light_curve_error)
+            mjd_list = np.append(mjd_list, curve.times)
+            bandpass_list = np.append(bandpass_list, curve.bandpass)
 
     file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
     if os.path.exists(file_name):
