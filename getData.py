@@ -50,10 +50,17 @@ class getData(object):
         wavg  = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_SPREAD_MODEL'] 
         return wavg
        
-
     def get_spread_err(self, ID):
         spreaderr = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['SPREADERR_MODEL']
         return spreaderr
+
+    def get_wavgs(self, ID):
+        wg = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_MAG_PSF_G']
+        wr = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_MAG_PSF_R']
+        wi = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_MAG_PSF_I']
+        wz = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_MAG_PSF_Z']
+        wy = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_MAG_PSF_Y']
+        return wg, wr, wi, wz, wy
         
 
     def grab_details_for_error(self, ID):
@@ -68,7 +75,7 @@ class getData(object):
         hpix = int(hpix)
         sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
         from desqcat import load_hpx, load_cat, load_cat_epochs
-        cat_wide = load_cat(hpix)
+        self.cat_wide = load_cat(hpix)
         cat = load_cat(hpix, long=True)
         cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC','BAND', 'EXPNUM', 'WAVG_SPREAD_MODEL','SPREADERR_MODEL'] #other options: HPX2048, NEPOCHS, FLAGS, WAVG_FLAGS, EXPNUM, WAVG_MAG_PSF, WAVG_MAGERR_PSF, WAVG_MAG_AUTO, WAVG_MAGERR_AUTO 
         epoch_cols = ['QUICK_OBJECT_ID', 'EXPNUM', 'MJD_OBS', 'BAND', 'T_EFF',
