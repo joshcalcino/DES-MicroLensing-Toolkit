@@ -1,3 +1,0 @@
-Hello Marika!
-
-Hello world!
