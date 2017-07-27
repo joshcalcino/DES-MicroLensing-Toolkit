@@ -1,4 +1,4 @@
-import numpy as np
+import numpy asiii np
 import sys
 import pandas as pd
 import matplotlib as mpl
@@ -11,6 +11,9 @@ import star
 import getHPIX
 import fitsio
 import os
+import time
+
+start_time = time.time()
 
 def load_data(pixel="11200", test_ID = 11120000000150):
     hpix = getHPIX.pix() #list of all pixels in survey
@@ -21,19 +24,19 @@ def load_data(pixel="11200", test_ID = 11120000000150):
         if pix != pixel: continue
         data = getData.getData(pix) #160,000 objects with seperate obs
         objID = data.uniqueIDs #list of all objects
-        for i in range(0,1,1): #for i in data:
+        for i in objID: #for i in range(0,1,1)
             #variables from data
-            objID = [test_ID]
-            mjd = data.get_timesByIDs(objID[i])
-            t_eff = data.get_t_eff(objID[i])
-            m_0 = data.get_mag(objID[i]) 
-            is_star = data.isStar(objID[i])
-            RA = data.get_RA(objID[i])
-            DEC = data.get_DEC(objID[i])
-            bandpass = data.get_bandpass(objID[i])
-            print "mjd", len(mjd)
-            print "RA", len(RA)
-            print "bandpass", len(bandpass)
+            #objID = [test_ID]
+            mjd = data.get_timesByIDs(i)
+            t_eff = data.get_t_eff(i)
+            m_0 = data.get_mag(i) 
+            is_star = data.isStar(i)
+            RA = data.get_RA(i)
+            DEC = data.get_DEC(i)
+            bandpass = data.get_bandpass(i)
+            #print "mjd", len(mjd)
+            #print "RA", len(RA)
+            #print "bandpass", len(bandpass)
 
             if is_star:
                 mjd_list.append( mjd )
@@ -41,7 +44,7 @@ def load_data(pixel="11200", test_ID = 11120000000150):
                 m0_list.append( m_0 )
                 ra_list.append( RA )
                 dec_list.append( DEC )
-                objID_list.append( objID[i] )
+                objID_list.append( i )
                 band_list.append( bandpass )
             """
             Ds = data.get_Ds(objID[i])
@@ -204,7 +207,7 @@ def save_data(curves, pix):
         mjd_list = np.append(mjd_list, curves[i].times)
         bandpass_list = np.append(bandpass_list, curves[i].bandpass)
 
-    file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
+    file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
     if os.path.exists(file_name):
         os.remove(file_name)
         print "removed the file!"
@@ -217,4 +220,5 @@ def save_data(curves, pix):
     names = ['OBJID','RA','DEC','MAG','MAGERR','MJD','BAND']  
     print 3
     fits.write(array_list, names=names, overwrite = True)
-    print "saved!"        
+    print "saved!"
+    print "My program took", time.time() - start_time, "to run"        
