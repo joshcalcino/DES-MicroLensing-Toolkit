@@ -25,7 +25,7 @@ def load_data(pixel="11200", test_ID = 11120000000150):
         if pix != pixel: continue #limits data to selected pixel - for testing purposes
         data = getData.getData(pix) #13,000-250,000 objects with seperate obs
         objID = data.sIDs #list of all objects
-        for i in range(0,4,1): #for i in objID:
+        for i in objID: #for i in objID:
             #variables from data
             #objID = [test_ID]
             is_star = data.isStar(objID[i])
@@ -125,6 +125,7 @@ def save_data(data, pix):
     magerr_list = [] #error bar
     mjd_list = []
     bandpass_list = []
+    mlens_list = []
 
     for list_of_curves in data:
         for curve in list_of_curves:
@@ -135,7 +136,8 @@ def save_data(data, pix):
             magerr_list = np.append(magerr_list, curve.light_curve_error)
             mjd_list = np.append(mjd_list, curve.times)
             bandpass_list = np.append(bandpass_list, curve.bandpass)
-
+            mlens_list = np.append(mlens_list, curve.mlens)
+            
     file_name = "/home/s1/mmironov/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
     if os.path.exists(file_name):
         os.remove(file_name)
@@ -144,10 +146,10 @@ def save_data(data, pix):
         
     fits = fitsio.FITS(file_name,'rw')
     print 1
-    array_list = [objID_list, ra_list,dec_list,mag_list,magerr_list,mjd_list,bandpass_list]
+    array_list = [objID_list, ra_list,dec_list,mag_list,magerr_list,mjd_list,bandpass_list, mlens_list]
     print 2
-    names = ['OBJID','RA','DEC','MAG','MAGERR','MJD','BAND']  
+    names1 = ['OBJID','RA','DEC','MAG','MAGERR','MJD','BAND', 'MLENS']
     print 3
-    fits.write(array_list, names=names, overwrite = True)
+    fits.write(array_list, names1=names, overwrite = True)
     print "saved!"
     print "My program took", (time.time() - start_time)/3600, "hours to run"    

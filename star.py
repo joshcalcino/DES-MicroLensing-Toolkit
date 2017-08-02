@@ -68,4 +68,3 @@ class star(object):
                 index += 1
         """
         return self.lightcurve
-
