@@ -136,6 +136,18 @@ class getData(object):
             print "ObjID", ID, "is NOT at star."
         return test
 
+    def star_list():
+        hpix = getHPIX.pix() #list of all pixels in survey
+        for pix in hpix:
+            data = getData.getData(pix) #160,000 objects with seperate obs
+            objID = data.uniqueIDs #list of all objects
+            for i in objID:
+                is_star = data.isStar(i)
+                if is_star:
+                    objID_list.append( i )
+            return objID_list
+        print len(objID_list)
+
     """
     def star_list(self, bandpass = 'g'): #takes ALL ids from data and returns a list of only stars from data
         stars = []

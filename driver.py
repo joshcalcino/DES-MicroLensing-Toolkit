@@ -1,4 +1,4 @@
-import numpy asiii np
+import numpy as np
 import sys
 import pandas as pd
 import matplotlib as mpl
@@ -24,21 +24,23 @@ def load_data(pixel="11200", test_ID = 11120000000150):
         if pix != pixel: continue
         data = getData.getData(pix) #160,000 objects with seperate obs
         objID = data.uniqueIDs #list of all objects
+        print (len(objID))
         for i in objID: #for i in range(0,1,1)
             #variables from data
             #objID = [test_ID]
-            mjd = data.get_timesByIDs(i)
-            t_eff = data.get_t_eff(i)
-            m_0 = data.get_mag(i) 
             is_star = data.isStar(i)
-            RA = data.get_RA(i)
-            DEC = data.get_DEC(i)
-            bandpass = data.get_bandpass(i)
             #print "mjd", len(mjd)
             #print "RA", len(RA)
             #print "bandpass", len(bandpass)
 
             if is_star:
+                mjd = data.get_timesByIDs(i)
+                t_eff = data.get_t_eff(i)
+                m_0 = data.get_mag(i)
+                RA = data.get_RA(i)
+                DEC = data.get_DEC(i)
+                bandpass = data.get_bandpass(i)
+
                 mjd_list.append( mjd )
                 teff_list.append( t_eff )
                 m0_list.append( m_0 )
@@ -50,6 +52,7 @@ def load_data(pixel="11200", test_ID = 11120000000150):
 
 
 def nike(data, index=0):
+
     mjd_list = data[0]     
     teff_list = data[1]
     m0_list = data[2]
@@ -90,16 +93,16 @@ def nike(data, index=0):
    
         tmp = star_set.get_curves(mjd, band, objID, ra, dec, t_eff, m_0)
         curves.append(tmp)
-        """
-        tmp2 = dict()
-        for l in range(0,len(curves),1):
-            tmp2["mag"]  = curves[l].light_curve
-            tmp2["magerr"]  = curves[l].light_curve_error
-            tmp2["mjd"]  = curves[l].times
-            tmp2["delmag"]  = curves[l].delta_mag
-            tmp2["objID"] = curves[l].quickid
-        tmp.append(tmp2)
-        """
+    
+        #tmp2 dict()
+        #for l in range(0,len(curves),1):
+            #tmp2["mag"]  = curves[l].light_curve
+            #tmp2["magerr"]  = curves[l].light_curve_error
+            #tmp2["mjd"]  = curves[l].times
+            #tmp2["delmag"]  = curves[l].delta_mag
+            #tmp2["objID"] = curves[l].quickid
+        #tmp.append(tmp2)
+
     save_data(curves, pix)
     #pickle.dump(tmp, open("data_july_25.pickle","wb"))
     return curves
@@ -219,4 +222,4 @@ def save_data(data, pix):
     print 3
     fits.write(array_list, names=names, overwrite = True)
     print "saved!"
-    print "My program took", time.time() - start_time, "to run"        
+    print "My program took", (time.time() - start_time)/3600, "hours to run"    
