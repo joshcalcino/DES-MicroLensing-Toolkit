@@ -24,7 +24,7 @@ def load_data(pixel="11200", test_ID = 11120000000150):
     for pix in hpix:
         if pix != pixel: continue #limits data to selected pixel - for testing purposes
         data = getData.getData(pix) #13,000-250,000 objects with seperate obs
-        objID = data.uniqueIDs #list of all objects
+        objID = data.sIDs #list of all objects
         for i in range(0,2,1): #for i in objID:
             #variables from data
             #objID = [test_ID]
