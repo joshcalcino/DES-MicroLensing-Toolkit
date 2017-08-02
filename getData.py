@@ -11,18 +11,9 @@ class getData(object):
 
     def __init__(self, hpix=11737):
         print "Pixel:", hpix
-        self.list_times, self.uniqueIDs, self.ecat = self.pull_data(hpix)
-<<<<<<< HEAD
+        self.uniqueIDs, self.ecat = self.pull_data(hpix)
         self.index = 0
-        #self.star_list = self.star_list()
-=======
->>>>>>> fermi_devel_mm
 
-    def get_MJD(self, index =1000):
-        quick_id = self.list_times[index]
-        MJD_list = self.ecat.query("QUICK_OBJECT_ID== {}".format(quick_id))['MJD_OBS']
-        return MJD_list
-    
     def get_timesByIDs(self, ID):
         MJD_list = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['MJD_OBS']
         return MJD_list   
@@ -58,7 +49,6 @@ class getData(object):
     def get_spread_err(self, ID):
         spreaderr = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['SPREADERR_MODEL']
         return spreaderr
-<<<<<<< HEAD
        
     def find20mag(self):
         for x in range(0, len(self.uniqueIDs)):
@@ -69,7 +59,6 @@ class getData(object):
                 print("ID is: " + str(Id))
                 print("********************")
             self.index += 1
-=======
 
     def get_wavgs(self, ID):
         wg = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_MAG_PSF_G']
@@ -79,8 +68,6 @@ class getData(object):
         wy = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_MAG_PSF_Y']
         return wg, wr, wi, wz, wy
         
->>>>>>> 2c8a38a0be1f9e470da13744cc90dd772dc86163
-
     def grab_details_for_error(self, ID):
         t_eff = self.get_t_eff(ID) 
         magerr = self.get_magerr(ID)
@@ -89,7 +76,7 @@ class getData(object):
         band = self.get_bandpass(ID)
         return t_eff, magerr, mag_psf, mjd, band
    
-    def count_rstars(self):
+    def count_stars(self):
         counts_file = open('counts.txt', 'w')
         test_list = self.cat_wide['MAG_PSF_R']
         spreaderr = self.cat_wide['SPREADERR_MODEL_R']
@@ -101,48 +88,34 @@ class getData(object):
         counts_file.write(str(count) + "\n")
         return count
  
-    def count_gstars(self):
-        counts_file = open('counts.txt', 'w')
-        test_list = self.cat_wide['MAG_PSF_G']
-        spreaderr = self.cat_wide['SPREADERR_MODEL_G']
-        wavg = self.cat_wide['WAVG_SPREAD_MODEL_G']
-        count = 0
-        for n in range(0, len(test_list)):
-            if abs(wavg[n])<(0.003 +  spreaderr[n]) and (test_list[n] <= 21.5):
-                count += 1
-        counts_file.write(str(count) + "\n")
-        return count
-
-    def count_istars(self):
-        counts_file = open('counts.txt', 'w')
-        test_list = self.cat_wide['MAG_PSF_I']
-        spreaderr = self.cat_wide['SPREADERR_MODEL_I']
-        wavg = self.cat_wide['WAVG_SPREAD_MODEL_I']
-        count = 0
-        for n in range(0, len(test_list)):
-            if abs(wavg[n])<(0.003 +  spreaderr[n]) and (test_list[n] <= 21.5):
-                count += 1
-        counts_file.write(str(count) + "\n")
-        return count
-
     def pull_data(self,hpix):
         hpix = int(hpix)
         sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
         from desqcat import load_hpx, load_cat, load_cat_epochs
         self.cat_wide = load_cat(hpix)
+        cat_wide = load_cat(hpix)
+        uIDs = self.cat_wide['QUICK_OBJECT_ID']
         cat = load_cat(hpix, long=True)
         cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC','BAND', 'EXPNUM', 'WAVG_SPREAD_MODEL','SPREADERR_MODEL'] 
         epoch_cols = ['QUICK_OBJECT_ID', 'EXPNUM', 'MJD_OBS', 'BAND', 'T_EFF',
               'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']
+        """
+        s1_cols = ['QUICK_OBJECT_ID','MAG_PSF','BAND', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']
+        s2_cols = ['WAVG_SPREAD_MODEL','SPREADERR_MODEL','BAND']
+        emags = load_cat_epochs(hpix, s1_cols, s2_cols)
+        """
         ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
+        """
         ecat = ecat.query('MAG_PSF < 30')
+        sIDs = ecat.query('MAG_PSF < 21.5')
+        sIDs = ecat.query('WAVG_SPREAD_MODEL < (0.003 + SPREADERR_MODEL)')
+        self.sIDs = sIDs['QUICK_OBJECT_ID'].unique()
+        """
         obj_expnum_counts = ecat[['QUICK_OBJECT_ID', 'EXPNUM', 'BAND']].groupby(['QUICK_OBJECT_ID', 'EXPNUM'], as_index=False).count()
         obj_expnum_counts.columns = ['QUICK_OBJECT_ID', 'EXPNUM', 'COUNTS']
         duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
         ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
-        list_times = ecat['QUICK_OBJECT_ID']
-        uniqueIDs = ecat['QUICK_OBJECT_ID'].unique()
-        return list_times, uniqueIDs, ecat
+        return uIDs, ecat
 
     def get_error_details(self, quick_id):
         t_eff, magerr , mag_psf, mjd, bandpass = self.grab_details_for_error(quick_id)

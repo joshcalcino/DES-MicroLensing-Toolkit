@@ -15,30 +15,29 @@ import time
 
 start_time = time.time()
 
+""" Currently load_data only works for 1 pixel at a time. """
 def load_data(pixel="11200", test_ID = 11120000000150):
     hpix = getHPIX.pix() #list of all pixels in survey
     index = 0
     mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list  = \
         [], [], [], [], [], [], []
     for pix in hpix:
-        if pix != pixel: continue
-        data = getData.getData(pix) #160,000 objects with seperate obs
+        if pix != pixel: continue #limits data to selected pixel - for testing purposes
+        data = getData.getData(pix) #13,000-250,000 objects with seperate obs
         objID = data.uniqueIDs #list of all objects
         for i in range(0,2,1): #for i in objID:
             #variables from data
             #objID = [test_ID]
-            mjd = data.get_timesByIDs(objID[i])
-            t_eff = data.get_t_eff(objID[i])
-            m_0 = data.get_mag(objID[i]) 
             is_star = data.isStar(objID[i])
-            RA = data.get_RA(objID[i])
-            DEC = data.get_DEC(objID[i])
-            bandpass = data.get_bandpass(objID[i])
-            print "mjd", len(mjd)
-            print "RA", len(RA)
-            print "bandpass", len(bandpass)
-
             if is_star:
+                # if is star, gets data information
+                mjd = data.get_timesByIDs(objID[i])
+                t_eff = data.get_t_eff(objID[i])
+                m_0 = data.get_mag(objID[i]) 
+                RA = data.get_RA(objID[i])
+                DEC = data.get_DEC(objID[i])
+                bandpass = data.get_bandpass(objID[i])
+                # appends data information to list
                 mjd_list.append( mjd )
                 teff_list.append( t_eff )
                 m0_list.append( m_0 )
@@ -64,12 +63,7 @@ def marika(low, high):
     print "Marika took", seconds, " seconds to run. Or", seconds/60, "minutes." 
     return numStars
 
-def mishelle(index = 11200):
-    data = getData.getData(index)
-    uniq = data.uniqueIDs
-    return uniq
-
-def nike(data, index=0):
+def nike(data, index=0): #takes data from one pixel
     mjd_list = data[0]     
     teff_list = data[1]
     m0_list = data[2]
@@ -86,7 +80,6 @@ def nike(data, index=0):
         print "i:", i
         #if i != index: continue
         star_set = star.star()
-        #calculated variables
         t_eff= teff_list[i]
         m_0 = m0_list[i]
         ra = ra_list[i]
@@ -99,66 +92,6 @@ def nike(data, index=0):
         curves.append(tmp)
     save_data(curves, pix)
     #pickle.dump(tmp, open("data_july_25.pickle","wb"))
-    return curves
-
-def nikex(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, index):
-    curves = []
-    size =  len(ra_list)
-    for i in range(size): #for i in data:
-        print "i:", i
-        if i != index: continue
-        star_set = star.star()
-        #calculated variables
-        t_eff= teff_list[i]
-        m_0 = m0_list[i]
-        ra = ra_list[i]
-        dec = dec_list[i]
-        objID = objID_list[i]
-        mjd = mjd_list[i]
-        band = band_list[i]
-   
-        curves = star_set.get_curvesx(mjd,band , t_eff, m_0)
-    #plots(curves)
-    return curves
-
-def nikeu(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, index):
-    curves = []
-    size =  len(ra_list)
-    for i in range(size): #for i in data:
-        print "i:", i
-        if i != index: continue
-        star_set = star.star()
-        #calculated variables
-        t_eff= teff_list[i]
-        m_0 = m0_list[i]
-        ra = ra_list[i]
-        dec = dec_list[i]
-        objID = objID_list[i]
-        mjd = mjd_list[i]
-        band = band_list[i]
-   
-        curves = star_set.get_curvesu(mjd,band , t_eff, m_0)
-    #plots(curves)
-    return curves
-
-def nikeM(mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, index):
-    curves = []
-    size =  len(ra_list)
-    for i in range(size): #for i in data:
-        print "i:", i
-        if i != index: continue
-        star_set = star.star()
-        #calculated variables
-        t_eff= teff_list[i]
-        m_0 = m0_list[i]
-        ra = ra_list[i]
-        dec = dec_list[i]
-        objID = objID_list[i]
-        mjd = mjd_list[i]
-        band = band_list[i]
-   
-        curves = star_set.get_curvesM(mjd,band , t_eff, m_0)
-    #plots(curves)
     return curves
 
 def plots(event, start =0, stop = 2, step=1):
