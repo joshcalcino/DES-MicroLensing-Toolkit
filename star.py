@@ -28,47 +28,8 @@ class star(object):
         """
 
     """ Takes a various arguments and returns a list of Mircolensing events. """
-<<<<<<< HEAD
-    def get_curves(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=5,curve_type =1):
-=======
-    def get_curvesx(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=5,curve_type =1):
-        v_t = 220
-        index = 0
-        t_0 = 56961
-        M = 50
-        u_0 = .5
-        for x in np.arange(0.1,1,.1):
-            self.lightcurve.append(MicroLensingGenerator.GenerateMLEvent(
-                        t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, bandpass, t_eff, curve_type))
-            index += 1
-        return self.lightcurve
-
-    def get_curvesu(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=5,curve_type =1):
-        v_t = 220
-        index = 0
-        t_0 = 56961
-        M = 50
-        x = .5
-        for u_0 in np.arange(0,2,.2):
-            self.lightcurve.append(MicroLensingGenerator.GenerateMLEvent(
-                        t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, bandpass, t_eff, curve_type))
-            index += 1
-        return self.lightcurve
-
-    def get_curvesM(self, MJD_list, bandpass, t_eff = 1, m_0=30, Ds=5,curve_type =1):
-        v_t = 220
-        index = 0
-        t_0 = 56961
-        u_0 = .5
-        x = .5
-        for M in np.arange(10,101,10):
-            self.lightcurve.append(MicroLensingGenerator.GenerateMLEvent(
-                        t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, bandpass, t_eff, curve_type))
-            index += 1
-        return self.lightcurve
 
     def get_curves(self, MJD_list, bandpass, objID, ra, dec, t_eff = 1, m_0=30, Ds=5,curve_type =1):
->>>>>>> 2c8a38a0be1f9e470da13744cc90dd772dc86163
         v_t = 220
         index = 0
         t_0 = 56961        

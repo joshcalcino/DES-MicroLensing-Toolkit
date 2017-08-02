@@ -19,33 +19,34 @@ start_time = time.time()
 def load_data(pixel="11200", test_ID = 11120000000150):
     hpix = getHPIX.pix() #list of all pixels in survey
     index = 0
-    mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list  = \
-        [], [], [], [], [], [], []
+    mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, pix_list  = \
+        [], [], [], [], [], [], [], []
     for pix in hpix:
         if pix != pixel: continue #limits data to selected pixel - for testing purposes
         data = getData.getData(pix) #13,000-250,000 objects with seperate obs
         objID = data.sIDs #list of all objects
-        for i in range(0,2,1): #for i in objID:
+        for i in range(0,4,1): #for i in objID:
             #variables from data
             #objID = [test_ID]
             is_star = data.isStar(objID[i])
-            if is_star:
-                # if is star, gets data information
-                mjd = data.get_timesByIDs(objID[i])
-                t_eff = data.get_t_eff(objID[i])
-                m_0 = data.get_mag(objID[i]) 
-                RA = data.get_RA(objID[i])
-                DEC = data.get_DEC(objID[i])
-                bandpass = data.get_bandpass(objID[i])
-                # appends data information to list
-                mjd_list.append( mjd )
-                teff_list.append( t_eff )
-                m0_list.append( m_0 )
-                ra_list.append( RA )
-                dec_list.append( DEC )
-                objID_list.append( objID[i] )
-                band_list.append( bandpass )
-    return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, pix
+            #if is_star:
+            # if is star, gets data information
+            mjd = data.get_timesByIDs(objID[i])
+            t_eff = data.get_t_eff(objID[i])
+            m_0 = data.get_mag(objID[i]) 
+            RA = data.get_RA(objID[i])
+            DEC = data.get_DEC(objID[i])
+            bandpass = data.get_bandpass(objID[i])
+            # appends data information to list
+            mjd_list.append( mjd )
+            teff_list.append( t_eff )
+            m0_list.append( m_0 )
+            ra_list.append( RA )
+            dec_list.append( DEC )
+            objID_list.append( objID[i] )
+            band_list.append( bandpass )
+            pix_list.append( pix )
+    return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, pix_list
 
 def marika(low, high):
     t1 = time.time()
@@ -76,21 +77,21 @@ def nike(data, index=0): #takes data from one pixel
     curves = []
     size =  len(ra_list)
 
-    for i in range(size): #for i in data:
+    for i in range(0, size,1): #for i in data:
         print "i:", i
         #if i != index: continue
         star_set = star.star()
-        t_eff= teff_list[i]
-        m_0 = m0_list[i]
-        ra = ra_list[i]
-        dec = dec_list[i]
-        objID = objID_list[i]
-        mjd = mjd_list[i]
-        band = band_list[i]
+        t_eff= np.asarray(teff_list[i])
+        m_0 = np.asarray(m0_list[i])
+        ra = np.asarray(ra_list[i])
+        dec = np.asarray(dec_list[i])
+        objID = np.asarray(objID_list[i])
+        mjd = np.asarray(mjd_list[i])
+        band = np.asarray(band_list[i])
    
         tmp = star_set.get_curves(mjd, band, objID, ra, dec, t_eff, m_0)
         curves.append(tmp)
-    save_data(curves, pix)
+    #save_data(curves, pix)
     #pickle.dump(tmp, open("data_july_25.pickle","wb"))
     return curves
 
@@ -145,9 +146,9 @@ def save_data(data, pix):
     print 1
     array_list = [objID_list, ra_list,dec_list,mag_list,magerr_list,mjd_list,bandpass_list]
     print 2
-    names = ['OBJID','RA','DEC','MAG','MAGERR','MJD','BAND']  
+    names1 = ['OBJID','RA','DEC','MAG','MAGERR','MJD','BAND']  
     print 3
-    fits.write(array_list, names=names, overwrite = True)
+    fits.write(array_list, names=names1)
     print "saved!"
 
         
