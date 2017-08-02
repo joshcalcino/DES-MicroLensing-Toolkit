@@ -26,17 +26,15 @@ def load_data(pixel="11200", test_ID = 11120000000150):
         data = getData.getData(pix) #13,000-250,000 objects with seperate obs
         objID = data.sIDs #list of all objects
         for i in range(0,4,1): #for i in objID:
+
             #variables from data
-            #objID = [test_ID]
-            is_star = data.isStar(objID[i])
-            #if is_star:
-            # if is star, gets data information
             mjd = data.get_timesByIDs(objID[i])
             t_eff = data.get_t_eff(objID[i])
             m_0 = data.get_mag(objID[i]) 
             RA = data.get_RA(objID[i])
             DEC = data.get_DEC(objID[i])
             bandpass = data.get_bandpass(objID[i])
+
             # appends data information to list
             mjd_list.append( mjd )
             teff_list.append( t_eff )
@@ -48,22 +46,6 @@ def load_data(pixel="11200", test_ID = 11120000000150):
             pix_list.append( pix )
     return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, pix_list
 
-def marika(low, high):
-    t1 = time.time()
-    numStars = []
-    hpix = getHPIX.pix()
-    if high > len(hpix): raise Exception
-    for i in range(0,len(hpix),1):
-        if (i >= low) and (i < high):
-            data = getData.getData(hpix[i])
-            stars = data.count_stars()
-            objs = data.uniqueIDs
-            numStars.append([hpix[i], stars, len(objs)])
-    t2 = time.time()
-    seconds = t2 - t1
-    print "Marika took", seconds, " seconds to run. Or", seconds/60, "minutes." 
-    return numStars
-
 def nike(data, index=0): #takes data from one pixel
     mjd_list = data[0]     
     teff_list = data[1]
@@ -73,7 +55,6 @@ def nike(data, index=0): #takes data from one pixel
     objID_list = data[5]
     band_list = data[6]
     pix = data[7]
-
     curves = []
     size =  len(ra_list)
 
@@ -89,7 +70,7 @@ def nike(data, index=0): #takes data from one pixel
         mjd = np.asarray(mjd_list[i])
         band = np.asarray(band_list[i])
    
-        tmp = star_set.get_curves(mjd, band, objID, ra, dec, t_eff, m_0)
+        tmp = star_set.get_curves(mjd, band, objID, ra, dec, 0, t_eff, m_0)
         curves.append(tmp)
     #save_data(curves, pix)
     #pickle.dump(tmp, open("data_july_25.pickle","wb"))
@@ -112,7 +93,7 @@ def plots2(event1, event2, event3, start, stop, step):
         if i < e1:
             fake_plots.plot_many(event1[i], "blue")
         if i < e2:
-            fake_plots.plot_many(event2[i], "orange")
+            fake_plots.plot_many(event2[i], "chartreuse2")
         if i < e3:    
             fake_plots.plot_many(event3[i], "red")
     return 0
@@ -125,6 +106,12 @@ def save_data(data, pix):
     magerr_list = [] #error bar
     mjd_list = []
     bandpass_list = []
+    mlens_list = []
+    t0_list = []
+    u0_list = []
+    x_list = []
+    lcid_list = []
+
 
     for list_of_curves in data:
         for curve in list_of_curves:
@@ -135,6 +122,12 @@ def save_data(data, pix):
             magerr_list = np.append(magerr_list, curve.light_curve_error)
             mjd_list = np.append(mjd_list, curve.times)
             bandpass_list = np.append(bandpass_list, curve.bandpass)
+            mlens_list = np.append( mlens_list, curve.mlens )
+            t0_list = np.append( t0_list, curve.t0 )
+            u0_list = np.append( u0_list, curve.u0 )
+            x_list = np.append( x_list, curve.xx )
+            lcid_list = np.append ( lcid_list, curve.lcid )
+            
 
     file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
     if os.path.exists(file_name):
@@ -144,9 +137,9 @@ def save_data(data, pix):
         
     fits = fitsio.FITS(file_name,'rw')
     print 1
-    array_list = [objID_list, ra_list,dec_list,mag_list,magerr_list,mjd_list,bandpass_list]
+    array_list = [lcid_list, objID_list, ra_list,dec_list,mag_list,magerr_list,mjd_list,bandpass_list, mlens_list, t0_list, u0_list, x_list]
     print 2
-    names1 = ['OBJID','RA','DEC','MAG','MAGERR','MJD','BAND']  
+    names1 = ['LCID', 'OBJID','RA','DEC','MAG','MAGERR','MJD','BAND', 'M_LENS', 'T_0', 'U_0', 'X']  
     print 3
     fits.write(array_list, names=names1)
     print "saved!"
