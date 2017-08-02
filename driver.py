@@ -80,13 +80,13 @@ def nike(data, index=0): #takes data from one pixel
         print "i:", i
         #if i != index: continue
         star_set = star.star()
-        t_eff= teff_list[i]
-        m_0 = m0_list[i]
-        ra = ra_list[i]
-        dec = dec_list[i]
-        objID = objID_list[i]
-        mjd = mjd_list[i]
-        band = band_list[i]
+        t_eff= np.asarray(teff_list[i])
+        m_0 = np.asarray(m0_list[i])
+        ra = np.asarray(ra_list[i])
+        dec = np.asarray(dec_list[i])
+        objID = np.asarray(objID_list[i])
+        mjd = np.asarray(mjd_list[i])
+        band = np.asarray(band_list[i])
    
         tmp = star_set.get_curves(mjd, band, objID, ra, dec, t_eff, m_0)
         curves.append(tmp)

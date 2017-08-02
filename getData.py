@@ -11,7 +11,7 @@ class getData(object):
 
     def __init__(self, hpix=11737):
         print "Pixel:", hpix
-        self.sIDs, self.uniqueIDs, self.ecat, self.cat_wide = self.pull_data(hpix)
+        self.sIDs, self.ecat, self.cat_wide = self.pull_data(hpix)
         self.index = 0
 
     def get_timesByIDs(self, ID):
@@ -94,7 +94,7 @@ class getData(object):
         from desqcat import load_hpx, load_cat, load_cat_epochs
         self.cat_wide = load_cat(hpix)
         cat_wide = load_cat(hpix)
-        uIDs = self.cat_wide['QUICK_OBJECT_ID']
+        #uIDs = self.cat_wide['QUICK_OBJECT_ID']
         cat = load_cat(hpix, long=True)
         cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC','BAND', 'EXPNUM', 'WAVG_SPREAD_MODEL','SPREADERR_MODEL'] 
         epoch_cols = ['QUICK_OBJECT_ID', 'EXPNUM', 'MJD_OBS', 'BAND', 'T_EFF',
@@ -108,7 +108,7 @@ class getData(object):
         obj_expnum_counts.columns = ['QUICK_OBJECT_ID', 'EXPNUM', 'COUNTS']
         duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
         ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
-        return sIDs, uIDs, ecat, cat_wide
+        return sIDs, ecat, cat_wide
 
     def get_error_details(self, quick_id):
         t_eff, magerr , mag_psf, mjd, bandpass = self.grab_details_for_error(quick_id)
