@@ -25,7 +25,7 @@ def load_data(pixel="11200", test_ID = 11120000000150):
         data = getData.getData(pix) #160,000 objects with seperate obs
         objID = data.uniqueIDs #list of all objects
         print (len(objID))
-        for i in objID: #for i in range(0,1,1)
+        for i in range(13100, 13200, 1): #for i in range(0,1,1)
             #variables from data
             #objID = [test_ID]
             is_star = data.isStar(i)
