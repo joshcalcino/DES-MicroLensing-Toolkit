@@ -71,7 +71,8 @@ class data_practice(object):
             if abs(wavg[n])<(0.003 +  spreaderr[n]) and (test_list[n] <= 21.5):
                 mag_list.append(test_list[n])
                 count += 1
-        #print mag_list
+                #print mag_list
+                count += 1
         counts_file.write(str(count) + "\n")
         return count
 

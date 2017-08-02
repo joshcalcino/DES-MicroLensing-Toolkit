@@ -10,9 +10,13 @@ import MicroLensingGenerator
 class getData(object):
 
     def __init__(self, hpix=11737):
+        print "Pixel:", hpix
         self.list_times, self.uniqueIDs, self.ecat = self.pull_data(hpix)
+<<<<<<< HEAD
         self.index = 0
         #self.star_list = self.star_list()
+=======
+>>>>>>> fermi_devel_mm
 
     def get_MJD(self, index =1000):
         quick_id = self.list_times[index]
@@ -24,11 +28,11 @@ class getData(object):
         return MJD_list   
 
     def get_RA(self, IDs):
-        ra = self.ecat.query("QUICK_OBJECT_ID== {}".format(IDs))['RA']
+        ra = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(IDs))['RA']
         return ra   
 
     def get_DEC(self, IDs):
-        dec = self.ecat.query("QUICK_OBJECT_ID== {}".format(IDs))['DEC']
+        dec = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(IDs))['DEC']
         return dec   
 
     def get_t_eff(self, ID):
@@ -40,7 +44,7 @@ class getData(object):
         return magerr
 
     def get_mag(self, ID):
-        mag = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['MAG_PSF']
+        mag = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['MAG_PSF']
         return mag
 
     def get_bandpass(self, ID):
@@ -48,11 +52,11 @@ class getData(object):
         return band
 
     def get_spread(self, ID):
-        wavg  = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_SPREAD_MODEL'] 
+        wavg  = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['WAVG_SPREAD_MODEL'] 
         return wavg
        
     def get_spread_err(self, ID):
-        spreaderr = self.ecat.query("QUICK_OBJECT_ID== {}".format(ID))['SPREADERR_MODEL']
+        spreaderr = self.cat_wide.query("QUICK_OBJECT_ID== {}".format(ID))['SPREADERR_MODEL']
         return spreaderr
 <<<<<<< HEAD
        
@@ -84,16 +88,52 @@ class getData(object):
         mjd = self.get_timesByIDs(ID)
         band = self.get_bandpass(ID)
         return t_eff, magerr, mag_psf, mjd, band
-    
+   
+    def count_rstars(self):
+        counts_file = open('counts.txt', 'w')
+        test_list = self.cat_wide['MAG_PSF_R']
+        spreaderr = self.cat_wide['SPREADERR_MODEL_R']
+        wavg = self.cat_wide['WAVG_SPREAD_MODEL_R']
+        count = 0
+        for n in range(0, len(test_list)):
+            if abs(wavg[n])<(0.003 +  spreaderr[n]) and (test_list[n] <= 21.5):
+                count += 1
+        counts_file.write(str(count) + "\n")
+        return count
+ 
+    def count_gstars(self):
+        counts_file = open('counts.txt', 'w')
+        test_list = self.cat_wide['MAG_PSF_G']
+        spreaderr = self.cat_wide['SPREADERR_MODEL_G']
+        wavg = self.cat_wide['WAVG_SPREAD_MODEL_G']
+        count = 0
+        for n in range(0, len(test_list)):
+            if abs(wavg[n])<(0.003 +  spreaderr[n]) and (test_list[n] <= 21.5):
+                count += 1
+        counts_file.write(str(count) + "\n")
+        return count
+
+    def count_istars(self):
+        counts_file = open('counts.txt', 'w')
+        test_list = self.cat_wide['MAG_PSF_I']
+        spreaderr = self.cat_wide['SPREADERR_MODEL_I']
+        wavg = self.cat_wide['WAVG_SPREAD_MODEL_I']
+        count = 0
+        for n in range(0, len(test_list)):
+            if abs(wavg[n])<(0.003 +  spreaderr[n]) and (test_list[n] <= 21.5):
+                count += 1
+        counts_file.write(str(count) + "\n")
+        return count
+
     def pull_data(self,hpix):
         hpix = int(hpix)
         sys.path.append('/data/des51.b/data/neilsen/wide_cadence/python')
         from desqcat import load_hpx, load_cat, load_cat_epochs
         self.cat_wide = load_cat(hpix)
         cat = load_cat(hpix, long=True)
-        cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC','BAND', 'EXPNUM', 'WAVG_SPREAD_MODEL','SPREADERR_MODEL'] #other options: HPX2048, NEPOCHS, FLAGS, WAVG_FLAGS, EXPNUM, WAVG_MAG_PSF, WAVG_MAGERR_PSF, WAVG_MAG_AUTO, WAVG_MAGERR_AUTO 
+        cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC','BAND', 'EXPNUM', 'WAVG_SPREAD_MODEL','SPREADERR_MODEL'] 
         epoch_cols = ['QUICK_OBJECT_ID', 'EXPNUM', 'MJD_OBS', 'BAND', 'T_EFF',
-              'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL'] #other options: EXPTIME, 
+              'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']
         ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
         ecat = ecat.query('MAG_PSF < 30')
         obj_expnum_counts = ecat[['QUICK_OBJECT_ID', 'EXPNUM', 'BAND']].groupby(['QUICK_OBJECT_ID', 'EXPNUM'], as_index=False).count()
@@ -141,31 +181,23 @@ class getData(object):
         test = False
         wavg = self.get_spread(ID)
         spreaderr = self.get_spread_err(ID)
+        mag = self.get_mag(ID)
         for n in range(0, len(wavg)):
-            if abs(wavg[n]) < (0.003 + spreaderr[n]): #is this for a particular bandpass?
+            if abs(wavg[n]) < (0.003 + spreaderr[n]) and (test_list[n] <= 21.5): #is this for a particular bandpass?
                 test = True
+        """
         if test == True:
             print "ObjID", ID, "is a star!!"
         else:
             print "ObjID", ID, "is NOT at star."
+        """
         return test
 
-    """
-    def star_list(self, bandpass = 'g'): #takes ALL ids from data and returns a list of only stars from data
+    def star_list(self, uniqueIDs, pix): #takes ALL ids from data and returns a list of only stars from data
+        print "start star list"
         stars = []
-        for ID in self.uniqueIDs:
-            #if isStar(ID, bandpass):
-                #stars.append(ID)
-            isStar_truth = False
-            wavg = self.get_spread(ID, bandpass)
-            spreaderr = self.get_spread_err(ID, bandpass)
-            for n in range(0, len(wavg)):
-                if abs(wavg[n])<(0.003 +  spreaderr[n]):
-                    isStar_truth = True
-            if isStar_truth == True:
-                print "found a star!!"
+        for ID in uniqueIDs:
+            if self.isStar(ID):
                 stars.append(ID)
-            else:
-                print "no star"
-        return stars
-    """
+        print "There are", len(stars), "stars out of", len(uniqueIDs), "objects in pixel", pix
+        return pix, len(stars), len(uniqueIDs)

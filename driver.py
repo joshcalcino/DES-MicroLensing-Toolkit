@@ -11,6 +11,9 @@ import star
 import getHPIX
 import fitsio
 import os
+import time
+
+start_time = time.time()
 
 def load_data(pixel="11200", test_ID = 11120000000150):
     hpix = getHPIX.pix() #list of all pixels in survey
@@ -45,6 +48,26 @@ def load_data(pixel="11200", test_ID = 11120000000150):
                 band_list.append( bandpass )
     return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, pix
 
+def marika(low, high):
+    t1 = time.time()
+    numStars = []
+    hpix = getHPIX.pix()
+    if high > len(hpix): raise Exception
+    for i in range(0,len(hpix),1):
+        if (i >= low) and (i < high):
+            data = getData.getData(hpix[i])
+            stars = data.count_stars()
+            objs = data.uniqueIDs
+            numStars.append([hpix[i], stars, len(objs)])
+    t2 = time.time()
+    seconds = t2 - t1
+    print "Marika took", seconds, " seconds to run. Or", seconds/60, "minutes." 
+    return numStars
+
+def mishelle(index = 11200):
+    data = getData.getData(index)
+    uniq = data.uniqueIDs
+    return uniq
 
 def nike(data, index=0):
     mjd_list = data[0]     
@@ -56,21 +79,8 @@ def nike(data, index=0):
     band_list = data[6]
     pix = data[7]
 
-
-    #tmp = []; import pickle
     curves = []
     size =  len(ra_list)
-    # i is a given star_id or quick_object_id
-
-    # this is the approach when you hae giant single vectors of quanitties
-    #idlist = np.unique(objID_list)
-    #for qid in idlist:
-        #ix = qid == objID_list
-        #teff = teff_list[ix]   # this isnt' a lsit of vectors but a giant flat vector
-        # bandpasses = bandpass_list[ix]
-        #for band in np.unique(bandpasses):  # or for filter in range(0,5):  or band in ["g","r","i","z","Y"] :
-            #iy = bandpass_list[ix] == band
-            #rband = mag_list[ix][iy]
 
     for i in range(size): #for i in data:
         print "i:", i
@@ -87,16 +97,6 @@ def nike(data, index=0):
    
         tmp = star_set.get_curves(mjd, band, objID, ra, dec, t_eff, m_0)
         curves.append(tmp)
-        """
-        tmp2 = dict()
-        for l in range(0,len(curves),1):
-            tmp2["mag"]  = curves[l].light_curve
-            tmp2["magerr"]  = curves[l].light_curve_error
-            tmp2["mjd"]  = curves[l].times
-            tmp2["delmag"]  = curves[l].delta_mag
-            tmp2["objID"] = curves[l].quickid
-        tmp.append(tmp2)
-        """
     save_data(curves, pix)
     #pickle.dump(tmp, open("data_july_25.pickle","wb"))
     return curves
@@ -215,4 +215,6 @@ def save_data(data, pix):
     names = ['OBJID','RA','DEC','MAG','MAGERR','MJD','BAND']  
     print 3
     fits.write(array_list, names=names, overwrite = True)
-    print "saved!"        
+    print "saved!"
+
+        
