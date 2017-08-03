@@ -85,7 +85,7 @@ def get_curves(data, index=0):
     curves = []
     print "Number of Objects:", objects
 
-    for i in objects:
+    for i in range(0, objects,1):
         print "i:", i
         #if i != index: continue
         star_set = star.star()
