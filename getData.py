@@ -101,14 +101,14 @@ class getData(object):
               'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']
         ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
         ecat = ecat.query('MAG_PSF < 30')
-        sIDs = ecat.query('MAG_PSF < 21.5')
-        sIDs = sIDs.query('WAVG_SPREAD_MODEL < (0.003 + SPREADERR_MODEL)')
-        sIDs = sIDs['QUICK_OBJECT_ID'].unique()
+        dim_cat = ecat.query('MAG_PSF < 21.5')
+        star_cat = dim_cat.query('WAVG_SPREAD_MODEL < (0.003 + SPREADERR_MODEL)')
+        sIDs = star_cat['QUICK_OBJECT_ID'].unique()
         obj_expnum_counts = ecat[['QUICK_OBJECT_ID', 'EXPNUM', 'BAND']].groupby(['QUICK_OBJECT_ID', 'EXPNUM'], as_index=False).count()
         obj_expnum_counts.columns = ['QUICK_OBJECT_ID', 'EXPNUM', 'COUNTS']
         duplicated_objects = obj_expnum_counts.QUICK_OBJECT_ID[obj_expnum_counts.COUNTS>1]
         ecat = ecat[np.in1d(ecat.QUICK_OBJECT_ID.values, duplicated_objects.values, invert=True)]
-        return sIDs, ecat, cat_wide
+        return sIDs, star_cat, cat_wide
 
     def get_error_details(self, quick_id):
         t_eff, magerr , mag_psf, mjd, bandpass = self.grab_details_for_error(quick_id)
