@@ -12,7 +12,6 @@ class star(object):
 
     def __init__(self):
         self.lightcurve = []
-        #self.final_mag_list = [] 
         """
         Need to loop over Parameter Limits:
 
@@ -29,10 +28,12 @@ class star(object):
 
     """ Takes a various arguments and returns a list of Mircolensing events. """
 
-    def get_curves(self, MJD_list, bandpass, objID, ra, dec, lcID, t_eff = 1, m_0=30, Ds=5,curve_type =1):
+    def get_curves(self, MJD_list, bandpass, objID, ra, dec, t_eff = 1, m_0=30, Ds=5,curve_type =1):
         v_t = 220
+        lcID = 0
         trange = [56535, 56747, 56992, 57234, 57430] # Dates: 8.31.13, 3.31.14, 12.1.14, 7.31.15, 2.12.16   
         for t_0 in trange:
+            if t_0 != 56535: continue
             print "t_0 index: ", t_0, lcID
             for u_0 in np.arange(0,2,.2):
                 for x in np.arange(0.1,1,0.1):
