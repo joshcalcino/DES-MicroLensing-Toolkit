@@ -25,7 +25,7 @@ def load_data(pixel="11200", test_ID = 11120000000150):
         if pix != pixel: continue #limits data to selected pixel - for testing purposes
         data = getData.getData(pix) #13,000-250,000 objects with seperate obs
         objID = data.sIDs #list of all objects
-        for i in range(0,4,1): #for i in objID:
+        for i in range(0,101,1): #for i in objID:
             #variables from data
             mjd = data.get_timesByIDs(objID[i])
             t_eff = data.get_t_eff(objID[i])
@@ -127,7 +127,7 @@ def save_data(data, pix):
             lcid_list = np.append ( lcid_list, curve.lcid )
             
 
-    file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
+    file_name = "/home/s1/mmironov/data/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
     if os.path.exists(file_name):
         os.remove(file_name)
         print "removed the file!"
