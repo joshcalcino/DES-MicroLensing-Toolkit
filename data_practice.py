@@ -73,6 +73,8 @@ class data_practice(object):
                 count += 1
         #print mag_list
         #counts_file.write(str(count) + "\n")
+                #print mag_list
+        counts_file.write(str(count) + "\n")
         return count
 
     def magdetails20(self):
