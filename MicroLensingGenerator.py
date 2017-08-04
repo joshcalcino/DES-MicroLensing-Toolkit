@@ -104,6 +104,8 @@ class GenerateMLEvent(object):
         ig, = np.where(bandpass=='g')
         iz, = np.where(bandpass=='z')
         ii, = np.where(bandpass=='i')
+        ##Maybe np.sort the self.light_curves and then you will also need to 
+        ##np.sort the MJD list as well I think
         nr = self.interp_r(self.light_curve[ir])
         nY = self.interp_Y(self.light_curve[iY])
         ng = self.interp_g(self.light_curve[ig])
