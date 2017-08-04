@@ -20,23 +20,26 @@ import data_practice as dp
 
 start_time = time.time()
 """
-1) load data
-    this should load one pixel, and load 100 objects into array 
-2) nike(data) 
-    this would take all 100 objects, and make 4500 curves per object
-    this then calls save_data, which saves ~45,000+ rows to a single fits file
+p = number of pixels to sample
+o = number of objects to sample
+nike():
+    load_data()
+    get_curves()
+    save_data()
 """
 
-def nike(p = 2, o = 5):
+def nike(p = 2, o = 5): #when ready to run, remove 'p=2, o=5'
     hpix = getHPIX.pix()
-    pixies = random.sample(hpix, p)
+    pixies = random.sample(hpix, p) #when ready to run, remove this line
+    plotable = []
     print "Pixels:", pixies
     for pix in pixies: #when ready to run over ALL pixels, replace 'pixies' with 'hpix'
         f_name = pix + 'test' #when ready to run remove this line
         t0 = time.time()
-        data = load_data(pix, o)
+        data = load_data(pix, o) #when ready to run, change 'o' to 100
         t1 = time.time()
         curves = get_curves(data)
+        plotable.append( curves )
         t2 = time.time()
         files = save_data(curves, f_name) #when ready to run replace 'f_name' with 'pix'
         t3 = time.time()
@@ -47,15 +50,16 @@ def nike(p = 2, o = 5):
         print "Load Data:", data_time, "seconds"
         print "Curves:", curves_time, "seconds"
         print "Save File:", save_time, "seconds"
+    return plotable
 
 """ Currently load_data only works for 1 pixel at a time. """
-def load_data(pix="11748", t = 2):
+def load_data(pix, sample_size):
     mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, pix_list  = \
         [], [], [], [], [], [], [], []
     data = getData.getData(pix) #13,000-250,000 objects with seperate obs
     objID = data.sIDs #list of all stars
-    objs = random.sample(objID, t)
-    print "Objects:", objs
+    objs = random.sample(objID, sample_size)
+    print "Object IDs:", objs
     
     for ID in objs: 
         #variables from data
@@ -78,17 +82,15 @@ def load_data(pix="11748", t = 2):
     return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list
 
 """ Takes data from all objects within one pixel."""
-def get_curves(data, index=0): 
+def get_curves(data): 
     mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list = data
     objects =  len(mjd_list) #objects = num of objs 
 
     curves = []
     print "Number of Objects:", objects
 
-    for i in range(0, objects,1):
-        print "i:", i
-        #if i != index: continue
-        star_set = star.star()
+    for i in range(0, objects, 1):
+        print "Object", i, ":", objID_list[i] 
         t_eff= np.asarray( teff_list[i] )
         m_0 = np.asarray( m0_list[i] )
         ra = np.asarray( ra_list[i] )
@@ -97,18 +99,18 @@ def get_curves(data, index=0):
         mjd = np.asarray( mjd_list[i] )
         band = np.asarray( band_list[i] )
  
-        #tmp = star_set.get_curves(mjd, band, objID, ra, dec, t_eff, m_0) #45,000 MLEs
         lcs = create_lightcurves(mjd, band, objID, ra, dec, t_eff, m_0) #45,000 MLEs
         curves.append( lcs )
     return curves
 
+""" Takes DES data and creates Microlensing events. Outputs a list of lightcurves per star."""
 def create_lightcurves(MJD_list, bandpass, objID, ra, dec, t_eff = 1, m_0=30, Ds=5,curve_type =1):
     lightcurve = []
     v_t = 220
     lcID = 0
     trange = [56535, 56747, 56992, 57234, 57430] # Dates: 8.31.13, 3.31.14, 12.1.14, 7.31.15, 2.12.16   
     for t_0 in trange:
-        if t_0 != 56535: continue
+        #if t_0 != 56535: continue
         print "t_0 index: ", t_0, lcID
         for u_0 in np.arange(0,2,.2):
             for x in np.arange(0.1,1,0.1):
@@ -120,12 +122,13 @@ def create_lightcurves(MJD_list, bandpass, objID, ra, dec, t_eff = 1, m_0=30, Ds
     return lightcurve
 
 """ Saves data from all curves, of all objects in one pixel."""
-def save_data(data, pix):
+def save_data(pixel_data, pix):
     objID_list, ra_list, dec_list, mag_list, magerr_list, mjd_list, bandpass_list, mlens_list, \
         t0_list, u0_list, x_list, lcid_list = [], [], [], [], [], [], [], [], [], [], [], []
 
-    for list_of_curves in data: #data needs to be one pixel worth of data
-        for curve in list_of_curves: #list of curves needs to be one object per pixel
+    #This for loop appends data from each curve to a single row.
+    for obj in pixel_data: #pixel_data needs to be one pixel worth of data
+        for curve in obj: #obj needs to be one object per pixel
             lcid_list = np.append( lcid_list, curve.lcid )
             objID_list = np.append( objID_list, curve.quickid )
             ra_list = np.append( ra_list, curve.ra )
@@ -139,7 +142,6 @@ def save_data(data, pix):
             u0_list = np.append( u0_list, curve.u0 )
             x_list = np.append( x_list, curve.xx )
             
-
     file_name = "/home/s1/marika/data/DES-MicroLensing-Toolkit/fitsData/test/ml_curves" + str(pix) + ".fits"
     if os.path.exists(file_name):
         os.remove(file_name)
@@ -156,24 +158,22 @@ def save_data(data, pix):
     fits.write(array_list, names=column_headers)
     print "saved!"
 
-def plots(event, start =0, stop = 2, step=1):
-    print "event len:", len(event)
+def plots(curves, start =0, stop = 2, step=1):
+    print "event len:", len(curves)
     fake_plots.clear()
     for i in range(start, stop, step):
         print "i", i
-        fake_plots.plot_many(event[i])    
-    return 0
+        fake_plots.plot_many(curves[i])    
 
-def plots2(event1, event2, event3, start, stop, step):
+def plots2(lc1, lc2, lc3, start, stop, step):
     fake_plots.clear()
-    e1 = len(event1)
-    e2 = len(event2)
-    e3 = len(event3)
+    l1 = len(lc1)
+    l2 = len(lc2)
+    l3 = len(lc3)
     for i in range(start, stop, step):
-        if i < e1:
-            fake_plots.plot_many(event1[i], "blue")
-        if i < e2:
-            fake_plots.plot_many(event2[i], "chartreuse2")
-        if i < e3:    
-            fake_plots.plot_many(event3[i], "red")
-    return 0
+        if i < l1:
+            fake_plots.plot_many(lc1[i], "blue")
+        if i < l2:
+            fake_plots.plot_many(lc2[i], "chartreuse2")
+        if i < l3:    
+            fake_plots.plot_many(lc3[i], "red")

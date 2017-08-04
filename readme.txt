@@ -1,25 +1,22 @@
 Getting Started
 
     This directory contains 4 files used in generating millions of lightcurves for MicroLensingGenerator Events. 
-    The project takes input parameters from the DES Y3 data and returns a list of microlensing events for a given star object. 
+    The project takes input parameters from the DES Y3 data and saves a file of microlensing events for stars within a given pixel.
     These files are:
-        MicroLensingGenerator
-        fake_plots
-        getData
-        parameters 
+        driver.py
+
+        MicroLensingGenerator.py
+        getData.py
+        getHPIX.py
+        fake_plots.py
 
 Prerequisites
 
     User must import the following into the python environment:
-        import MicroLensingGenerator; import fake_plots; import getData; import matplotlib.pyplot as plt; import numpy as np; plt.ion(); import parameters
-    User then imports the data from the DES survey:
-        data = getData.getData(); mjd = data.get_MJD(); para = parameters.loop();
-    User can then generate the plots and events:
-        fake_plots.nike(mjd); obj = para.star_object(mjd)
+        import driver 
+    User can then generate data:
+        driver.nike()
     
-    
-
-    What things you need to install the software and how to install them
 
 Give examples
     Installing
