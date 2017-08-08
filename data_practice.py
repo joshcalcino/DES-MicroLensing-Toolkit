@@ -59,20 +59,21 @@ class data_practice(object):
         return t_eff, magerr
 
     def avg_mag_redux(self):
-        counts_file = open('counts.txt', 'w')
+        #counts_file = open('counts.txt', 'w')
         mag_list = []
         test_list = self.cat_wide['MAG_PSF_R']
-        print(test_list[0])
+        #print(test_list[0])
         spreaderr = self.cat_wide['SPREADERR_MODEL_R']
         wavg = self.cat_wide['WAVG_SPREAD_MODEL_R']
         #print self.cat_wide.head()
         count = 0
         for n in range(0, len(test_list)):
             if abs(wavg[n])<(0.003 +  spreaderr[n]) and (test_list[n] <= 21.5):
-                mag_list.append(test_list[n])
+                #mag_list.append(test_list[n])
                 count += 1
+        #print mag_list
+        #counts_file.write(str(count) + "\n")
                 #print mag_list
-                count += 1
         counts_file.write(str(count) + "\n")
         return count
 

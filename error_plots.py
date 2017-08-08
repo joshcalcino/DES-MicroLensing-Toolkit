@@ -82,6 +82,8 @@ def error_plots(teff_low, teff_hi,input_file = "Y_error_data.txt", bandpass = 'Y
     magerr_plot = np.array(magerr_plot)
     t_eff_plot = np.array(t_eff_plot)
 
+    print mag
+
     ix = np.argsort(mag_plot)
     mag_plot = mag_plot[ix]
     magerr_plot = magerr_plot[ix]
@@ -109,9 +111,13 @@ def error_plots(teff_low, teff_hi,input_file = "Y_error_data.txt", bandpass = 'Y
     mag_testing = mag[ix]
     magerr_testing=magerr[ix]
     teff_testing = teff[ix]
-
+    print("********")
     predicted_mag_error = interp(mag_testing)
-    fd = open("magerr_model_{}.pickle".format(bandpass), 'wb')
+    
+    print(predicted_mag_error)
+    
+    
+    fd = open("magerr2_model_{}.pickle".format(bandpass), 'wb')
     pickle.dump([mag_training, magerr_training], fd)
     fd.close()
 
@@ -126,12 +132,16 @@ def error_plots(teff_low, teff_hi,input_file = "Y_error_data.txt", bandpass = 'Y
 
     #predicted_mag_error = teff_testing
     #magerr_testing =  magerr_testingi
-    error_file = pickle.load(open("magerr_model_{}.pickle".format(bandpass), 'rb'))
+    error_file = pickle.load(open("magerr2_model_{}.pickle".format(bandpass), 'rb'))
     interp_woo = interp1d(error_file[0], error_file[1], bounds_error = False)
+    #interp_woo = interp1d(error_file[0], error_file[1])
     timey = np.arange(error_file[0].min(),error_file[0].max(),0.05)
     plot_me = interp_woo(np.sort(mag_testing))
     wimey = interp_woo(timey)
     #print error
+
+    for celeste in range(0, len(plot_me)):
+            print(plot_me[celeste])
 
     print(np.sort(mag_testing))
 
@@ -156,7 +166,7 @@ def error_plots(teff_low, teff_hi,input_file = "Y_error_data.txt", bandpass = 'Y
     #plt.scatter(mag_plot, calculated, color = 'red')
     #plt.scatter(mag_plot, error, color = 'green')
     plt.show()
-    plt.savefig("error_for_paper_06-1.5.png")
+    #plt.savefig("error_for_paper_06-1.5.png")
     
     """
 
