@@ -32,10 +32,10 @@ def plot_many(event, color = "rosybrown"):
     delta_mag = event.delta_mag  # change in the magnitude of the star due to the lensing
     
     mpl.rcParams['figure.figsize'] = (8, 5)
-
     t_time = np.arange(t.min(),t.max(),0.01)
+
     interp = interp1d(t, delta_mag, bounds_error =  False, kind = 'linear')
-    dm = interp(t_time)
+    dm = interp(t_time) 
 
     interp2 = interp1d(t, mag, bounds_error = False, kind = 'linear') 
     cm = interp2(t_time)    
