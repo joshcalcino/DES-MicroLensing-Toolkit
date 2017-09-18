@@ -1,8 +1,0 @@
-BEGIN {}
-{
-    mag  = $1
-    if ( mag > 21.9 && mag < 22.1) {
-        print $0
-    }
-}
-END {}

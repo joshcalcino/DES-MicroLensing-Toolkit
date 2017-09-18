@@ -65,9 +65,10 @@ def plot_many(event, color = "rosybrown"):
         if b[i] == 'i':
             plt.scatter(t[i], mag[i], s= 50, c = "mediumblue",marker='>', edgecolor='black', zorder=5)
             plt.errorbar(t[i], mag[i], error[i], capsize =4, c='royalblue', elinewidth=1)
+    """
     #MJD
     for i in range(0, len(b), 1):
-        if b[i] == 'r':
+       if b[i] == 'r':
             plt.scatter(t[i],  m_0[i], s= 50, c = "r",marker='s', edgecolor='black', zorder=2)
             plt.errorbar(t[i], m_0[i],error[i], capsize =4, c='tomato', elinewidth=1 )
         if b[i] == 'Y':
@@ -82,7 +83,6 @@ def plot_many(event, color = "rosybrown"):
         if b[i] == 'i':
             plt.scatter(t[i],  m_0[i], s= 50, c = "mediumblue",marker='>', edgecolor='black', zorder=5)
             plt.errorbar(t[i], m_0[i],error[i], capsize =4, c='royalblue', elinewidth=1)
-    """
     #DelMag
     for i in range(0, len(b), 1):
         if b[i] == 'r':
