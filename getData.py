@@ -96,12 +96,19 @@ class getData(object):
         cat_wide = load_cat(hpix)
         #uIDs = self.cat_wide['QUICK_OBJECT_ID']
         cat = load_cat(hpix, long=True)
-        cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC','BAND', 'EXPNUM', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL'] 
+        #cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC','BAND', 'EXPNUM','SPREADERR_MODEL'] 
+        #epoch_cols = ['QUICK_OBJECT_ID', 'EXPNUM', 'MJD_OBS', 'BAND', 'T_EFF',
+        #      'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO', 'SPREADERR_MODEL']
+        cat_cols = ['QUICK_OBJECT_ID', 'RA', 'DEC','BAND', 'EXPNUM', 'WAVG_SPREAD_MODEL','SPREADERR_MODEL'] 
         epoch_cols = ['QUICK_OBJECT_ID', 'EXPNUM', 'MJD_OBS', 'BAND', 'T_EFF',
               'MAG_PSF', 'MAGERR_PSF', 'MAG_AUTO', 'MAGERR_AUTO', 'WAVG_SPREAD_MODEL', 'SPREADERR_MODEL']
+        print 1
         ecat = load_cat_epochs(hpix, cat_cols, epoch_cols)
+        print 2
         ecat = ecat.query('MAG_PSF < 30')
+        print 3 
         dim_cat = ecat.query('MAG_PSF < 21.5')
+        print 4
         star_cat = dim_cat.query('WAVG_SPREAD_MODEL < (0.003 + SPREADERR_MODEL)')
         sIDs = star_cat['QUICK_OBJECT_ID'].unique()
         obj_expnum_counts = ecat[['QUICK_OBJECT_ID', 'EXPNUM', 'BAND']].groupby(['QUICK_OBJECT_ID', 'EXPNUM'], as_index=False).count()
