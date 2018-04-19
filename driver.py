@@ -23,7 +23,7 @@ start_time = time.time()
 p = number of pixels to sample
 o = number of objects to sample
 nike():
-    load_data()
+    load_data() # loads one pixel of data, all stars
     get_curves()
     save_data()
 """
@@ -65,7 +65,7 @@ def load_data(pix, sample_size = 2):
     for ID in objs: 
         #variables from data
         data.loadStar( ID )
-        mjd = data.getMJD( ID )
+        mjd = data.getMJD( ID ) 
         t_eff = data.get_t_eff( ID )
         m_0 = data.get_mag( ID )
         RA = data.get_RA( ID )
@@ -86,7 +86,7 @@ def load_data(pix, sample_size = 2):
 """ Takes data from all objects within one pixel."""
 def get_curves(data): 
     mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list = data
-    objects =  len(mjd_list) #objects = num of objs * number of MJDs
+    objects =  len(mjd_list) 
 
     curves = []
     print "Number of Objects:", objects
@@ -108,8 +108,8 @@ def get_curves(data):
 """ Takes DES data and creates Microlensing events. Outputs a list of lightcurves per star."""
 def create_lightcurves(MJD_list, band, objID, ra, dec, t_eff = 1, m_0=30, Ds=5,curve_type =1):
     lightcurve = []
-    v_t = 220
-    lcID = 0
+    v_t = 220 #velocity = 220 m/s
+    lcID = 0 #lightcurve ID
     trange = [56535, 56747, 56992, 57234, 57430] # Dates: 8.31.13, 3.31.14, 12.1.14, 7.31.15, 2.12.16   
     for t_0 in trange:
         #if t_0 != 56535: continue
