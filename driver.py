@@ -27,9 +27,10 @@ nike():
     get_curves()
     save_data()
 """
-
+#runs one hpix, and loads data, then ets curves and adds to list, then saves data
 def nike(p = 2, o = 5): #when ready to run, remove 'p=2, o=5'
     hpix = getHPIX.pix()
+    hpix = ['9280', '9281']
     pixies = random.sample(hpix, p) #when ready to run, remove this line
     plotable = []
     print "Pixels:", pixies
@@ -63,9 +64,10 @@ def load_data(pix, sample_size):
     
     for ID in objs: 
         #variables from data
-        mjd = data.get_timesByIDs( ID ) 
+        data.get_itemsByID( ID )
+        mjd = data.get_times( ID )
         t_eff = data.get_t_eff( ID )
-        m_0 = data.get_mag( ID ) 
+        m_0 = data.get_mag( ID )
         RA = data.get_RA( ID )
         DEC = data.get_DEC( ID )
         bandpass = data.get_bandpass( ID )
@@ -177,3 +179,7 @@ def plots2(lc1, lc2, lc3, start, stop, step):
             fake_plots.plot_many(lc2[i], "chartreuse2")
         if i < l3:    
             fake_plots.plot_many(lc3[i], "red")
+
+
+
+
