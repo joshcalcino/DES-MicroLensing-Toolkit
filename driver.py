@@ -54,7 +54,7 @@ def nike(p = 2, o = 5): #when ready to run, remove 'p=2, o=5'
     return plotable
 
 """ Currently load_data only works for 1 pixel at a time. """
-def load_data(pix, sample_size):
+def load_data(pix, sample_size = 2):
     mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list, pix_list  = \
         [], [], [], [], [], [], [], []
     data = getData.getData(pix) #13,000-250,000 objects with seperate obs
@@ -64,13 +64,13 @@ def load_data(pix, sample_size):
     
     for ID in objs: 
         #variables from data
-        data.get_itemsByID( ID )
-        mjd = data.get_times( ID )
+        data.loadStar( ID )
+        mjd = data.getMJD( ID )
         t_eff = data.get_t_eff( ID )
         m_0 = data.get_mag( ID )
         RA = data.get_RA( ID )
         DEC = data.get_DEC( ID )
-        bandpass = data.get_bandpass( ID )
+        band = data.get_band( ID )
 
         # appends data information to list
         mjd_list.append( mjd ) 
@@ -79,14 +79,14 @@ def load_data(pix, sample_size):
         ra_list.append( RA )
         dec_list.append( DEC )
         objID_list.append( ID )
-        band_list.append( bandpass )
+        band_list.append( band )
 
     return mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list
 
 """ Takes data from all objects within one pixel."""
 def get_curves(data): 
     mjd_list, teff_list, m0_list, ra_list, dec_list, objID_list, band_list = data
-    objects =  len(mjd_list) #objects = num of objs 
+    objects =  len(mjd_list) #objects = num of objs * number of MJDs
 
     curves = []
     print "Number of Objects:", objects
@@ -106,7 +106,7 @@ def get_curves(data):
     return curves
 
 """ Takes DES data and creates Microlensing events. Outputs a list of lightcurves per star."""
-def create_lightcurves(MJD_list, bandpass, objID, ra, dec, t_eff = 1, m_0=30, Ds=5,curve_type =1):
+def create_lightcurves(MJD_list, band, objID, ra, dec, t_eff = 1, m_0=30, Ds=5,curve_type =1):
     lightcurve = []
     v_t = 220
     lcID = 0
@@ -118,7 +118,7 @@ def create_lightcurves(MJD_list, bandpass, objID, ra, dec, t_eff = 1, m_0=30, Ds
             for x in np.arange(0.1,1,0.1):
                 for M in range(10,101,10):
                     lightcurve.append(MicroLensingGenerator.GenerateMLEvent(
-                        t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, bandpass, objID, ra, dec, lcID, t_eff, curve_type))
+                        t_0, u_0, v_t, M, Ds, x, MJD_list, m_0, band, objID, ra, dec, lcID, t_eff, curve_type))
                     lcID += 1
     print "total index:", lcID
     return lightcurve
