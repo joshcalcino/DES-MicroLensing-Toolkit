@@ -30,7 +30,7 @@ nike():
 #runs one hpix, and loads data, then ets curves and adds to list, then saves data
 def nike(p = 2, o = 5): #when ready to run, remove 'p=2, o=5'
     hpix = getHPIX.pix()
-    hpix = ['9280', '9281']
+    #hpix = ['9280', '9282']
     pixies = random.sample(hpix, p) #when ready to run, remove this line
     plotable = []
     print "Pixels:", pixies

@@ -13,7 +13,7 @@ class getData(object):
         print "Pixel:", hpix
         self.sIDs, self.star_cat, self.ecat = self.pull_data(hpix)
         self.index = 0
-        self.get_starData(self.sIDs[0])
+        self.loadStar(self.sIDs[0])
 
     def pull_data(self,hpix):
         hpix = int(hpix)
@@ -36,58 +36,56 @@ class getData(object):
         sIDs = star_cat['QUICK_OBJECT_ID'].unique()
         return sIDs, star_cat, ecat
 
- def loadStar(self, ID):
-        data = self.star_cat.query("QUICK_OBJECT_ID== {}".format(ID))[['MJD_OBS', 'RA','DEC','T_EFF','MAGERR_PSF','MAG_PSF', 'BAND', "WAVG_SPREAD_MODEL", "SPREADERR_MODEL"]]
-        self.edata = data
-        self.edata_id = ID
-        #print "Star ID", ID, "data loaded." 
+    def loadStar(self, ID):
+        data = self.star_cat.query("QUICK_OBJECT_ID== {}".format(ID))[['MJD_OBS', 'RA','DEC','T_EFF','MAGERR_PSF','MAG_PSF', 'BAND', "WAVG_SPREAD_MODEL", "SPREADERR_MODEL"]]
+        self.edata = data
+        self.edata_id = ID
 
-    def getMJD(self, ID):
-        if self.edata_id != ID:
-            self.loadStar(ID)
-        return self.edata["MJD_OBS"]
+    def getMJD(self, ID):
+        if self.edata_id != ID:
+            self.loadStar(ID)
+        return self.edata["MJD_OBS"]
 
-    def get_RA(self, ID):
-        if self.edata_id != ID:
-            self.loadStar(ID)
-        return self.edata["RA"]
+    def get_RA(self, ID):
+        if self.edata_id != ID:
+            self.loadStar(ID)
+        return self.edata["RA"]
 
-    def get_DEC(self, ID):
-        if self.edata_id != ID:
-            self.loadStar(ID)
-       return self.edata["DEC"]
+    def get_DEC(self, ID):
+        if self.edata_id != ID:
+            self.loadStar(ID)
+        return self.edata["DEC"]
 
-    def get_t_eff(self, ID):
-        if self.edata_id != ID:
-            self.loadStar(ID)
-        return self.edata["T_EFF"]
+    def get_t_eff(self, ID):
+        if self.edata_id != ID:
+            self.loadStar(ID)
+        return self.edata["T_EFF"]
 
-    def get_magerr(self, ID):
-        if self.edata_id != ID:
-            self.loadStar(ID)
-        return self.edata["MAGERR_PSF"]
+    def get_magerr(self, ID):
+        if self.edata_id != ID:
+            self.loadStar(ID)
+        return self.edata["MAGERR_PSF"]
 
-    def get_mag(self, ID):
-        if self.edata_id != ID:
-            self.loadStar(ID)
-        return self.edata["MAG_PSF"]
+    def get_mag(self, ID):
+        if self.edata_id != ID:
+            self.loadStar(ID)
+        return self.edata["MAG_PSF"]
 
-    def get_band(self, ID):
-        if self.edata_id != ID:
-            self.loadStar(ID)
-        return self.edata["BAND"]
+    def get_band(self, ID):
+        if self.edata_id != ID:
+            self.loadStar(ID)
+        return self.edata["BAND"]
 
-    def get_spread(self, ID):
-        if self.edata_id != ID:
-            self.loadStar(ID)
-        return self.edata["WAVG_SPREAD_MODEL"]
+    def get_spread(self, ID):
+        if self.edata_id != ID:
+            self.loadStar(ID)
+        return self.edata["WAVG_SPREAD_MODEL"]
 
-    def get_spread_err(self, ID):
-        if self.edata_id != ID:
-            self.loadStar(ID)
-        return self.edata["SPREADERR_MODEL"]
+    def get_spread_err(self, ID):
+        if self.edata_id != ID:
+            self.loadStar(ID)
+        return self.edata["SPREADERR_MODEL"]
 
-       
     def find20mag(self):
         maglist = []
         sIDs = self.sIDs
